@@ -17,12 +17,13 @@ AudioCraft is Meta's foundation research framework for audio generation that ena
 
 This repository will guide you through using each of AudioCraft's core features:
 
-1. **Getting Started**: Basic setup and interface overview
-2. **MusicGen**: Creating music from text descriptions
-3. **AudioGen**: Generating environmental sounds and effects
+1. **[Getting Started](tutorials/getting-started/README.md)**: Basic setup and interface overview
+2. **[MusicGen](tutorials/musicgen/README.md)**: Creating music from text descriptions
+3. **[AudioGen](tutorials/audiogen/README.md)**: Generating environmental sounds and effects
 4. **TextToAudio**: Building general audio generation pipelines 
 5. **TTS Solutions**: Creating customized text-to-speech applications
 6. **Advanced Techniques**: Combining multiple models for complex audio creation
+7. **[Troubleshooting & FAQs](tutorials/troubleshooting.md)**: Common issues and solutions
 
 ## Requirements
 
@@ -40,6 +41,34 @@ Each tutorial section includes:
 - Example prompts and configurations
 - Best practices and tips
 - Sample outputs
+
+## Quick Start
+
+To get started quickly:
+
+```bash
+# Install AudioCraft
+pip install audiocraft
+
+# Run a simple music generation example
+python -c "
+import torch
+from audiocraft.models import MusicGen
+from audiocraft.data.audio import audio_write
+
+# Load model
+model = MusicGen.get_pretrained('small')
+
+# Generate music
+wav = model.generate(['An upbeat electronic track with a catchy melody'])
+
+# Save output
+audio_write('output', wav[0].cpu(), model.sample_rate)
+print('Generated audio saved to output.wav')
+"
+```
+
+For more detailed setup instructions, see our [Getting Started Guide](tutorials/getting-started/README.md).
 
 ## Ethics and Responsible Use
 
