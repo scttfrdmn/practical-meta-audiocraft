@@ -26,9 +26,11 @@ This repository will guide you through using each of AudioCraft's core features:
 
 ## Requirements
 
-- Python 3.8+
-- PyTorch 1.13.1+
-- CUDA-compatible GPU (for faster generation)
+- Python 3.9 (recommended)
+- PyTorch 2.1.0+
+- Either:
+  - CUDA-compatible NVIDIA GPU (for faster generation on Windows/Linux)
+  - Apple Silicon Mac with Metal GPU acceleration (M1/M2/M3/M4 series)
 - Basic familiarity with Python and ML frameworks
 
 ## Usage
