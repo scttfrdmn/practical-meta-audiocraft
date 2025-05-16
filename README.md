@@ -1,0 +1,65 @@
+# Meta AudioCraft Tutorial
+
+This project is a comprehensive tutorial for using Meta's AudioCraft, a powerful AI audio generation framework that can create music, sound effects, and audio using natural language text prompts.
+
+## About Meta AudioCraft
+
+AudioCraft is Meta's foundation research framework for audio generation that enables users to:
+
+- Generate high-quality music from text descriptions
+- Create environmental and sound effects
+- Produce realistic audio based on text prompts
+- Generate speech and voice content
+- Build, train and deploy audio generation models
+- Create custom audio models and pipelines
+
+## Tutorial Contents
+
+This repository will guide you through using each of AudioCraft's core features:
+
+1. **Getting Started**: Basic setup and interface overview
+2. **MusicGen**: Creating music from text descriptions
+3. **AudioGen**: Generating environmental sounds and effects
+4. **TextToAudio**: Building general audio generation pipelines 
+5. **TTS Solutions**: Creating customized text-to-speech applications
+6. **Advanced Techniques**: Combining multiple models for complex audio creation
+
+## Requirements
+
+- Python 3.8+
+- PyTorch 1.13.1+
+- CUDA-compatible GPU (for faster generation)
+- Basic familiarity with Python and ML frameworks
+
+## Usage
+
+Each tutorial section includes:
+- Step-by-step instructions
+- Example prompts and configurations
+- Best practices and tips
+- Sample outputs
+
+## Ethics and Responsible Use
+
+When using AudioCraft or any AI audio generation technology:
+
+- Always attribute generated content as AI-created
+- Clearly disclose when music or audio has been AI-generated
+- Consider copyright implications of training data and outputs
+- Be mindful of potential misuse (voice cloning, misinformation)
+- Follow Meta's terms of service and usage guidelines
+
+## Resources
+
+- [AudioCraft GitHub Repository](https://github.com/facebookresearch/audiocraft)
+- [Meta AI Blog: AudioCraft](https://ai.meta.com/blog/audiocraft-musicgen-audiogen-encodec-generative-ai-audio/)
+- [MusicGen Demo](https://huggingface.co/spaces/facebook/MusicGen)
+- [AudioGen Demo](https://huggingface.co/spaces/facebook/AudioGen)
+
+## License
+
+This tutorial is available under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+This is an unofficial tutorial and is not affiliated with Meta. Meta AudioCraft is an open-source project by Meta AI Research, and usage of the technology is subject to Meta's license terms and conditions.
