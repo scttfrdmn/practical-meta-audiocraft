@@ -1,0 +1,132 @@
+---
+layout: default
+---
+
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty {{ page.difficulty }}">{{ page.difficulty | capitalize }}</span>
+      <span class="estimated-time">{{ page.estimated_time }}</span>
+    </div>
+    <h1>{{ page.title }}</h1>
+  </div>
+  
+  {% if page.scenario %}
+  <div class="scenario-quote">
+    <blockquote>
+      <p>"{{ page.scenario.quote }}"</p>
+      <cite>— {{ page.scenario.persona }}, {{ page.scenario.role }}</cite>
+    </blockquote>
+  </div>
+  {% endif %}
+  
+  {{ content }}
+  
+  {% if page.challenge %}
+  <div class="chapter-challenge">
+    <h2>Hands-on Challenge</h2>
+    {{ page.challenge | markdownify }}
+  </div>
+  {% endif %}
+  
+  {% if page.takeaways %}
+  <div class="key-takeaways">
+    <h2>Key Takeaways</h2>
+    <ul>
+      {% for takeaway in page.takeaways %}
+      <li>{{ takeaway }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  
+  {% if page.next_steps %}
+  <div class="next-steps">
+    <h2>Next Steps</h2>
+    <p>Now that you've mastered {{ page.title | downcase | remove: "chapter " | remove: ":" }}, you're ready to explore:</p>
+    <ul>
+      {% for step in page.next_steps %}
+      <li>
+        <a href="{{ step.url }}">{{ step.title }}</a>: {{ step.description }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  
+  {% if page.further_reading %}
+  <div class="further-reading">
+    <h2>Further Reading</h2>
+    <ul>
+      {% for resource in page.further_reading %}
+      <li>
+        {% if resource.url %}
+        <a href="{{ resource.url }}" target="_blank">{{ resource.title }}</a>
+        {% else %}
+        {{ resource.title }}
+        {% endif %}
+        {% if resource.description %}
+        - {{ resource.description }}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+
+<div class="chapter-navigation">
+  {% if page.previous %}
+  <a href="{{ page.previous.url }}" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">{{ page.previous.title }}</span>
+  </a>
+  {% endif %}
+  
+  {% if page.next %}
+  <a href="{{ page.next.url }}" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">{{ page.next.title }}</span>
+  </a>
+  {% endif %}
+</div>
+
+{% include copyright-footer.html %}
+
+{% if page.code_examples %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize code tabs
+    const tabs = document.querySelectorAll('.code-tabs');
+    tabs.forEach(function(tabContainer) {
+      const tabButtons = tabContainer.querySelectorAll('.tab-button');
+      const tabContents = tabContainer.querySelectorAll('.tab-content');
+      
+      // Set first tab as active by default
+      if (tabButtons.length > 0) {
+        tabButtons[0].classList.add('active');
+        tabContents[0].classList.add('active');
+      }
+      
+      // Add click handlers
+      tabButtons.forEach(function(button, index) {
+        button.addEventListener('click', function() {
+          // Remove active class from all tabs
+          tabButtons.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          button.classList.add('active');
+          tabContents[index].classList.add('active');
+        });
+      });
+    });
+    
+    // Initialize audio players
+    const audioPlayers = document.querySelectorAll('.audio-example');
+    audioPlayers.forEach(function(player) {
+      // Custom audio player logic here
+    });
+  });
+</script>
+{% endif %}
