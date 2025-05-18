@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0;url={{ page.redirect.to }}">
+    <link rel="canonical" href="{{ page.redirect.to }}">
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected automatically, follow this <a href="{{ page.redirect.to }}">link to {{ page.redirect.to | replace: site.baseurl, "" }}</a>.</p>
+  </body>
+</html>
