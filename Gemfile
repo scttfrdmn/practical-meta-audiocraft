@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3.2"
+# GitHub Pages
+gem "github-pages", "~> 228", group: :jekyll_plugins
 gem "minima", "~> 2.5"
 
 group :jekyll_plugins do
@@ -18,9 +19,3 @@ end
 
 # Performance-booster for watching directories on Windows
 gem "wdm", "~> 0.1.1", :platforms => [:mingw, :x64_mingw, :mswin]
-
-# Lock Jekyll to v4.3.2 for GitHub Pages compatibility
-gem "jekyll", "~> 4.3.2"
-
-# GitHub Pages
-gem "github-pages", "~> 228", group: :jekyll_plugins
