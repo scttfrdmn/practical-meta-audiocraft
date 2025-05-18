@@ -22,20 +22,20 @@ This book will teach you how to leverage Meta's AudioCraft framework to generate
 ## How This Book is Organized
 
 **Part I: Foundations**
-- [Chapter 1: Introduction to AI Audio Generation](/chapters/part1/introduction/)
-- [Chapter 2: Setting Up Your Environment](/chapters/part1/setup/)
-- [Chapter 3: Understanding AudioCraft Architecture](/chapters/part1/architecture/)
-- [Chapter 4: Your First Audio Generation](/chapters/part1/first-generation/)
+- [Chapter 1: Introduction to AI Audio Generation](/practical-meta-audiocraft/chapters/part1/introduction/)
+- [Chapter 2: Setting Up Your Environment](/practical-meta-audiocraft/chapters/part1/setup/)
+- [Chapter 3: Understanding AudioCraft Architecture](/practical-meta-audiocraft/chapters/part1/architecture/)
+- [Chapter 4: Your First Audio Generation](/practical-meta-audiocraft/chapters/part1/first-generation/)
 
 **Part II: Music Generation with MusicGen**
-- [Chapter 5: Basic Music Generation](/chapters/part2/basic-music/)
+- [Chapter 5: Basic Music Generation](/practical-meta-audiocraft/chapters/part2/basic-music/)
 - Chapter 6: Prompt Engineering for Music
 - Chapter 7: Parameter Optimization
 - Chapter 8: Melody Conditioning
 - Chapter 9: Advanced Music Generation Techniques
 
 **Part III: Sound Effects with AudioGen**
-- [Chapter 10: Basic Sound Effect Generation](/chapters/part3/basic-sound-effects/)
+- [Chapter 10: Basic Sound Effect Generation](/practical-meta-audiocraft/chapters/part3/basic-sound-effects/)
 - Chapter 11: Crafting Sound Effect Prompts
 - Chapter 12: Building Sound Libraries
 - Chapter 13: Creating Complex Soundscapes
@@ -66,10 +66,10 @@ No prior experience with machine learning or audio engineering is required!
 
 ## Getting Started
 
-Ready to begin? Start with [Chapter 1: Introduction to AI Audio Generation](/chapters/part1/introduction/) to understand the fundamentals of AI audio generation and how AudioCraft works.
+Ready to begin? Start with [Chapter 1: Introduction to AI Audio Generation](/practical-meta-audiocraft/chapters/part1/introduction/) to understand the fundamentals of AI audio generation and how AudioCraft works.
 
 <div class="cta-buttons">
-  <a href="/chapters/part1/introduction/" class="button primary">Start Reading</a>
+  <a href="/practical-meta-audiocraft/chapters/part1/introduction/" class="button primary">Start Reading</a>
   <a href="https://github.com/facebookresearch/audiocraft" class="button secondary">AudioCraft GitHub</a>
 </div>
 
