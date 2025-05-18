@@ -1,0 +1,43 @@
+baseURL = 'https://scttfrdmn.github.io/practical-meta-audiocraft/'
+languageCode = 'en-us'
+title = 'Practical Meta AudioCraft'
+theme = 'book'
+
+# Book theme settings
+[params]
+  # Book theme parameters
+  BookTheme = 'auto'
+  BookToC = true
+  BookSection = 'chapters'
+  BookDateFormat = 'Jan 2, 2006'
+  BookSearch = true
+  BookComments = false
+  BookPortableLinks = true
+  BookServiceWorker = true
+  
+  # Custom parameters
+  author = 'Scott Friedman'
+  description = 'A hands-on guide to creating music, sound effects, and audio experiences with AI'
+  copyright = '© 2025 Scott Friedman - Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License'
+  
+[menu]
+  [[menu.before]]
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.before]]
+    name = "Getting Started"
+    url = "/chapters/part1/introduction/"
+    weight = 5
+  [[menu.before]]
+    name = "MusicGen"
+    url = "/chapters/part2/basic-music/"
+    weight = 10
+  [[menu.before]]
+    name = "AudioGen"
+    url = "/chapters/part3/introduction-to-audiogen/"
+    weight = 15
+  [[menu.before]]
+    name = "Tutorials"
+    url = "/tutorials/getting-started/"
+    weight = 20
