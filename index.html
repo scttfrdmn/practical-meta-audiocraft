@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Meta AudioCraft</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1a73e8;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34a853;
+            margin-top: 30px;
+        }
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background-color: #0d65d9;
+            text-decoration: none;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .feature {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #1a73e8;
+        }
+        .copyright {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Practical Meta AudioCraft</h1>
+    
+    <p>
+        Welcome to "Practical Meta AudioCraft" - a comprehensive guide to creating music, 
+        sound effects, and audio experiences with AI!
+    </p>
+    
+    <div class="container">
+        <h2>What You'll Learn</h2>
+        <ul>
+            <li>Generate custom music from text descriptions</li>
+            <li>Create realistic sound effects and ambient soundscapes</li>
+            <li>Build integrated audio generation applications</li>
+            <li>Deploy audio AI systems to production environments</li>
+            <li>Extend AudioCraft for specialized use cases</li>
+        </ul>
+        
+        <a href="https://github.com/scttfrdmn/practical-meta-audiocraft" class="cta-button">
+            View on GitHub
+        </a>
+    </div>
+    
+    <h2>Getting Started</h2>
+    <p>
+        This comprehensive tutorial will guide you through using Meta's AudioCraft framework, 
+        from basic setup to advanced audio generation techniques.
+    </p>
+    
+    <div class="feature-grid">
+        <div class="feature">
+            <h3>Music Generation</h3>
+            <p>Learn to create custom music tracks using text prompts with MusicGen</p>
+        </div>
+        <div class="feature">
+            <h3>Sound Effects</h3>
+            <p>Generate realistic sound effects and ambient audio with AudioGen</p>
+        </div>
+        <div class="feature">
+            <h3>Interactive Audio</h3>
+            <p>Build responsive audio systems that adapt to user input</p>
+        </div>
+        <div class="feature">
+            <h3>Deployment</h3>
+            <p>Deploy your audio AI systems to web interfaces and applications</p>
+        </div>
+    </div>
+    
+    <h2>Installation</h2>
+    <p>
+        Basic AudioCraft setup:
+    </p>
+    <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
+# Create Python environment
+conda create -n audiocraft python=3.9
+conda activate audiocraft
+
+# Install PyTorch with MPS support (Mac)
+pip install torch==2.1.0 torchaudio==2.1.0
+
+# Install AudioCraft
+pip install -U audiocraft
+    </pre>
+    
+    <div class="copyright">
+        © 2025 Scott Friedman. Licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+    </div>
+</body>
+</html>
