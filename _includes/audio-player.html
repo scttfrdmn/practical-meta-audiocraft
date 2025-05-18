@@ -1,0 +1,37 @@
+{% comment %}
+  Audio Player Component
+  
+  Parameters:
+  - title: Title of the audio example
+  - src: Path to the audio file
+  - description: Optional description of the audio
+  - prompt: Optional text prompt used to generate the audio
+  - parameters: Optional generation parameters used
+{% endcomment %}
+
+<div class="audio-example">
+  <h4>{{ include.title }}</h4>
+  
+  {% if include.prompt %}
+  <div class="prompt-used">
+    <strong>Prompt:</strong> "{{ include.prompt }}"
+  </div>
+  {% endif %}
+  
+  {% if include.parameters %}
+  <div class="parameters-used">
+    <strong>Parameters:</strong> {{ include.parameters }}
+  </div>
+  {% endif %}
+  
+  <audio controls>
+    <source src="{{ include.src }}" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+  
+  {% if include.description %}
+  <div class="description">
+    {{ include.description }}
+  </div>
+  {% endif %}
+</div>
