@@ -1,7 +1,3 @@
----
-layout: home
-title: Practical Meta AudioCraft
----
 
 # Practical Meta AudioCraft
 

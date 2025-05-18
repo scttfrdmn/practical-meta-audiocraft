@@ -1,4 +1,4 @@
-name: Build and Deploy Jekyll
+name: Build and Deploy Static Site
 
 on:
   push:
@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -16,17 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-      - name: Bundle Install
-        run: bundle install
-      - name: Jekyll Build
-        run: JEKYLL_ENV=production bundle exec jekyll build
-      - name: Deploy to GitHub Pages
+      - name: Deploy Index
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: _site
           branch: gh-pages
+          folder: .
