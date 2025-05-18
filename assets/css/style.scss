@@ -1,0 +1,201 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Custom styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  max-width: 100%;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+h1 { color: #1a73e8; }
+h2 { color: #34a853; }
+
+a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.site-header {
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+  margin-bottom: 30px;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.site-title a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.site-nav {
+  float: right;
+  margin-top: 10px;
+}
+
+.site-nav .page-link {
+  margin-left: 20px;
+}
+
+.nav-trigger {
+  display: none;
+}
+
+.menu-icon {
+  display: none;
+}
+
+.page-content {
+  padding: 20px 0;
+}
+
+.site-footer {
+  border-top: 1px solid #eee;
+  padding: 30px 0;
+  margin-top: 60px;
+}
+
+.footer-col-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 200px;
+  padding-right: 20px;
+}
+
+code {
+  background-color: #f5f5f5;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+pre {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.highlight {
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+th {
+  background-color: #f5f5f5;
+  text-align: left;
+}
+
+button, .button {
+  display: inline-block;
+  background-color: #1a73e8;
+  color: white !important;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+button:hover, .button:hover {
+  background-color: #0d65d9;
+}
+
+.feature {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #1a73e8;
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 600px) {
+  .site-nav {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: right;
+    padding: 0;
+    z-index: 1;
+  }
+  
+  .site-nav .page-link {
+    display: block;
+    padding: 10px;
+    margin: 0;
+  }
+  
+  .site-nav .menu-icon {
+    display: block;
+    float: right;
+    width: 36px;
+    height: 26px;
+    line-height: 0;
+    padding-top: 10px;
+    text-align: center;
+  }
+  
+  .site-nav .trigger {
+    clear: both;
+    display: none;
+  }
+  
+  .site-nav input:checked ~ .trigger {
+    display: block;
+    padding-bottom: 5px;
+  }
+  
+  .footer-col-wrapper {
+    flex-direction: column;
+  }
+  
+  .footer-col {
+    margin-bottom: 20px;
+  }
+}
