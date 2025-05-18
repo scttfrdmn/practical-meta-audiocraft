@@ -4,9 +4,9 @@
 title: "Practical Meta AudioCraft"
 tagline: "Building AI Audio Generation Systems"
 description: "A hands-on guide to creating music, sound effects, and audio experiences with AI"
-url: ""
-baseurl: ""
-repository: ""
+url: "https://scttfrdmn.github.io"
+baseurl: "/practical-meta-audiocraft"
+repository: "scttfrdmn/practical-meta-audiocraft"
 
 # Build settings
 markdown: kramdown
