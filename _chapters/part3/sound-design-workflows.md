@@ -516,7 +516,7 @@ class ProjectSoundDesigner:
         template_vars = template_vars or {}
         prompt = sound_def["prompt_template"]
         for var_name, var_value in template_vars.items():
-            prompt = prompt.replace(f"{{{var_name}}}", var_value)
+            prompt = prompt.replace(f"\\{{{var_name}\\}}", var_value)
         
         # Merge default params with overrides
         params = dict(sound_def["default_params"])

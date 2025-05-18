@@ -1994,9 +1994,9 @@ const AudioVisualPlayer = ({ experienceUrl }) => {
               width={window.innerWidth} 
               height={window.innerHeight - 80}
               ref={stageRef}
-              style={{
+              style={ {
                 transform: effects.cameraMotion ? 
-                  `translate(${effects.cameraMotion.shakeX}px, ${effects.cameraMotion.shakeY}px) scale(${effects.cameraMotion.zoom})` : 
+                  "translate(shakeXpx, shakeYpx) scale(zoom)" : 
                   'none'
               }}
             >
