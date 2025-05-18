@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AudioGen Basics: Sound Effect Generation with AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/audiogen/audiogen_basics/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">AudioGen Basics: Sound Effect Generation with AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="audiogen-basics-sound-effect-generation-with-audiocraft">AudioGen Basics: Sound Effect Generation with AudioCraft</h1>
+
+<p>This tutorial introduces Meta’s AudioGen model and how to use it for generating environmental sounds and effects from text descriptions. We’ll explore the basic functionality and parameters that control the generation process.</p>
+
+<h2 id="introduction-to-audiogen">Introduction to AudioGen</h2>
+
+<p>AudioGen is a text-to-audio model designed to generate realistic sound effects and environmental audio from textual descriptions. Unlike MusicGen, which focuses on musical content, AudioGen specializes in creating non-musical sounds such as:</p>
+
+<ul>
+  <li>Environmental sounds (rain, wind, forest ambience)</li>
+  <li>Sound effects (footsteps, door creaks, explosions)</li>
+  <li>Machine sounds (engines, appliances, vehicles)</li>
+  <li>Animal sounds (birds, dogs, insects)</li>
+  <li>Human non-speech sounds (laughter, coughing, clapping)</li>
+</ul>
+
+<p>AudioGen was trained on a diverse dataset of sound effects and can generate high-quality audio across many categories of sounds.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>Before we begin, make sure you have AudioCraft installed. If not, refer to the <a href="/practical-meta-audiocraft/tutorials/getting-started/">Getting Started Guide</a>.</p>
+
+<p>Let’s first create a simple script to generate a sound effect from a text prompt:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># audiogen_basic.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">generate_sound</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"sound_output"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate a sound effect based on a text prompt.
+    
+    Args:
+        prompt (str): Text description of the sound to generate
+        duration (float): Length of audio in seconds
+        model_size (str): Size of model to use ("medium" or "large")
+        output_dir (str): Directory to save output files
+        temperature (float): Controls randomness (higher = more random)
+    
+    Returns:
+        str: Path to the generated audio file
+    """</span>
+    <span class="c1"># Create output directory if it doesn't exist
+</span>    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating sound for prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using model size: </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">, duration: </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="c1"># Determine device (MPS for Mac, CUDA for NVIDIA, CPU otherwise)
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load the model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate sound
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Create a filename based on the prompt
+</span>    <span class="n">safe_prompt</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="p">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s">"_"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">safe_prompt</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s"</span>
+    
+    <span class="c1"># Save the audio file
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span> 
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span> 
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> 
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Example prompts to try
+</span>    <span class="n">prompts</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"Heavy rain falling on a metal roof with occasional thunder"</span><span class="p">,</span>
+        <span class="s">"Crackling campfire with wood popping and occasional owl hoots"</span><span class="p">,</span>
+        <span class="s">"Busy city street with cars passing, people talking, and sirens in the distance"</span><span class="p">,</span>
+        <span class="s">"Forest ambience with birds chirping, leaves rustling, and a stream flowing"</span><span class="p">,</span>
+        <span class="s">"Old mechanical clock ticking with gears turning and a soft bell chime"</span>
+    <span class="p">]</span>
+    
+    <span class="c1"># Generate sound for the first prompt
+</span>    <span class="c1"># Change the index to try different prompts
+</span>    <span class="n">generate_sound</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># 5 seconds
+</span>        <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span>  <span class="c1"># Use "medium" or "large"
+</span>        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>  <span class="c1"># Default creativity level
+</span>    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>Save this script as <code class="language-plaintext highlighter-rouge">audiogen_basic.py</code> and run it to generate your first sound effect with AudioGen!</p>
+
+<h2 id="understanding-the-key-parameters">Understanding the Key Parameters</h2>
+
+<p>Like MusicGen, AudioGen has several parameters that control its output:</p>
+
+<h3 id="model-size">Model Size</h3>
+
+<p>AudioGen comes in two sizes:</p>
+<ul>
+  <li><strong>medium</strong>: Balanced generation time and quality</li>
+  <li><strong>large</strong>: Highest quality output but slower and requires more memory</li>
+</ul>
+
+<p>Note that unlike MusicGen, AudioGen does not have a “small” model.</p>
+
+<h3 id="duration">Duration</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">duration</code> parameter controls how long the generated audio will be, in seconds. For sound effects, shorter durations (3-5 seconds) often work well for discrete sounds, while longer durations (10-30 seconds) are better for ambient backgrounds.</p>
+
+<h3 id="temperature">Temperature</h3>
+
+<p>Temperature (between 0.0 and 2.0) controls the randomness of the generation:</p>
+<ul>
+  <li><strong>Lower values</strong> (0.1-0.5): More predictable, consistent sounds</li>
+  <li><strong>Medium values</strong> (0.6-1.0): Balanced variability</li>
+  <li><strong>Higher values</strong> (1.1-2.0): More experimental, diverse sounds</li>
+</ul>
+
+<h3 id="top-k-and-top-p-sampling">Top-k and Top-p Sampling</h3>
+
+<p>These parameters control the diversity of the generation:</p>
+
+<ul>
+  <li><strong>top_k</strong>: Limits sampling to the k most likely tokens at each step</li>
+  <li><strong>top_p</strong>: Uses nucleus sampling to dynamically select the most likely tokens (set to 0.0 to disable)</li>
+</ul>
+
+<h2 id="crafting-effective-sound-prompts">Crafting Effective Sound Prompts</h2>
+
+<p>Creating good prompts for AudioGen is crucial for getting the desired results. Here are some strategies:</p>
+
+<h3 id="be-specific-and-descriptive">Be Specific and Descriptive</h3>
+
+<p>Instead of vague descriptions, use detailed and specific language:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Vague vs. Specific prompts
+</span><span class="n">vague_prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Rain"</span><span class="p">,</span>
+    <span class="s">"Wind"</span><span class="p">,</span>
+    <span class="s">"Animal sounds"</span><span class="p">,</span>
+    <span class="s">"Machine"</span>
+<span class="p">]</span>
+
+<span class="n">specific_prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Heavy rain falling on a metal roof with water dripping from gutters"</span><span class="p">,</span>
+    <span class="s">"Strong wind howling through pine trees on a mountain ridge"</span><span class="p">,</span>
+    <span class="s">"A pack of wolves howling in the distance with occasional barks"</span><span class="p">,</span>
+    <span class="s">"Industrial machine with rhythmic metallic clanking and hydraulic hisses"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="include-sound-qualities">Include Sound Qualities</h3>
+
+<p>Describe acoustic characteristics of the sound:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Sound quality descriptors
+</span><span class="n">quality_prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Deep, resonant drum beats echoing in a cave"</span><span class="p">,</span>
+    <span class="s">"High-pitched, metallic scraping sounds"</span><span class="p">,</span>
+    <span class="s">"Soft, muffled footsteps on carpet"</span><span class="p">,</span>
+    <span class="s">"Sharp, staccato tapping on a wooden table"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="specify-environment-and-context">Specify Environment and Context</h3>
+
+<p>Include details about where the sound is occurring:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Environmental context
+</span><span class="n">environment_prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Waves crashing on a rocky shore with seagulls in the distance"</span><span class="p">,</span>
+    <span class="s">"Bustling coffee shop with espresso machines, quiet conversations, and clinking cups"</span><span class="p">,</span>
+    <span class="s">"Empty subway station with occasional train announcements and distant footsteps"</span><span class="p">,</span>
+    <span class="s">"Jungle at night with insects chirping, frogs croaking, and leaves rustling"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="layer-multiple-sound-elements">Layer Multiple Sound Elements</h3>
+
+<p>Combine different sound elements for complex soundscapes:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Layered sound prompts
+</span><span class="n">layered_prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Crackling campfire with occasional wood pops, crickets chirping, and a gentle breeze"</span><span class="p">,</span>
+    <span class="s">"Office ambience with keyboard typing, printer running, and quiet conversation"</span><span class="p">,</span>
+    <span class="s">"Thunderstorm with heavy rain, wind, thunder cracks, and water dripping"</span><span class="p">,</span>
+    <span class="s">"Kitchen sounds with chopping vegetables, sizzling pan, and timer beeping"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="creating-a-sound-category-explorer">Creating a Sound Category Explorer</h2>
+
+<p>Let’s create a script that explores different categories of sounds:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># audiogen_category_explorer.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">def</span> <span class="nf">explore_sound_categories</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"sound_categories"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate samples across different sound categories.
+    
+    Args:
+        model_size (str): Size of model to use
+        duration (float): Length of each sample in seconds
+        output_dir (str): Directory to save samples
+    """</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define category prompts
+</span>    <span class="n">categories</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"nature_rain"</span><span class="p">:</span> <span class="s">"Heavy rain falling on leaves with occasional thunder in the distance"</span><span class="p">,</span>
+        <span class="s">"nature_wind"</span><span class="p">:</span> <span class="s">"Strong wind blowing through trees with leaves rustling"</span><span class="p">,</span>
+        <span class="s">"nature_water"</span><span class="p">:</span> <span class="s">"Gentle stream flowing over rocks with water bubbling and splashing"</span><span class="p">,</span>
+        <span class="s">"nature_fire"</span><span class="p">:</span> <span class="s">"Crackling campfire with wood popping and embers hissing"</span><span class="p">,</span>
+        
+        <span class="s">"urban_traffic"</span><span class="p">:</span> <span class="s">"Busy city intersection with cars honking, engines revving, and traffic signals beeping"</span><span class="p">,</span>
+        <span class="s">"urban_construction"</span><span class="p">:</span> <span class="s">"Construction site with jackhammers, power drills, and workers shouting"</span><span class="p">,</span>
+        <span class="s">"urban_cafe"</span><span class="p">:</span> <span class="s">"Busy cafe with coffee machines, quiet conversations, and clinking dishes"</span><span class="p">,</span>
+        <span class="s">"urban_subway"</span><span class="p">:</span> <span class="s">"Subway train arriving at station with screeching brakes and announcement"</span><span class="p">,</span>
+        
+        <span class="s">"household_kitchen"</span><span class="p">:</span> <span class="s">"Kitchen sounds with cutting vegetables, water running, and microwave beeping"</span><span class="p">,</span>
+        <span class="s">"household_bathroom"</span><span class="p">:</span> <span class="s">"Shower running with water spray hitting tiles and drain gurgling"</span><span class="p">,</span>
+        <span class="s">"household_livingroom"</span><span class="p">:</span> <span class="s">"Living room with TV playing, clock ticking, and occasional footsteps"</span><span class="p">,</span>
+        <span class="s">"household_yard"</span><span class="p">:</span> <span class="s">"Lawnmower running with grass cutting and birds in background"</span><span class="p">,</span>
+        
+        <span class="s">"animals_birds"</span><span class="p">:</span> <span class="s">"Forest birds chirping, calling, and fluttering their wings"</span><span class="p">,</span>
+        <span class="s">"animals_dogs"</span><span class="p">:</span> <span class="s">"Dogs barking, panting, and playing with toys"</span><span class="p">,</span>
+        <span class="s">"animals_insects"</span><span class="p">:</span> <span class="s">"Crickets chirping and buzzing insects flying around"</span><span class="p">,</span>
+        <span class="s">"animals_farm"</span><span class="p">:</span> <span class="s">"Farm animals with cows mooing, chickens clucking, and sheep bleating"</span><span class="p">,</span>
+        
+        <span class="s">"mechanical_engine"</span><span class="p">:</span> <span class="s">"Car engine starting, idling, and revving"</span><span class="p">,</span>
+        <span class="s">"mechanical_factory"</span><span class="p">:</span> <span class="s">"Factory machinery with conveyor belts, pneumatic presses, and motors"</span><span class="p">,</span>
+        <span class="s">"mechanical_tools"</span><span class="p">:</span> <span class="s">"Power tools with electric drill, circular saw, and sander"</span><span class="p">,</span>
+        <span class="s">"mechanical_office"</span><span class="p">:</span> <span class="s">"Office equipment with printers, keyboards typing, and telephones ringing"</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate sound for each category
+</span>    <span class="k">for</span> <span class="n">category_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">category_name</span><span class="si">}</span><span class="s"> sound..."</span><span class="p">)</span>
+        
+        <span class="c1"># Generate
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Save
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">category_name</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved </span><span class="si">{</span><span class="n">category_name</span><span class="si">}</span><span class="s"> sample to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">explore_sound_categories</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This script will generate samples across 20 different sound categories, giving you a comprehensive exploration of what AudioGen can create.</p>
+
+<h2 id="creating-an-ambient-soundscape-generator">Creating an Ambient Soundscape Generator</h2>
+
+<p>Let’s create a script that generates longer ambient soundscapes:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># audiogen_ambient_generator.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">def</span> <span class="nf">generate_ambient_soundscape</span><span class="p">(</span>
+    <span class="n">environment</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"ambient_soundscapes"</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate an ambient soundscape for a specific environment.
+    
+    Args:
+        environment (str): Type of environment to generate
+        duration (float): Length of audio in seconds
+        model_size (str): Size of model to use
+        temperature (float): Controls randomness
+        output_dir (str): Directory to save output
+    """</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define environment prompts
+</span>    <span class="n">environments</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"forest"</span><span class="p">:</span> <span class="s">"Peaceful forest ambient sounds with birds chirping, leaves rustling in the breeze, and a distant stream flowing"</span><span class="p">,</span>
+        <span class="s">"ocean"</span><span class="p">:</span> <span class="s">"Calm ocean waves gently rolling onto a sandy beach with seagulls calling in the distance"</span><span class="p">,</span>
+        <span class="s">"city"</span><span class="p">:</span> <span class="s">"Urban city ambient sound with distant traffic, people talking as they walk past, and occasional sirens"</span><span class="p">,</span>
+        <span class="s">"cafe"</span><span class="p">:</span> <span class="s">"Cozy cafe ambience with quiet conversations, coffee machines steaming, and soft music in the background"</span><span class="p">,</span>
+        <span class="s">"rain"</span><span class="p">:</span> <span class="s">"Gentle rainfall ambient with raindrops hitting windows and roof, creating a peaceful atmosphere"</span><span class="p">,</span>
+        <span class="s">"night"</span><span class="p">:</span> <span class="s">"Night time ambient sounds with crickets chirping, occasional owl hoots, and gentle wind through trees"</span><span class="p">,</span>
+        <span class="s">"river"</span><span class="p">:</span> <span class="s">"River ambient sounds with water flowing over rocks, fish occasionally jumping, and light wind in reeds"</span><span class="p">,</span>
+        <span class="s">"office"</span><span class="p">:</span> <span class="s">"Office ambient sounds with keyboard typing, quiet conversations, printing, and occasional phone rings"</span><span class="p">,</span>
+        <span class="s">"mountain"</span><span class="p">:</span> <span class="s">"High mountain ambient with strong wind gusts, distant eagle calls, and rocks occasionally falling"</span><span class="p">,</span>
+        <span class="s">"spaceship"</span><span class="p">:</span> <span class="s">"Science fiction spaceship ambient with humming engines, electronic beeps, and occasional mechanical sounds"</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Check if the environment is valid
+</span>    <span class="k">if</span> <span class="n">environment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">environments</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Environment '</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">' not found. Available environments:"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">env_name</span> <span class="ow">in</span> <span class="n">environments</span><span class="p">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">env_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">environments</span><span class="p">[</span><span class="n">environment</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating ambient soundscape: </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate soundscape
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Save the audio file
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">_ambient_</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span>
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Soundscape saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">'Generate ambient soundscapes'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--environment'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">'forest'</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'Type of environment to generate (forest, ocean, city, etc.)'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--duration'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'Duration in seconds (default: 15.0)'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--model'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">'medium'</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">'medium'</span><span class="p">,</span> <span class="s">'large'</span><span class="p">],</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'Model size to use (default: medium)'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">'--output'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">'ambient_soundscapes'</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">'Output directory (default: ambient_soundscapes)'</span><span class="p">)</span>
+    
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
+    
+    <span class="n">generate_ambient_soundscape</span><span class="p">(</span>
+        <span class="n">environment</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">environment</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">model_size</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">output</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This script creates longer ambient soundscapes for different environments, perfect for background audio in various scenarios.</p>
+
+<h2 id="creating-a-sound-effect-combination-tool">Creating a Sound Effect Combination Tool</h2>
+
+<p>One of the powerful applications of AudioGen is creating complex sound combinations. Let’s build a script for that:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># audiogen_sound_combiner.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">def</span> <span class="nf">generate_sound_combination</span><span class="p">(</span>
+    <span class="n">sound_elements</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span> 
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"combined_sounds"</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate multiple sound elements and combine them into a single audio file.
+    
+    Args:
+        sound_elements (dict): Dictionary of sound element names and their prompts
+        duration (float): Length of each sound element in seconds
+        model_size (str): Size of model to use
+        output_dir (str): Directory to save outputs
+    """</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"elements"</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate each sound element
+</span>    <span class="n">generated_sounds</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">sound_elements</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating sound element: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="c1"># Generate
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        <span class="n">audio_array</span> <span class="o">=</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">()</span>
+        
+        <span class="c1"># Save individual element
+</span>        <span class="n">element_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"elements"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">element_path</span><span class="p">,</span>
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="n">generated_sounds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"audio"</span><span class="p">:</span> <span class="n">audio_array</span><span class="p">,</span>
+            <span class="s">"path"</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">element_path</span><span class="si">}</span><span class="s">.wav"</span>
+        <span class="p">}</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved element to </span><span class="si">{</span><span class="n">element_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    
+    <span class="c1"># Combine sounds
+</span>    <span class="c1"># Get the sample rate from the model
+</span>    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+    
+    <span class="c1"># Initialize an empty audio array
+</span>    <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sound</span><span class="p">[</span><span class="s">"audio"</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sound</span> <span class="ow">in</span> <span class="n">generated_sounds</span><span class="p">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">combined_audio</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+    
+    <span class="c1"># Mix all sounds together
+</span>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sound</span> <span class="ow">in</span> <span class="n">generated_sounds</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Normalize the volume of each sound element
+</span>        <span class="n">normalized</span> <span class="o">=</span> <span class="n">sound</span><span class="p">[</span><span class="s">"audio"</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">generated_sounds</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">)</span>  <span class="c1"># Prevent clipping
+</span>        
+        <span class="c1"># Add to the combined audio
+</span>        <span class="n">combined_audio</span><span class="p">[:</span><span class="n">normalized</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">normalized</span>
+    
+    <span class="c1"># Ensure the combined audio doesn't clip
+</span>    <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">combined_audio</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">combined_audio</span> <span class="o">=</span> <span class="n">combined_audio</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">combined_audio</span><span class="p">))</span>
+    
+    <span class="c1"># Convert back to torch tensor
+</span>    <span class="n">combined_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">combined_audio</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    
+    <span class="c1"># Save the combined sound
+</span>    <span class="n">combination_name</span> <span class="o">=</span> <span class="s">"_"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">sound_elements</span><span class="p">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">30</span><span class="p">]</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"combined_</span><span class="si">{</span><span class="n">combination_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+        <span class="n">combined_tensor</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>  <span class="c1"># Add channel dimension
+</span>        <span class="n">sample_rate</span>
+    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Combined sound saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Example sound elements for a rainy cafe scene
+</span>    <span class="n">sound_elements</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"rain"</span><span class="p">:</span> <span class="s">"Heavy rain falling on windows and roof with occasional thunder"</span><span class="p">,</span>
+        <span class="s">"cafe"</span><span class="p">:</span> <span class="s">"Inside cafe ambience with quiet conversations and cups clinking"</span><span class="p">,</span>
+        <span class="s">"music"</span><span class="p">:</span> <span class="s">"Soft jazz music playing from speakers with piano and saxophone"</span><span class="p">,</span>
+        <span class="s">"traffic"</span><span class="p">:</span> <span class="s">"Occasional traffic sounds from outside, muffled by the rain"</span>
+    <span class="p">}</span>
+    
+    <span class="n">generate_sound_combination</span><span class="p">(</span>
+        <span class="n">sound_elements</span><span class="o">=</span><span class="n">sound_elements</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+        <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This script generates multiple sound elements separately and then combines them into a layered soundscape, giving you more control over the final result.</p>
+
+<h2 id="exercises">Exercises</h2>
+
+<ol>
+  <li>
+    <p><strong>Sound Scene Creator</strong>: Try creating prompts for specific scenes, like “thunderstorm at sea” or “busy airport terminal.”</p>
+  </li>
+  <li>
+    <p><strong>Sound Design Challenge</strong>: Generate sound effects that could be used in a video game or film, such as “alien spaceship landing” or “magical portal opening.”</p>
+  </li>
+  <li>
+    <p><strong>Sound Variety</strong>: Generate the same sound description multiple times with different temperature settings to see how the results vary.</p>
+  </li>
+  <li>
+    <p><strong>Ambient Loop</strong>: Try to create ambient sounds that could work well as seamless loops.</p>
+  </li>
+</ol>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you understand the basics of AudioGen, you can:</p>
+
+<ol>
+  <li>Experiment with different prompts and parameters</li>
+  <li>Explore sound design for different applications</li>
+  <li>Create complex soundscapes by combining multiple generations</li>
+  <li>Use the generated sounds in your creative projects</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>AudioGen provides powerful capabilities for generating realistic sound effects and ambient soundscapes from text descriptions. By understanding how to craft effective prompts and adjust generation parameters, you can create a wide variety of high-quality audio content for use in games, films, applications, or any other creative project requiring sound design.</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

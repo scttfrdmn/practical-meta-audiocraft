@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Understanding the AudioCraft Architecture</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/getting-started/architecture/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Understanding the AudioCraft Architecture</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="understanding-the-audiocraft-architecture">Understanding the AudioCraft Architecture</h1>
+
+<p>This tutorial explains the underlying architecture of Meta’s AudioCraft framework, helping you understand how the various components work together to generate audio.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>AudioCraft is a comprehensive audio generation framework that includes several key components:</p>
+
+<ol>
+  <li><strong>MusicGen</strong>: Text-to-music generation model</li>
+  <li><strong>AudioGen</strong>: Text-to-audio generation model (for sound effects and environmental sounds)</li>
+  <li><strong>EnCodec</strong>: Neural audio codec for compression and decompression</li>
+  <li><strong>Language Models (LMs)</strong>: Text-conditioned models for generating audio tokens</li>
+</ol>
+
+<p>Understanding how these components interact will help you use AudioCraft more effectively and customize it for your specific needs.</p>
+
+<h2 id="architecture-diagram">Architecture Diagram</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────────┐
+│                  AudioCraft Framework                    │
+│                                                         │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │
+│  │   MusicGen  │    │  AudioGen   │    │ Custom LMs  │  │
+│  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘  │
+│         │                  │                  │         │
+│         └──────────┬───────┴──────────┬───────┘         │
+│                    │                  │                 │
+│          ┌─────────┴─────────┐ ┌──────┴──────┐          │
+│          │  Language Models  │ │   EnCodec   │          │
+│          └─────────┬─────────┘ └──────┬──────┘          │
+│                    │                  │                 │
+│                    └─────────┬────────┘                 │
+│                              │                          │
+│                     ┌────────┴────────┐                 │
+│                     │ Audio Generation │                 │
+│                     └─────────────────┘                 │
+└─────────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<h2 id="core-components">Core Components</h2>
+
+<h3 id="1-encodec-neural-audio-codec">1. EnCodec: Neural Audio Codec</h3>
+
+<p>EnCodec is the foundation of AudioCraft’s audio processing. It’s a neural network-based audio codec that:</p>
+
+<ul>
+  <li><strong>Compresses audio</strong> into a compact discrete representation (tokens)</li>
+  <li><strong>Decompresses tokens</strong> back into high-quality audio waveforms</li>
+  <li>Operates at different <strong>bandwidth levels</strong> (1.5, 3, 6, or 12 kHz)</li>
+  <li>Can handle <strong>multiple audio channels</strong> (mono, stereo)</li>
+</ul>
+
+<p>EnCodec transforms the continuous audio signal space into a discrete token space that language models can more easily process.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">EncodecModel</span>
+
+<span class="c1"># Load the EnCodec model
+</span><span class="n">encodec</span> <span class="o">=</span> <span class="n">EncodecModel</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">()</span>
+
+<span class="c1"># Compress audio to tokens
+</span><span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">encoded_frames</span> <span class="o">=</span> <span class="n">encodec</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">audio_waveform</span><span class="p">)</span>
+    
+<span class="c1"># Extract discrete codes
+</span><span class="n">codes</span> <span class="o">=</span> <span class="n">encoded_frames</span><span class="p">.</span><span class="n">codes</span>  <span class="c1"># These are the discrete tokens
+</span>
+<span class="c1"># Decompress back to audio
+</span><span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">decoded_audio</span> <span class="o">=</span> <span class="n">encodec</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded_frames</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="2-language-models-lms">2. Language Models (LMs)</h3>
+
+<p>AudioCraft uses specialized language models to generate sequences of audio tokens. These LMs:</p>
+
+<ul>
+  <li>Are conditioned on <strong>text descriptions</strong> (prompts)</li>
+  <li>Generate audio in the <strong>token space</strong> created by EnCodec</li>
+  <li>Can be conditioned on additional inputs like <strong>melody</strong> or <strong>continuing existing audio</strong></li>
+  <li>Are trained to understand the <strong>sequential structure</strong> of audio and music</li>
+</ul>
+
+<p>The language models in AudioCraft are typically transformer-based architectures, similar to those used in text generation but optimized for audio token sequences.</p>
+
+<h3 id="3-musicgen">3. MusicGen</h3>
+
+<p>MusicGen is AudioCraft’s music generation model that:</p>
+
+<ul>
+  <li>Generates <strong>music from text descriptions</strong></li>
+  <li>Can be conditioned on a <strong>melody input</strong></li>
+  <li>Supports <strong>multiple generation lengths</strong> (up to 30 seconds by default)</li>
+  <li>Comes in different sizes (<strong>small, medium, large</strong>) with varying quality/speed tradeoffs</li>
+</ul>
+
+<p>MusicGen combines a text encoder with a specialized LM to generate music tokens, which are then decoded through EnCodec.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+
+<span class="c1"># Load the MusicGen model
+</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'medium'</span><span class="p">)</span>
+
+<span class="c1"># Set generation parameters
+</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>  <span class="c1"># 10 seconds
+</span>    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Generate music from text
+</span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Energetic electronic dance track with a driving beat and synthesizer melody"</span><span class="p">]</span>
+<span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="4-audiogen">4. AudioGen</h3>
+
+<p>AudioGen is specialized for generating sound effects and environmental sounds:</p>
+
+<ul>
+  <li>Creates <strong>non-musical audio</strong> from text descriptions</li>
+  <li>Optimized for <strong>environmental sounds, effects, and ambiences</strong></li>
+  <li>Uses a similar architecture to MusicGen but with different training data</li>
+  <li>Particularly good at <strong>realistic sound reproduction</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+
+<span class="c1"># Load the AudioGen model
+</span><span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'medium'</span><span class="p">)</span>
+
+<span class="c1"># Generate sound effects
+</span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Thunder cracking followed by heavy rain"</span><span class="p">]</span>
+<span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="the-generation-process">The Generation Process</h2>
+
+<p>When you generate audio with AudioCraft, the following steps occur:</p>
+
+<ol>
+  <li><strong>Text Processing</strong>: Your text prompt is encoded using a text encoder (typically a frozen T5 encoder)</li>
+  <li><strong>Token Generation</strong>: The language model uses the encoded text to generate a sequence of audio tokens</li>
+  <li><strong>Audio Decoding</strong>: EnCodec converts these tokens back into an audio waveform</li>
+  <li><strong>Post-Processing</strong>: Optional normalization and enhancement</li>
+</ol>
+
+<h2 id="memory-and-computational-requirements">Memory and Computational Requirements</h2>
+
+<p>Understanding the resource demands of each component helps optimization:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Memory Usage</th>
+      <th>Computation</th>
+      <th>Primary Function</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Text Encoder</td>
+      <td>Low</td>
+      <td>Low</td>
+      <td>Processes input prompts</td>
+    </tr>
+    <tr>
+      <td>Language Model</td>
+      <td>High</td>
+      <td>High</td>
+      <td>Generates audio tokens</td>
+    </tr>
+    <tr>
+      <td>EnCodec</td>
+      <td>Medium</td>
+      <td>Medium</td>
+      <td>Encodes/decodes audio</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The Language Model consumes the most resources, which is why there are different sizes available (small, medium, large).</p>
+
+<h2 id="extending-audiocraft">Extending AudioCraft</h2>
+
+<p>AudioCraft’s modular design allows for customization:</p>
+
+<ol>
+  <li><strong>Custom Prompting</strong>: Develop prompt templates for consistent results</li>
+  <li><strong>Model Fine-Tuning</strong>: Adapt models to specific genres or sounds</li>
+  <li><strong>Pipeline Integration</strong>: Combine with other audio processing tools</li>
+  <li><strong>Alternative Decoders</strong>: Replace EnCodec with other audio generators</li>
+</ol>
+
+<h2 id="performance-optimization-tips">Performance Optimization Tips</h2>
+
+<p>To get the best performance from AudioCraft:</p>
+
+<ol>
+  <li><strong>Model Size Selection</strong>: Choose the appropriate model size for your hardware</li>
+  <li><strong>Batch Processing</strong>: Generate multiple samples in batches when possible</li>
+  <li><strong>Memory Management</strong>: Clear unused models from memory when switching between tasks</li>
+  <li><strong>Progressive Generation</strong>: For longer pieces, generate in segments and combine</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Memory optimization example
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+
+<span class="c1"># After generation, clear CUDA cache
+</span><span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">empty_cache</span><span class="p">()</span>
+<span class="n">gc</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you understand the architecture of AudioCraft:</p>
+
+<ol>
+  <li>Explore <a href="/practical-meta-audiocraft/tutorials/getting-started/basic-usage/">Basic Usage: Your First Steps with AudioCraft</a></li>
+  <li>Try generating music with <a href="/practical-meta-audiocraft/tutorials/musicgen/">MusicGen Tutorials</a></li>
+  <li>Experiment with sound effects using <a href="/practical-meta-audiocraft/tutorials/audiogen/">AudioGen Tutorials</a></li>
+</ol>
+
+<h2 id="additional-resources">Additional Resources</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/2306.05284">AudioCraft Paper</a> - Technical details of MusicGen</li>
+  <li><a href="https://arxiv.org/abs/2210.13438">EnCodec Paper</a> - Neural audio compression</li>
+  <li><a href="https://arxiv.org/abs/2209.15352">AudioGen Paper</a> - Audio generation model</li>
+</ul>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

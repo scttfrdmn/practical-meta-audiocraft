@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 5: Basic Music Generation</title>
+  <meta name="description" content="Chapter 5: Basic Music Generation">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part2/basic-music/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty beginner">Beginner</span>
+      <span class="estimated-time">2 hours</span>
+    </div>
+    <h1>Chapter 5: Basic Music Generation</h1>
+  </div>
+  
+  
+  <div class="scenario-quote">
+    <blockquote>
+      <p>"I need to create background music for my indie game project, but I have no musical training and can't afford to hire a composer. I want to generate custom tracks that match specific scenes and moods, but I'm overwhelmed by all the options in MusicGen."</p>
+      <cite>— Dev Harrison, Indie Game Developer</cite>
+    </blockquote>
+  </div>
+  
+  
+  <h1 id="chapter-5-basic-music-generation">Chapter 5: Basic Music Generation</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>Creating original music for your projects has traditionally required musical training or hiring a composer. Even with stock music libraries, finding the perfect track that matches your specific vision can be frustrating and time-consuming. You might need music that shifts in tone at precise moments, follows particular themes, or perfectly matches your visual content.</p>
+
+<p>For indie developers, content creators, and digital artists, music creation has often been a bottleneck. Without the budget for professional composers or the time to learn music production, many settle for generic stock music that doesn’t fully realize their creative vision.</p>
+
+<p>In this chapter, we’ll explore how to use MusicGen to generate custom music tracks from simple text descriptions. We’ll build on what you learned in the first audio generation chapter, diving deeper into the specific capabilities, techniques, and best practices for music generation. You’ll learn how to reliably generate high-quality music that matches your creative intent.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you’ll be able to:</p>
+
+<ul>
+  <li>Generate music in specific genres and styles using effective prompts</li>
+  <li>Control mood, instrumentation, and musical structure through text descriptions</li>
+  <li>Customize generation parameters for different musical outcomes</li>
+  <li>Create variations of the same musical concept</li>
+  <li>Develop a systematic approach to music generation for projects</li>
+  <li>Build a reusable music generation module for your applications</li>
+</ul>
+
+<h2 id="crafting-effective-music-prompts">Crafting Effective Music Prompts</h2>
+
+<p>The quality of music you generate depends significantly on the prompt you provide. Unlike general text generation, music prompts benefit from specific elements that guide the AI toward successful generation.</p>
+
+<h3 id="the-anatomy-of-an-effective-music-prompt">The Anatomy of an Effective Music Prompt</h3>
+
+<p>An effective music prompt typically includes several key components:</p>
+
+<ol>
+  <li><strong>Genre or Style</strong>: The overall musical category (e.g., “jazz,” “electronic,” “orchestral”)</li>
+  <li><strong>Mood/Emotion</strong>: The feeling the music should convey (e.g., “uplifting,” “melancholic,” “tense”)</li>
+  <li><strong>Instrumentation</strong>: Key instruments to include (e.g., “piano,” “synth bass,” “strings”)</li>
+  <li><strong>Tempo/Rhythm</strong>: Speed and rhythmic characteristics (e.g., “fast-paced,” “steady beat,” “waltz rhythm”)</li>
+  <li><strong>Structure</strong>: Any desired musical elements (e.g., “building chorus,” “quiet intro,” “dramatic bridge”)</li>
+</ol>
+
+<p>Here’s a template for constructing effective prompts:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A [genre/style] piece with [instrumentation] featuring [mood/emotion] and [tempo/rhythm characteristics]. The music has [structural elements] and [additional details].
+</code></pre></div></div>
+
+<h3 id="examples-of-effective-prompts">Examples of Effective Prompts</h3>
+
+<p>Let’s look at several well-crafted prompts and what makes them effective:</p>
+
+<p><strong>Basic prompt:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"Electronic music"
+</code></pre></div></div>
+
+<p><strong>Improved prompt:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"An upbeat electronic dance track with a catchy synth melody, driving bass, and energetic drums. The music builds tension before dropping into a euphoric chorus."
+</code></pre></div></div>
+
+<p>The improved version provides:</p>
+<ul>
+  <li>Genre/style: “electronic dance track”</li>
+  <li>Instrumentation: “synth melody,” “driving bass,” “energetic drums”</li>
+  <li>Mood: “upbeat,” “euphoric”</li>
+  <li>Structure: “builds tension before dropping into a chorus”</li>
+</ul>
+
+<p>Let’s look at another example:</p>
+
+<p><strong>Basic prompt:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"Sad piano music"
+</code></pre></div></div>
+
+<p><strong>Improved prompt:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"A melancholic piano solo in a minor key with gentle, flowing notes and occasional string accompaniment. The piece evokes a feeling of nostalgia with emotional crescendos and delicate, quiet passages."
+</code></pre></div></div>
+
+<p>The improved version includes:</p>
+<ul>
+  <li>Genre/style: “piano solo”</li>
+  <li>Technical details: “minor key”</li>
+  <li>Playing style: “gentle, flowing notes”</li>
+  <li>Additional instrumentation: “occasional string accompaniment”</li>
+  <li>Mood: “melancholic,” “nostalgia,” “emotional”</li>
+  <li>Structure: “crescendos,” “delicate, quiet passages”</li>
+</ul>
+
+<h2 id="a-complete-musicgen-application">A Complete MusicGen Application</h2>
+
+<p>Now let’s build a comprehensive music generation application that incorporates these prompt design principles. This application will:</p>
+
+<ol>
+  <li>Generate music based on detailed prompts</li>
+  <li>Save the results with appropriate metadata</li>
+  <li>Support different generation parameters</li>
+  <li>Include error handling and performance monitoring</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># musicgen_application.py - Complete music generation application
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">MusicGenerator</span><span class="p">:</span>
+    <span class="s">"""A comprehensive music generation application using MusicGen."""</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"generated_music"</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize the music generator.
+        
+        Args:
+            model_size (str): Size of model to use ('small', 'medium', or 'large')
+            output_dir (str): Directory to save generated music
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_device</span><span class="p">()</span>
+        
+        <span class="c1"># Create output directory
+</span>        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Set up metadata recording
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"generation_metadata.json"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_load_metadata</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Determine the best available device."""</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using CUDA device: </span><span class="si">{</span><span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) device"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU (generation will be slower)"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">device</span>
+    
+    <span class="k">def</span> <span class="nf">_load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Load existing metadata or create new metadata file."""</span>
+        <span class="k">if</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">metadata_path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="p">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Error reading metadata file. Creating new metadata."</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s">"generations"</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">"generations"</span><span class="p">:</span> <span class="p">[]}</span>
+    
+    <span class="k">def</span> <span class="nf">_save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Save metadata to disk."""</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Load the MusicGen model."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"Model already loaded"</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">load_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Model loaded in </span><span class="si">{</span><span class="n">load_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Failed to load model: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">prompt</span><span class="p">,</span> 
+                 <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> 
+                 <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+                 <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> 
+                 <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
+                 <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+                 <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Generate music from a text prompt.
+        
+        Args:
+            prompt (str): Text description of the music to generate
+            duration (float): Length of audio in seconds (max 30)
+            temperature (float): Controls randomness (higher = more random)
+            top_k (int): Number of highest probability tokens to consider
+            top_p (float): Nucleus sampling threshold (0.0 to disable)
+            cfg_coef (float): Classifier-free guidance scale (how closely to follow text)
+            seed (int, optional): Random seed for reproducible results
+            filename (str, optional): Custom filename, if None will be auto-generated
+            
+        Returns:
+            str: Path to the generated audio file
+        """</span>
+        <span class="c1"># Ensure model is loaded
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">load_model</span><span class="p">()</span>
+        
+        <span class="c1"># Set seed if provided
+</span>        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using random seed: </span><span class="si">{</span><span class="n">seed</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="n">top_p</span><span class="p">,</span>
+            <span class="n">cfg_coef</span><span class="o">=</span><span class="n">cfg_coef</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music for prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Parameters: duration=</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s, temperature=</span><span class="si">{</span><span class="n">temperature</span><span class="si">}</span><span class="s">, cfg_coef=</span><span class="si">{</span><span class="n">cfg_coef</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Record start time for performance measurement
+</span>        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Generate music
+</span>            <span class="n">wav</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+            
+            <span class="c1"># Create a filename
+</span>            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">safe_prompt</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="p">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s">"_"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]</span>
+                <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"music_</span><span class="si">{</span><span class="n">safe_prompt</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+            
+            <span class="c1"># Save the audio file
+</span>            <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">audio_write</span><span class="p">(</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Calculate performance metrics
+</span>            <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+            
+            <span class="c1"># Record metadata
+</span>            <span class="n">generation_info</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s">"model_size"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+                <span class="s">"top_k"</span><span class="p">:</span> <span class="n">top_k</span><span class="p">,</span>
+                <span class="s">"top_p"</span><span class="p">:</span> <span class="n">top_p</span><span class="p">,</span>
+                <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="n">cfg_coef</span><span class="p">,</span>
+                <span class="s">"seed"</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span>
+                <span class="s">"filename"</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+                <span class="s">"generation_time"</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+                <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">"generations"</span><span class="p">].</span><span class="n">append</span><span class="p">(</span><span class="n">generation_info</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">_save_metadata</span><span class="p">()</span>
+            
+            <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+            
+        <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error generating music: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Clean up
+</span>            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">empty_cache</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">generate_variations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="s">"""
+        Generate multiple variations of the same prompt.
+        
+        Args:
+            prompt (str): Base prompt to use
+            count (int): Number of variations to generate
+            **kwargs: Additional parameters to pass to generate()
+            
+        Returns:
+            list: Paths to the generated audio files
+        """</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">base_temp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'temperature'</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="c1"># Slightly adjust temperature for variety
+</span>            <span class="n">variation_temp</span> <span class="o">=</span> <span class="n">base_temp</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.9</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">count</span><span class="p">))</span>
+            
+            <span class="c1"># Create variation-specific filename
+</span>            <span class="n">filename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'filename'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">var_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">_variation_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">"</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">var_filename</span> <span class="o">=</span> <span class="bp">None</span>
+            
+            <span class="c1"># Generate the variation
+</span>            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="se">\n</span><span class="s">Generating variation </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s"> (temperature: </span><span class="si">{</span><span class="n">variation_temp</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">)"</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> 
+                <span class="n">temperature</span><span class="o">=</span><span class="n">variation_temp</span><span class="p">,</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">var_filename</span><span class="p">,</span>
+                <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s">'temperature'</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="s">'filename'</span><span class="p">}</span>
+            <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="k">def</span> <span class="nf">generate_for_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">):</span>
+        <span class="s">"""
+        Generate a set of music tracks for a project.
+        
+        Args:
+            project_name (str): Name of the project
+            descriptions (dict): Dictionary of track names and their prompts
+            
+        Returns:
+            dict: Track names and their file paths
+        """</span>
+        <span class="n">project_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="k">for</span> <span class="n">track_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">descriptions</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="se">\n</span><span class="s">Generating '</span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="s">' for project '</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+            
+            <span class="c1"># Generate the track
+</span>            <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_name</span><span class="p">,</span> <span class="n">track_name</span><span class="p">)</span>
+            <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">track_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_path</span>
+        
+        <span class="c1"># Create a project summary
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_dir</span><span class="p">,</span> <span class="s">"project_info.txt"</span><span class="p">),</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Project: </span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generated: </span><span class="si">{</span><span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">'%Y-%m-%d %H:%M:%S'</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Tracks:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">track_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">descriptions</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="se">\n</span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="s">:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"File: </span><span class="si">{</span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">track_name</span><span class="p">,</span> <span class="s">'Generation failed'</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="s">"""Run the music generator from the command line."""</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">"Generate music with MusicGen"</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--prompt"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"Text description of music to generate"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--model"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">"small"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">],</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">"Model size to use (default: medium)"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--duration"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">"Duration in seconds (default: 10.0)"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--temperature"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">"Temperature parameter (default: 1.0)"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--variations"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">"Number of variations to generate (default: 1)"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--output"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"generated_music"</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">"Output directory (default: generated_music)"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"--seed"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"Random seed for reproducibility"</span><span class="p">)</span>
+    
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="n">parse_args</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">.</span><span class="n">prompt</span><span class="p">:</span>
+        <span class="c1"># Interactive mode if no prompt provided
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"=== MusicGen Interactive Mode ==="</span><span class="p">)</span>
+        <span class="n">args</span><span class="p">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s">"Enter your music description: "</span><span class="p">)</span>
+    
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">MusicGenerator</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">output</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">variations</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">generator</span><span class="p">.</span><span class="n">generate_variations</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">count</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">variations</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">seed</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">args</span><span class="p">.</span><span class="n">seed</span>
+        <span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>This script provides a robust framework for music generation that you can use directly or integrate into your projects.</p>
+
+<h2 id="using-the-musicgenerator-class">Using the MusicGenerator Class</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">MusicGenerator</code> class offers several ways to generate music, each suited to different needs:</p>
+
+<h3 id="1-basic-single-track-generation">1. Basic Single-Track Generation</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">musicgen_application</span> <span class="kn">import</span> <span class="n">MusicGenerator</span>
+
+<span class="c1"># Create a generator instance
+</span><span class="n">generator</span> <span class="o">=</span> <span class="n">MusicGenerator</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">)</span>
+
+<span class="c1"># Generate a single track
+</span><span class="n">output_file</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s">"An upbeat electronic track with a catchy melody and energetic rhythm"</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generated music saved to: </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="2-generating-multiple-variations">2. Generating Multiple Variations</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Generate variations of the same concept
+</span><span class="n">variations</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate_variations</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s">"A peaceful piano piece with gentle melodies and soft string accompaniment"</span><span class="p">,</span>
+    <span class="n">count</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>  <span class="c1"># Base temperature that will be slightly adjusted for each variation
+</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">"Generated variations:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variations</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Variation </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="3-project-based-generation">3. Project-Based Generation</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Generate a set of tracks for a game project
+</span><span class="n">game_soundtrack</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"main_theme"</span><span class="p">:</span> <span class="s">"An epic orchestral piece with dramatic brass, soaring strings, and powerful percussion. The music conveys a sense of adventure and heroism."</span><span class="p">,</span>
+    
+    <span class="s">"battle_music"</span><span class="p">:</span> <span class="s">"An intense, fast-paced orchestral track with driving percussion, staccato strings, and powerful brass. The music builds tension with rhythmic patterns and minor key harmonies."</span><span class="p">,</span>
+    
+    <span class="s">"peaceful_exploration"</span><span class="p">:</span> <span class="s">"A gentle ambient piece with soft flutes, harp arpeggios, and sustained string pads. The music creates a calm, peaceful atmosphere with occasional bird calls and nature sounds."</span><span class="p">,</span>
+    
+    <span class="s">"victory_fanfare"</span><span class="p">:</span> <span class="s">"A triumphant brass-heavy orchestral piece with celebratory percussion and uplifting major key progressions. The music conveys accomplishment and joy."</span>
+<span class="p">}</span>
+
+<span class="n">project_files</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate_for_project</span><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s">"fantasy_game_soundtrack"</span><span class="p">,</span>
+    <span class="n">descriptions</span><span class="o">=</span><span class="n">game_soundtrack</span>
+<span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Game soundtrack generated:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">track_name</span><span class="p">,</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">project_files</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="music-generation-for-different-genres">Music Generation for Different Genres</h2>
+
+<p>MusicGen can generate a wide variety of musical genres and styles. Here’s how to approach generation for some popular genres:</p>
+
+<h3 id="orchestralcinematic-music">Orchestral/Cinematic Music</h3>
+
+<p>Orchestral music benefits from detailed instrumentation and emotional descriptions:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">orchestral_prompt</span> <span class="o">=</span> <span class="s">"A grand orchestral piece with soaring strings, powerful brass fanfares, and thunderous percussion. The music builds from a gentle, mysterious introduction to an epic, heroic climax with full orchestra."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">orchestral_prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>  <span class="c1"># Longer duration for orchestral development
+</span>    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>  <span class="c1"># Slightly lower temperature for coherence
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">4.0</span>  <span class="c1"># Higher adherence to text prompt
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="electronicdance-music">Electronic/Dance Music</h3>
+
+<p>Electronic music prompts should specify rhythm, tempo, and synthesizer characteristics:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">edm_prompt</span> <span class="o">=</span> <span class="s">"An energetic electronic dance track at 128 BPM with pulsing synthesizer bass, arpeggiated lead synths, and a four-on-the-floor kick drum pattern. The track builds tension with a filtered breakdown before dropping into an euphoric chorus with wide, layered synth chords."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">edm_prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>  <span class="c1"># Slightly higher temperature for creativity
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="jazz">Jazz</h3>
+
+<p>Jazz generation benefits from mentioning instrumentation, tempo, and stylistic elements:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">jazz_prompt</span> <span class="o">=</span> <span class="s">"A smooth jazz piece with a walking bass line, brushed drums, piano comping, and a mellow saxophone playing the lead melody. The music has a relaxed swing feel with complex chord progressions and occasional improvised solos."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">jazz_prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># Higher temperature for improvisation-like qualities
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">2.5</span>  <span class="c1"># Lower cfg for more musical freedom
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="ambientatmospheric">Ambient/Atmospheric</h3>
+
+<p>Ambient music descriptions should focus on texture, mood, and sonic qualities:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ambient_prompt</span> <span class="o">=</span> <span class="s">"A serene ambient soundscape with evolving synthesizer pads, gentle piano notes echoing in the distance, and subtle atmospheric textures. The music creates a floating, weightless feeling with slow harmonic progressions and no percussion."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">ambient_prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>  <span class="c1"># Longer duration for ambient evolution
+</span>    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>  <span class="c1"># Lower temperature for consistency
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.5</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="parameter-tuning-for-different-musical-outcomes">Parameter Tuning for Different Musical Outcomes</h2>
+
+<p>The generation parameters significantly impact the music produced. Here’s a guide to adjusting parameters for specific musical goals:</p>
+
+<h3 id="temperature">Temperature</h3>
+
+<p>The temperature parameter controls randomness and creativity:</p>
+
+<ul>
+  <li>
+    <p><strong>Low temperature (0.3-0.7)</strong>: More predictable, coherent, and focused music. Good for when you need consistent, structured pieces.</p>
+  </li>
+  <li>
+    <p><strong>Medium temperature (0.8-1.2)</strong>: Balanced creativity and coherence. This is the sweet spot for most generations.</p>
+  </li>
+  <li>
+    <p><strong>High temperature (1.3-2.0)</strong>: More experimental, surprising, and varied music. Can introduce unexpected elements and progressions.</p>
+  </li>
+</ul>
+
+<h3 id="classifier-free-guidance-cfg_coef">Classifier-Free Guidance (cfg_coef)</h3>
+
+<p>The cfg_coef parameter controls how closely the generation follows your text prompt:</p>
+
+<ul>
+  <li>
+    <p><strong>Low cfg_coef (1.0-2.0)</strong>: Looser interpretation of the prompt, potentially more musically interesting but less controlled.</p>
+  </li>
+  <li>
+    <p><strong>Medium cfg_coef (2.5-4.0)</strong>: Balanced adherence to the prompt and musical quality.</p>
+  </li>
+  <li>
+    <p><strong>High cfg_coef (4.5-7.0)</strong>: Stricter adherence to the prompt, especially useful for very specific musical requirements.</p>
+  </li>
+</ul>
+
+<h3 id="practical-examples">Practical Examples</h3>
+
+<p>Here’s how to adjust these parameters for specific goals:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># For highly consistent, structured music (e.g., for looping game background)
+</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s">"A gentle, repeating piano melody with soft string accompaniment in a major key"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">5.0</span>
+<span class="p">)</span>
+
+<span class="c1"># For creative variations with unexpected elements (e.g., experimental music)
+</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s">"A fusion of jazz and electronic elements with unorthodox rhythms and harmonies"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.8</span><span class="p">,</span>
+    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">2.0</span>
+<span class="p">)</span>
+
+<span class="c1"># For balanced, production-ready music (e.g., for video background)
+</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s">"An uplifting pop track with acoustic guitar, piano, and light percussion"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="handling-common-music-generation-issues">Handling Common Music Generation Issues</h2>
+
+<p>When generating music, you might encounter certain issues. Here’s how to address them:</p>
+
+<h3 id="problem-repetitive-or-stuck-patterns">Problem: Repetitive or Stuck Patterns</h3>
+
+<p><strong>Solution</strong>: Increase temperature to introduce more variation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># If music is too repetitive
+</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.4</span><span class="p">,</span>  <span class="c1"># Higher temperature
+</span>    <span class="n">top_k</span><span class="o">=</span><span class="mi">500</span>  <span class="c1"># Consider more token options
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="problem-incoherent-or-chaotic-music">Problem: Incoherent or Chaotic Music</h3>
+
+<p><strong>Solution</strong>: Lower temperature and increase cfg_coef for more structure:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># If music lacks coherence
+</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>  <span class="c1"># Lower temperature
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">4.5</span>  <span class="c1"># Stronger adherence to prompt
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="problem-missing-specified-instruments">Problem: Missing Specified Instruments</h3>
+
+<p><strong>Solution</strong>: Make instrumentation more prominent in your prompt:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Before: "A jazz piece with saxophone"
+</span>
+<span class="c1"># After: "A jazz piece featuring a prominent saxophone lead playing the melody, accompanied by piano, bass, and drums"
+</span></code></pre></div></div>
+
+<h3 id="problem-weak-musical-structure">Problem: Weak Musical Structure</h3>
+
+<p><strong>Solution</strong>: Explicitly describe the desired structure in your prompt:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Before: "An electronic dance track"
+</span>
+<span class="c1"># After: "An electronic dance track with a clear intro, verse with subtle elements, building pre-chorus, and energetic chorus with a drop. The track has a distinct breakdown in the middle before returning to the main chorus."
+</span></code></pre></div></div>
+
+<h2 id="music-generation-for-specific-moods">Music Generation for Specific Moods</h2>
+
+<p>Mood is a critical aspect of music for projects. Here’s how to generate music for different emotional states:</p>
+
+<h3 id="upliftingpositive">Uplifting/Positive</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">uplifting_prompt</span> <span class="o">=</span> <span class="s">"An uplifting and inspirational orchestral piece with soaring strings, bright brass, and positive chord progressions in a major key. The music conveys optimism, achievement, and triumph over adversity."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">uplifting_prompt</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="tensesuspenseful">Tense/Suspenseful</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">suspense_prompt</span> <span class="o">=</span> <span class="s">"A tense orchestral piece with tremolo strings, occasional dissonant brass stabs, and a steady, heartbeat-like percussion. The music builds suspense with minor keys, chromatic movements, and moments of unsettling silence."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">suspense_prompt</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="sademotional">Sad/Emotional</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">emotional_prompt</span> <span class="o">=</span> <span class="s">"A melancholic piano piece with emotional string accompaniment in a minor key. The music expresses sadness and longing through slow, deliberate notes, gentle crescendos, and heartfelt melodic phrases."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">emotional_prompt</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="mysteriousmagical">Mysterious/Magical</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mysterious_prompt</span> <span class="o">=</span> <span class="s">"A mysterious and magical soundscape with ethereal harps, celesta, soft choir, and shimmering percussion. The music creates a sense of wonder and discovery through unusual scales and airy textures."</span>
+
+<span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">mysterious_prompt</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="case-study-creating-a-game-soundtrack">Case Study: Creating a Game Soundtrack</h2>
+
+<p>Let’s walk through a real-world example of creating a complete soundtrack for an indie game. We’ll generate several tracks for different game contexts:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">musicgen_application</span> <span class="kn">import</span> <span class="n">MusicGenerator</span>
+
+<span class="k">def</span> <span class="nf">create_game_soundtrack</span><span class="p">(</span><span class="n">game_title</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="s">"""Create a complete game soundtrack."""</span>
+    
+    <span class="c1"># Initialize generator with larger model for quality
+</span>    <span class="n">generator</span> <span class="o">=</span> <span class="n">MusicGenerator</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"large"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
+    
+    <span class="c1"># Define soundtrack requirements
+</span>    <span class="n">soundtrack</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"main_theme"</span><span class="p">:</span> <span class="s">"An epic orchestral theme with heroic brass, powerful strings, and dramatic percussion. The music conveys adventure and courage with a memorable, hummable main melody that builds to a powerful climax."</span><span class="p">,</span>
+        
+        <span class="s">"exploration"</span><span class="p">:</span> <span class="s">"A peaceful, ambient piece with gentle harp arpeggios, soft woodwinds, and sustained string pads. The music creates a sense of wonder and discovery with a relaxed tempo and major key harmonies."</span><span class="p">,</span>
+        
+        <span class="s">"battle"</span><span class="p">:</span> <span class="s">"An intense, driving orchestral piece with aggressive percussion, staccato strings, and bold brass hits. The music creates tension and excitement with a fast tempo, minor key, and rhythmic ostinatos."</span><span class="p">,</span>
+        
+        <span class="s">"sad_moment"</span><span class="p">:</span> <span class="s">"A melancholic piece with solo piano and emotional string accompaniment. The music conveys sadness and reflection with a slow tempo, minor key, and expressive melodic phrases."</span><span class="p">,</span>
+        
+        <span class="s">"victory"</span><span class="p">:</span> <span class="s">"A triumphant orchestral fanfare with celebratory brass, uplifting strings, and triumphant percussion. The music expresses achievement and joy with major key harmonies and resolving chord progressions."</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Generate each track with appropriate parameters
+</span>    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="c1"># Main theme - longer duration, balanced parameters
+</span>    <span class="n">results</span><span class="p">[</span><span class="s">"main_theme"</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"main_theme"</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/main_theme"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Exploration - longer duration, lower temperature for consistency
+</span>    <span class="n">results</span><span class="p">[</span><span class="s">"exploration"</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"exploration"</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/exploration"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Battle - standard duration, higher temperature for intensity
+</span>    <span class="n">results</span><span class="p">[</span><span class="s">"battle"</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"battle"</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.2</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/battle"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Sad moment - gentle, with high adherence to prompt
+</span>    <span class="n">results</span><span class="p">[</span><span class="s">"sad_moment"</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"sad_moment"</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/sad_moment"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Victory - short and impactful
+</span>    <span class="n">results</span><span class="p">[</span><span class="s">"victory"</span><span class="p">]</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"victory"</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/victory"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate variations of the exploration track for different areas
+</span>    <span class="n">variations</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate_variations</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">soundtrack</span><span class="p">[</span><span class="s">"exploration"</span><span class="p">]</span> <span class="o">+</span> <span class="s">" Variation with slightly different instrumentation but maintaining the same mood and theme."</span><span class="p">,</span>
+        <span class="n">count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s">/exploration_variation"</span>
+    <span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variations</span><span class="p">):</span>
+        <span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s">"exploration_variation_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+    
+    <span class="c1"># Create a summary file
+</span>    <span class="n">summary_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">game_title</span><span class="p">,</span> <span class="s">"soundtrack_info.txt"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">summary_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">game_title</span><span class="si">}</span><span class="s"> - Game Soundtrack</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"="</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">track_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">soundtrack</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Track: </span><span class="si">{</span><span class="n">track_name</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"File: </span><span class="si">{</span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">track_name</span><span class="p">,</span> <span class="s">'Generation failed'</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Additional Variations:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">variations</span><span class="p">)):</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Exploration Variation </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s">'exploration_variation_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">', '</span><span class="n">Generation</span> <span class="n">failed</span><span class="s">')</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="c1"># Create a complete game soundtrack
+</span><span class="n">soundtrack_files</span> <span class="o">=</span> <span class="n">create_game_soundtrack</span><span class="p">(</span>
+    <span class="n">game_title</span><span class="o">=</span><span class="s">"Dragon_Quest_Adventures"</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"game_soundtracks"</span>
+<span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">"Soundtrack generation complete!"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This case study demonstrates how to approach a real-world music generation task by:</p>
+<ul>
+  <li>Breaking down requirements into specific tracks</li>
+  <li>Crafting detailed prompts for each context</li>
+  <li>Adjusting parameters to suit each musical need</li>
+  <li>Creating variations for additional content</li>
+  <li>Documenting the generation process</li>
+</ul>
+
+<h2 id="integrating-musicgen-into-applications">Integrating MusicGen into Applications</h2>
+
+<p>You can integrate MusicGen into various application types:</p>
+
+<h3 id="web-application-integration">Web Application Integration</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">gradio</span> <span class="k">as</span> <span class="n">gr</span>
+<span class="kn">from</span> <span class="nn">musicgen_application</span> <span class="kn">import</span> <span class="n">MusicGenerator</span>
+
+<span class="c1"># Initialize the generator
+</span><span class="n">generator</span> <span class="o">=</span> <span class="n">MusicGenerator</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_music_for_web</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+    <span class="s">"""Generate music for web interface."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Return audio file path for Gradio to display
+</span>        <span class="k">return</span> <span class="n">output_file</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s">"Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s">"</span>
+
+<span class="c1"># Create a simple web interface
+</span><span class="n">demo</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Interface</span><span class="p">(</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">generate_music_for_web</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">gr</span><span class="p">.</span><span class="n">Textbox</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">"Music Description"</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s">"Describe the music you want to generate..."</span><span class="p">),</span>
+        <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Duration (seconds)"</span><span class="p">),</span>
+        <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Temperature (creativity)"</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">"Generated Music"</span><span class="p">),</span>
+    <span class="n">title</span><span class="o">=</span><span class="s">"MusicGen - AI Music Generator"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">"Generate custom music from text descriptions."</span>
+<span class="p">)</span>
+
+<span class="c1"># Launch the web interface
+</span><span class="n">demo</span><span class="p">.</span><span class="n">launch</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3 id="game-engine-integration">Game Engine Integration</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Example of a module that could be integrated with a game engine
+</span>
+<span class="k">class</span> <span class="nc">GameMusicManager</span><span class="p">:</span>
+    <span class="s">"""Manages dynamic music generation for games."""</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Initialize the music manager."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">MusicGenerator</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">loaded_model</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_track</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">music_cache</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Initialize the model (call during game loading)."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">generator</span><span class="p">.</span><span class="n">load_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">loaded_model</span> <span class="o">=</span> <span class="bp">True</span>
+    
+    <span class="k">def</span> <span class="nf">get_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">force_regenerate</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="s">"""
+        Get a music track for a game context.
+        
+        Args:
+            context (str): Game context (e.g., "battle", "exploration")
+            force_regenerate (bool): If True, regenerate even if cached
+        
+        Returns:
+            str: Path to the audio file
+        """</span>
+        <span class="c1"># Check if we have this context cached
+</span>        <span class="k">if</span> <span class="n">context</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">music_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_regenerate</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">music_cache</span><span class="p">[</span><span class="n">context</span><span class="p">]</span>
+        
+        <span class="c1"># Define prompts for different game contexts
+</span>        <span class="n">prompts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"main_menu"</span><span class="p">:</span> <span class="s">"An epic orchestral theme with heroic brass and strings, creating a sense of adventure and excitement for the start of a journey."</span><span class="p">,</span>
+            <span class="s">"exploration"</span><span class="p">:</span> <span class="s">"A peaceful ambient piece with gentle harp arpeggios and soft strings, creating a sense of wonder during exploration."</span><span class="p">,</span>
+            <span class="s">"battle"</span><span class="p">:</span> <span class="s">"An intense orchestral piece with driving percussion and minor key strings, building tension for combat sequences."</span><span class="p">,</span>
+            <span class="s">"victory"</span><span class="p">:</span> <span class="s">"A triumphant brass fanfare with uplifting strings and celebratory percussion."</span><span class="p">,</span>
+            <span class="s">"game_over"</span><span class="p">:</span> <span class="s">"A somber piano piece with minor key harmonies, conveying defeat and reflection."</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Get the appropriate prompt
+</span>        <span class="k">if</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompts</span><span class="p">[</span><span class="n">context</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Background music for </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s"> in a fantasy game"</span>
+        
+        <span class="c1"># Generate the track
+</span>        <span class="n">output_file</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generator</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>  <span class="c1"># Longer for game background
+</span>            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s">"game_music/</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s">"</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Cache the result
+</span>        <span class="k">if</span> <span class="n">output_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">music_cache</span><span class="p">[</span><span class="n">context</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_file</span>
+        
+        <span class="k">return</span> <span class="n">output_file</span>
+    
+    <span class="k">def</span> <span class="nf">clean_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Free resources when game exits."""</span>
+        <span class="c1"># Clean up GPU memory
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">empty_cache</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="hands-on-challenge">Hands-on Challenge</h2>
+
+<p>Now it’s your turn to apply what you’ve learned. Try this challenge to deepen your understanding:</p>
+
+<h3 id="challenge-mood-adaptive-music-generator">Challenge: Mood-Adaptive Music Generator</h3>
+
+<p>Create a script that:</p>
+<ol>
+  <li>Takes a mood parameter (e.g., “happy,” “sad,” “tense,” “peaceful”)</li>
+  <li>Automatically generates appropriate prompt additions based on the mood</li>
+  <li>Adjusts generation parameters to suit the mood (e.g., lower temperature for sad music)</li>
+  <li>Generates variations for each mood</li>
+  <li>Creates a simple HTML page that showcases the different mood-based compositions</li>
+</ol>
+
+<p>This challenge will reinforce your understanding of prompt engineering and parameter tuning for different musical characteristics.</p>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Detailed prompts with genre, instrumentation, mood, and structure produce better results</li>
+  <li>Different musical styles require different approaches to prompt engineering</li>
+  <li>Generation parameters like temperature and cfg_coef significantly impact musical output</li>
+  <li>Project-based generation creates cohesive sets of music for specific applications</li>
+  <li>Structured frameworks make music generation more reliable and reusable</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you understand the basics of MusicGen, you’re ready to explore more advanced techniques:</p>
+
+<ul>
+  <li><a href="/chapters/part2/prompt-engineering/">Prompt Engineering for Music</a>: Learn advanced techniques for crafting effective music prompts</li>
+  <li><a href="/chapters/part2/parameter-optimization/">Parameter Optimization</a>: Fine-tune generation parameters for better results</li>
+  <li><a href="/chapters/part2/melody-conditioning/">Melody Conditioning</a>: Guide music generation with reference melodies</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/2306.05284">MusicGen Research Paper</a>: Simple and Controllable Music Generation</li>
+  <li><a href="https://huggingface.co/spaces/facebook/MusicGen">MusicGen Demo on Hugging Face</a></li>
+  <li><a href="https://www.promptingguide.ai/">Prompt Engineering Guide</a>: General techniques for effective prompting</li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  <div class="next-steps">
+    <h2>Next Steps</h2>
+    <p>Now that you've mastered 5 basic music generation, you're ready to explore:</p>
+    <ul>
+      
+      <li>
+        <a href="/chapters/part2/prompt-engineering/">Prompt Engineering for Music</a>: Learn advanced techniques for crafting effective music prompts
+      </li>
+      
+      <li>
+        <a href="/chapters/part2/parameter-optimization/">Parameter Optimization</a>: Fine-tune generation parameters for better results
+      </li>
+      
+      <li>
+        <a href="/chapters/part2/melody-conditioning/">Melody Conditioning</a>: Guide music generation with reference melodies
+      </li>
+      
+    </ul>
+  </div>
+  
+  
+  
+  <div class="further-reading">
+    <h2>Further Reading</h2>
+    <ul>
+      
+      <li>
+        
+        <a href="https://arxiv.org/abs/2306.05284" target="_blank">MusicGen Research Paper</a>
+        
+        
+        - Simple and Controllable Music Generation
+        
+      </li>
+      
+      <li>
+        
+        <a href="https://huggingface.co/spaces/facebook/MusicGen" target="_blank">MusicGen Demo on Hugging Face</a>
+        
+        
+      </li>
+      
+      <li>
+        
+        <a href="https://www.promptingguide.ai/" target="_blank">Prompt Engineering Guide</a>
+        
+        
+        - General techniques for effective prompting
+        
+      </li>
+      
+    </ul>
+  </div>
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part1/setup/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Chapter 2: Setting Up Your Environment</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/part2/batch-processing-automation/" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Batch Processing and Automation for AI Audio Generation</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

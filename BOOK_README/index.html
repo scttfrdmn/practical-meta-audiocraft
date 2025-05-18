@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Practical Meta AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/BOOK_README/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Practical Meta AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="practical-meta-audiocraft">Practical Meta AudioCraft</h1>
+
+<p>Welcome to the “Practical Meta AudioCraft” book project! This repository contains a comprehensive book-style guide to using Meta’s AudioCraft framework for AI-powered audio generation.</p>
+
+<h2 id="about-the-project">About the Project</h2>
+
+<p>This project transforms the AudioCraft tutorial content into a cohesive, problem-based book following the pedagogical approach used in educational software engineering books. The goal is to create a resource that guides readers from basic concepts to advanced applications with practical, hands-on examples.</p>
+
+<h2 id="book-structure">Book Structure</h2>
+
+<p>The book is organized into five main parts:</p>
+
+<ol>
+  <li><strong>Foundations</strong> - Core concepts and setup</li>
+  <li><strong>Music Generation with MusicGen</strong> - Creating AI-generated music</li>
+  <li><strong>Sound Effects with AudioGen</strong> - Generating environmental sounds and effects</li>
+  <li><strong>Integration and Deployment</strong> - Building applications with AudioCraft</li>
+  <li><strong>Advanced Applications</strong> - Complex audio generation systems</li>
+</ol>
+
+<p>Each chapter follows a consistent structure:</p>
+<ul>
+  <li>Real-world problem scenario</li>
+  <li>Step-by-step solution development</li>
+  <li>Complete code examples</li>
+  <li>Variations and customizations</li>
+  <li>Practical exercises</li>
+</ul>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ul>
+  <li>Python 3.9 or newer</li>
+  <li>PyTorch 2.0.0 or newer</li>
+  <li>Basic understanding of Python programming</li>
+  <li>Either:
+    <ul>
+      <li>CUDA-compatible NVIDIA GPU (for faster generation on Windows/Linux)</li>
+      <li>Apple Silicon Mac with Metal GPU acceleration (M1/M2/M3/M4 series)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="reading-the-book">Reading the Book</h3>
+
+<p>The book is available in two formats:</p>
+<ol>
+  <li><strong>Web Version</strong>: Built with Jekyll and available at [URL will be added]</li>
+  <li><strong>Markdown Files</strong>: Available in the <code class="language-plaintext highlighter-rouge">_chapters</code> directory of this repository</li>
+</ol>
+
+<h2 id="project-status">Project Status</h2>
+
+<p>This project is currently in active development. See the <a href="/practical-meta-audiocraft/PROJECT_TRACKING/">Project Tracking</a> document for the current status and progress.</p>
+
+<h2 id="how-to-contribute">How to Contribute</h2>
+
+<p>We welcome contributions to improve the book! Here’s how you can help:</p>
+
+<ol>
+  <li><strong>Report Issues</strong>: If you find errors or have suggestions, please open an issue</li>
+  <li><strong>Suggest Improvements</strong>: Ideas for new content or clarifications are welcome</li>
+  <li><strong>Submit Pull Requests</strong>: Feel free to improve existing content or add new examples</li>
+</ol>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+  <li><a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a></li>
+  <li><a href="https://ai.meta.com/blog/audiocraft-musicgen-audiogen-encodec-generative-ai-audio/">Meta AI Blog: AudioCraft</a></li>
+  <li><a href="https://huggingface.co/spaces/facebook/MusicGen">MusicGen Demo</a></li>
+  <li><a href="https://huggingface.co/spaces/facebook/AudioGen">AudioGen Demo</a></li>
+</ul>
+
+<h2 id="license">License</h2>
+
+<p>This book is available under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. See the <a href="/practical-meta-audiocraft/LICENSE.md">LICENSE.md</a> file for details.</p>
+
+<h2 id="copyright">Copyright</h2>
+
+<p>Copyright © 2025 Scott Friedman.</p>
+
+<h2 id="disclaimer">Disclaimer</h2>
+
+<p>This is an unofficial guide and is not affiliated with Meta. Meta AudioCraft is an open-source project by Meta AI Research, and usage of the technology is subject to Meta’s license terms and conditions.</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

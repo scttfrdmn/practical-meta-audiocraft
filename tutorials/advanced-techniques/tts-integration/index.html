@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrating Advanced TTS with AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/advanced-techniques/tts-integration/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Integrating Advanced TTS with AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="integrating-advanced-tts-with-audiocraft">Integrating Advanced TTS with AudioCraft</h1>
+
+<p>This tutorial covers how to integrate expressive Text-to-Speech (TTS) systems with AudioCraft to create comprehensive audio experiences that combine voice narration, sound effects, and music.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>While AudioCraft excels at generating music and environmental sounds, it doesn’t specifically focus on voice synthesis. By combining AudioCraft with modern TTS systems, we can create rich audio productions with:</p>
+
+<ul>
+  <li>Expressive narration with emotion control</li>
+  <li>Multiple character voices</li>
+  <li>Perfect synchronization of speech, sound effects, and music</li>
+  <li>Dynamically responsive audio environments</li>
+</ul>
+
+<h2 id="choosing-a-tts-system">Choosing a TTS System</h2>
+
+<p>Several open-source TTS systems offer voice variety and prosody control:</p>
+
+<h3 id="1-xttsyourtts">1. XTTS/YourTTS</h3>
+<ul>
+  <li><strong>Strengths</strong>: Voice cloning, emotion control, multilingual</li>
+  <li><strong>GitHub</strong>: <a href="https://github.com/coqui-ai/TTS">Coqui TTS</a></li>
+  <li><strong>Installation</strong>: <code class="language-plaintext highlighter-rouge">pip install TTS</code></li>
+  <li><strong>Voice Control</strong>: Provides speaker embeddings for voice cloning</li>
+</ul>
+
+<h3 id="2-bark-by-suno-ai">2. Bark by Suno AI</h3>
+<ul>
+  <li><strong>Strengths</strong>: High expressivity, multiple voices, semantic tokens</li>
+  <li><strong>GitHub</strong>: <a href="https://github.com/suno-ai/bark">Bark</a></li>
+  <li><strong>Installation</strong>: <code class="language-plaintext highlighter-rouge">pip install git+https://github.com/suno-ai/bark.git</code></li>
+  <li><strong>Voice Control</strong>: Extensive prompt format for controlling emotion, pace</li>
+</ul>
+
+<h3 id="3-elevenlabs">3. ElevenLabs</h3>
+<ul>
+  <li><strong>Strengths</strong>: Exceptional quality, voice cloning, emotion control, multilingual</li>
+  <li><strong>API</strong>: <a href="https://api.elevenlabs.io/docs">ElevenLabs API</a></li>
+  <li><strong>Installation</strong>: <code class="language-plaintext highlighter-rouge">pip install elevenlabs</code></li>
+  <li><strong>Voice Control</strong>: Fine-grained control through API parameters</li>
+</ul>
+
+<h3 id="4-tortoise-tts">4. Tortoise TTS</h3>
+<ul>
+  <li><strong>Strengths</strong>: High quality, multi-voice with fine control</li>
+  <li><strong>GitHub</strong>: <a href="https://github.com/neonbjb/tortoise-tts">Tortoise TTS</a></li>
+  <li><strong>Installation</strong>: <code class="language-plaintext highlighter-rouge">pip install tortoise-tts</code></li>
+  <li><strong>Voice Control</strong>: CVVP conditioning for voice cloning</li>
+</ul>
+
+<h3 id="5-facebooks-mms-massively-multilingual-speech">5. Facebook’s MMS (Massively Multilingual Speech)</h3>
+<ul>
+  <li><strong>Strengths</strong>: Extensive language support, Meta integration</li>
+  <li><strong>GitHub</strong>: <a href="https://github.com/facebookresearch/fairseq">fairseq</a></li>
+  <li><strong>Installation</strong>: Complex, requires fairseq</li>
+</ul>
+
+<h2 id="basic-integration-bark-tts-with-audiocraft">Basic Integration: Bark TTS with AudioCraft</h2>
+
+<p>Let’s start with a simple example using Bark TTS with AudioCraft:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># combined_audio_generation.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">scipy.io.wavfile</span> <span class="k">as</span> <span class="n">wavfile</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span><span class="p">,</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+<span class="kn">from</span> <span class="nn">bark</span> <span class="kn">import</span> <span class="n">SAMPLE_RATE</span><span class="p">,</span> <span class="n">generate_audio</span><span class="p">,</span> <span class="n">preload_models</span>
+
+<span class="k">def</span> <span class="nf">generate_voice</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"voice_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Generate speech using Bark TTS"""</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Generating voice narration..."</span><span class="p">)</span>
+    
+    <span class="c1"># Generate speech using Bark
+</span>    <span class="n">preload_models</span><span class="p">()</span>  <span class="c1"># Takes time on first run
+</span>    <span class="n">speech_array</span> <span class="o">=</span> <span class="n">generate_audio</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    
+    <span class="c1"># Save as WAV file
+</span>    <span class="n">wavfile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">SAMPLE_RATE</span><span class="p">,</span> <span class="n">speech_array</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Voice saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">speech_array</span><span class="p">,</span> <span class="n">SAMPLE_RATE</span>
+
+<span class="k">def</span> <span class="nf">generate_background_music</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"music_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Generate background music using MusicGen"""</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating background music: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using device: </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Load MusicGen model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'small'</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate music
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Save the music
+</span>    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'.wav'</span><span class="p">,</span> <span class="s">''</span><span class="p">),</span>
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+    <span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Music saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+
+<span class="k">def</span> <span class="nf">generate_sound_effect</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"sfx_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Generate sound effect using AudioGen"""</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating sound effect: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+    
+    <span class="c1"># Load AudioGen model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'medium'</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate sound effect
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Save the sound effect
+</span>    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'.wav'</span><span class="p">,</span> <span class="s">''</span><span class="p">),</span>
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+    <span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Sound effect saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+
+<span class="k">def</span> <span class="nf">combine_audio_tracks</span><span class="p">(</span><span class="n">voice_path</span><span class="p">,</span> <span class="n">music_path</span><span class="p">,</span> <span class="n">sfx_path</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"combined_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Combine voice, music, and sound effect into a single audio file"""</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Combining audio tracks..."</span><span class="p">)</span>
+    
+    <span class="c1"># Load the audio files
+</span>    <span class="n">voice</span><span class="p">,</span> <span class="n">voice_sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">voice_path</span><span class="p">)</span>
+    <span class="n">music</span><span class="p">,</span> <span class="n">music_sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">music_path</span><span class="p">)</span>
+    <span class="n">sfx</span><span class="p">,</span> <span class="n">sfx_sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">sfx_path</span><span class="p">)</span>
+    
+    <span class="c1"># Convert to mono if stereo
+</span>    <span class="n">voice</span> <span class="o">=</span> <span class="n">voice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">voice</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">voice</span>
+    <span class="n">music</span> <span class="o">=</span> <span class="n">music</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">music</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">music</span>
+    <span class="n">sfx</span> <span class="o">=</span> <span class="n">sfx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">sfx</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">sfx</span>
+    
+    <span class="c1"># Resample to the same sample rate (use the voice sample rate)
+</span>    <span class="k">if</span> <span class="n">music_sr</span> <span class="o">!=</span> <span class="n">voice_sr</span><span class="p">:</span>
+        <span class="n">music</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">resample</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">music_sr</span><span class="p">,</span> <span class="n">voice_sr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sfx_sr</span> <span class="o">!=</span> <span class="n">voice_sr</span><span class="p">:</span>
+        <span class="n">sfx</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sfx</span><span class="p">,</span> <span class="n">sfx_sr</span><span class="p">,</span> <span class="n">voice_sr</span><span class="p">)</span>
+    
+    <span class="c1"># Make all audio tracks the same length (use the voice length)
+</span>    <span class="n">voice_length</span> <span class="o">=</span> <span class="n">voice</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># Trim or pad music
+</span>    <span class="k">if</span> <span class="n">music</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">voice_length</span><span class="p">:</span>
+        <span class="n">music</span> <span class="o">=</span> <span class="n">music</span><span class="p">[:</span><span class="n">voice_length</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">voice_length</span> <span class="o">-</span> <span class="n">music</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">music</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">([</span><span class="n">music</span><span class="p">,</span> <span class="n">padding</span><span class="p">])</span>
+    
+    <span class="c1"># Trim or pad sfx
+</span>    <span class="k">if</span> <span class="n">sfx</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">voice_length</span><span class="p">:</span>
+        <span class="n">sfx</span> <span class="o">=</span> <span class="n">sfx</span><span class="p">[:</span><span class="n">voice_length</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">voice_length</span> <span class="o">-</span> <span class="n">sfx</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">sfx</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">([</span><span class="n">sfx</span><span class="p">,</span> <span class="n">padding</span><span class="p">])</span>
+    
+    <span class="c1"># Mix the audio (voice at full volume, music and sfx at reduced volume)
+</span>    <span class="n">voice_weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">music_weight</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># Adjust as needed
+</span>    <span class="n">sfx_weight</span> <span class="o">=</span> <span class="mf">0.5</span>    <span class="c1"># Adjust as needed
+</span>    
+    <span class="n">combined</span> <span class="o">=</span> <span class="p">(</span><span class="n">voice</span> <span class="o">*</span> <span class="n">voice_weight</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">music</span> <span class="o">*</span> <span class="n">music_weight</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sfx</span> <span class="o">*</span> <span class="n">sfx_weight</span><span class="p">)</span>
+    
+    <span class="c1"># Normalize to prevent clipping
+</span>    <span class="n">max_val</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">combined</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">max_val</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">combined</span> <span class="o">/</span> <span class="n">max_val</span>
+    
+    <span class="c1"># Save the combined audio
+</span>    <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">combined</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">voice_sr</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Combined audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Define our content
+</span>    <span class="n">narration_text</span> <span class="o">=</span> <span class="s">"""
+    [laughter] Welcome to our adventure! Today we're exploring the ancient forest.
+    Can you hear the birds singing? [pause] Listen carefully to the sounds of nature.
+    """</span>
+    
+    <span class="n">music_prompt</span> <span class="o">=</span> <span class="s">"Mysterious ambient forest music with soft flutes and gentle strings"</span>
+    <span class="n">sfx_prompt</span> <span class="o">=</span> <span class="s">"Forest ambience with birds chirping, wind in leaves, and distant water stream"</span>
+    
+    <span class="c1"># Generate each audio component
+</span>    <span class="n">voice_array</span><span class="p">,</span> <span class="n">voice_sr</span> <span class="o">=</span> <span class="n">generate_voice</span><span class="p">(</span><span class="n">narration_text</span><span class="p">,</span> <span class="s">"voice_output.wav"</span><span class="p">)</span>
+    <span class="n">generate_background_music</span><span class="p">(</span><span class="n">music_prompt</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="s">"music_output.wav"</span><span class="p">)</span>
+    <span class="n">generate_sound_effect</span><span class="p">(</span><span class="n">sfx_prompt</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="s">"sfx_output.wav"</span><span class="p">)</span>
+    
+    <span class="c1"># Combine all audio tracks
+</span>    <span class="n">combine_audio_tracks</span><span class="p">(</span><span class="s">"voice_output.wav"</span><span class="p">,</span> <span class="s">"music_output.wav"</span><span class="p">,</span> <span class="s">"sfx_output.wav"</span><span class="p">,</span> <span class="s">"forest_adventure.wav"</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="s">"Complete! Your audio narrative has been created."</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="advanced-voice-control-with-bark">Advanced Voice Control with Bark</h2>
+
+<p>Bark TTS offers powerful voice customization through its prompt format. Here’s an example:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Customized voice generation with Bark
+</span><span class="kn">from</span> <span class="nn">bark</span> <span class="kn">import</span> <span class="n">generate_audio</span><span class="p">,</span> <span class="n">SAMPLE_RATE</span>
+<span class="kn">import</span> <span class="nn">scipy.io.wavfile</span> <span class="k">as</span> <span class="n">wavfile</span>
+
+<span class="c1"># Voice prompt with control markers
+</span><span class="n">prompt</span> <span class="o">=</span> <span class="s">"""
+[speaker: female_child, accent: American, emotion: excited]
+Wow! Look at all the butterflies in this meadow!
+[emotion: curious]
+I wonder which one is the most colorful?
+[emotion: happy, pace: slow]
+This has been the best adventure ever!
+"""</span>
+
+<span class="c1"># Generate and save audio
+</span><span class="n">audio_array</span> <span class="o">=</span> <span class="n">generate_audio</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+<span class="n">wavfile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"child_excited.wav"</span><span class="p">,</span> <span class="n">SAMPLE_RATE</span><span class="p">,</span> <span class="n">audio_array</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="synchronizing-audio-elements">Synchronizing Audio Elements</h2>
+
+<p>For more precise synchronization, you’ll need timestamps for your narration and sound effects:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create_timed_audio_experience</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"timed_output.wav"</span><span class="p">):</span>
+    <span class="s">"""
+    Creates a synchronized audio experience from a timed script
+    
+    Script format:
+    [
+        {"type": "voice", "text": "Welcome to the jungle", "start_time": 0.0},
+        {"type": "sfx", "description": "jungle ambience", "start_time": 0.5, "duration": 10.0},
+        {"type": "music", "description": "tribal drums", "start_time": 2.0, "duration": 8.0}
+    ]
+    """</span>
+    <span class="c1"># Sort script by start time
+</span>    <span class="n">script</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s">"start_time"</span><span class="p">])</span>
+    
+    <span class="c1"># Determine total duration
+</span>    <span class="n">total_duration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">script</span><span class="p">:</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s">"start_time"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">"duration"</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">end_time</span> <span class="o">+=</span> <span class="n">item</span><span class="p">[</span><span class="s">"duration"</span><span class="p">]</span>
+        <span class="n">total_duration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">total_duration</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+    
+    <span class="c1"># Add a small buffer at the end
+</span>    <span class="n">total_duration</span> <span class="o">+=</span> <span class="mf">2.0</span>
+    
+    <span class="c1"># Initialize an empty audio canvas (44.1kHz sample rate)
+</span>    <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">44100</span>
+    <span class="n">total_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">canvas</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_samples</span><span class="p">)</span>
+    
+    <span class="c1"># Process each script item
+</span>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">script</span><span class="p">:</span>
+        <span class="n">start_sample</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s">"start_time"</span><span class="p">]</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"voice"</span><span class="p">:</span>
+            <span class="c1"># Generate voice
+</span>            <span class="n">voice_array</span><span class="p">,</span> <span class="n">voice_sr</span> <span class="o">=</span> <span class="n">generate_voice</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s">"text"</span><span class="p">],</span> <span class="s">"temp_voice.wav"</span><span class="p">)</span>
+            <span class="n">voice_resampled</span> <span class="o">=</span> <span class="n">resample_audio</span><span class="p">(</span><span class="n">voice_array</span><span class="p">,</span> <span class="n">voice_sr</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+            
+            <span class="c1"># Add to canvas
+</span>            <span class="n">end_sample</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_sample</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">voice_resampled</span><span class="p">),</span> <span class="n">total_samples</span><span class="p">)</span>
+            <span class="n">canvas</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">+=</span> <span class="n">voice_resampled</span><span class="p">[:</span><span class="n">end_sample</span><span class="o">-</span><span class="n">start_sample</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.0</span>  <span class="c1"># Full volume
+</span>            
+        <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="s">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"sfx"</span><span class="p">:</span>
+            <span class="c1"># Generate sound effect
+</span>            <span class="n">sfx_array</span><span class="p">,</span> <span class="n">sfx_sr</span> <span class="o">=</span> <span class="n">generate_sound_effect</span><span class="p">(</span>
+                <span class="n">item</span><span class="p">[</span><span class="s">"description"</span><span class="p">],</span> 
+                <span class="n">item</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+                <span class="s">"temp_sfx.wav"</span>
+            <span class="p">)</span>
+            <span class="n">sfx_resampled</span> <span class="o">=</span> <span class="n">resample_audio</span><span class="p">(</span><span class="n">sfx_array</span><span class="p">,</span> <span class="n">sfx_sr</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+            
+            <span class="c1"># Add to canvas
+</span>            <span class="n">end_sample</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_sample</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sfx_resampled</span><span class="p">),</span> <span class="n">total_samples</span><span class="p">)</span>
+            <span class="n">canvas</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sfx_resampled</span><span class="p">[:</span><span class="n">end_sample</span><span class="o">-</span><span class="n">start_sample</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span>  <span class="c1"># Half volume
+</span>            
+        <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="s">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"music"</span><span class="p">:</span>
+            <span class="c1"># Generate music
+</span>            <span class="n">music_array</span><span class="p">,</span> <span class="n">music_sr</span> <span class="o">=</span> <span class="n">generate_background_music</span><span class="p">(</span>
+                <span class="n">item</span><span class="p">[</span><span class="s">"description"</span><span class="p">],</span>
+                <span class="n">item</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+                <span class="s">"temp_music.wav"</span>
+            <span class="p">)</span>
+            <span class="n">music_resampled</span> <span class="o">=</span> <span class="n">resample_audio</span><span class="p">(</span><span class="n">music_array</span><span class="p">,</span> <span class="n">music_sr</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+            
+            <span class="c1"># Add to canvas
+</span>            <span class="n">end_sample</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_sample</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">music_resampled</span><span class="p">),</span> <span class="n">total_samples</span><span class="p">)</span>
+            <span class="n">canvas</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">+=</span> <span class="n">music_resampled</span><span class="p">[:</span><span class="n">end_sample</span><span class="o">-</span><span class="n">start_sample</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3</span>  <span class="c1"># Lower volume
+</span>    
+    <span class="c1"># Normalize to prevent clipping
+</span>    <span class="n">max_amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">canvas</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">max_amplitude</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="n">canvas</span> <span class="o">/</span> <span class="n">max_amplitude</span>
+    
+    <span class="c1"># Save the final audio
+</span>    <span class="n">wavfile</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">canvas</span><span class="p">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Timed audio experience saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">resample_audio</span><span class="p">(</span><span class="n">audio_array</span><span class="p">,</span> <span class="n">orig_sr</span><span class="p">,</span> <span class="n">target_sr</span><span class="p">):</span>
+    <span class="s">"""Resample audio to the target sample rate"""</span>
+    <span class="c1"># Convert to torch tensor for resampling
+</span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">audio_array</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">audio_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">audio_array</span><span class="p">).</span><span class="nb">float</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">audio_tensor</span><span class="p">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">audio_tensor</span> <span class="o">=</span> <span class="n">audio_tensor</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">audio_tensor</span> <span class="o">=</span> <span class="n">audio_array</span>
+        
+    <span class="c1"># Resample
+</span>    <span class="n">resampled</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">resample</span><span class="p">(</span><span class="n">audio_tensor</span><span class="p">,</span> <span class="n">orig_sr</span><span class="p">,</span> <span class="n">target_sr</span><span class="p">)</span>
+    
+    <span class="c1"># Return as numpy array
+</span>    <span class="k">if</span> <span class="n">resampled</span><span class="p">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampled</span><span class="p">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resampled</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># Example usage
+</span><span class="n">script</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"voice"</span><span class="p">,</span> <span class="s">"text"</span><span class="p">:</span> <span class="s">"Welcome to our magical journey through the enchanted forest."</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span> <span class="s">"description"</span><span class="p">:</span> <span class="s">"Soft magical fantasy music with harps and flutes"</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">"duration"</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"sfx"</span><span class="p">,</span> <span class="s">"description"</span><span class="p">:</span> <span class="s">"Forest ambience with birds and leaves"</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s">"duration"</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"voice"</span><span class="p">,</span> <span class="s">"text"</span><span class="p">:</span> <span class="s">"Listen to the birds singing in the trees."</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"sfx"</span><span class="p">,</span> <span class="s">"description"</span><span class="p">:</span> <span class="s">"Magical shimmer sound effect"</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s">"duration"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"voice"</span><span class="p">,</span> <span class="s">"text"</span><span class="p">:</span> <span class="s">"Oh look! A magical creature appears before us!"</span><span class="p">,</span> <span class="s">"start_time"</span><span class="p">:</span> <span class="mf">13.5</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">create_timed_audio_experience</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s">"enchanted_forest_journey.wav"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="building-an-audio-narrative-pipeline">Building an Audio Narrative Pipeline</h2>
+
+<p>For more complex projects, create a modular audio narrative pipeline:</p>
+
+<ol>
+  <li><strong>Script Parsing</strong>: Convert a structured script to audio cues</li>
+  <li><strong>Asset Generation</strong>: Generate all required audio assets</li>
+  <li><strong>Timeline Assembly</strong>: Assemble assets on a precise timeline</li>
+  <li><strong>Mixing and Mastering</strong>: Balance levels and apply effects</li>
+</ol>
+
+<h2 id="integrating-other-tts-systems">Integrating Other TTS Systems</h2>
+
+<h3 id="elevenlabs-api-integration">ElevenLabs API Integration</h3>
+
+<p><a href="https://elevenlabs.io/">ElevenLabs</a> offers one of the most advanced commercially available TTS systems with exceptional voice quality, emotion control, and multilingual capabilities. Their API is straightforward to integrate with AudioCraft:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">def</span> <span class="nf">generate_voice_elevenlabs</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">,</span> 
+    <span class="n">voice_id</span><span class="o">=</span><span class="s">"21m00Tcm4TlvDq8ikWAM"</span><span class="p">,</span> <span class="c1"># Rachel voice (default)
+</span>    <span class="n">api_key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s">"eleven_monolingual_v1"</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="s">"elevenlabs_output.wav"</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate voice using ElevenLabs API
+    
+    Args:
+        text (str): Text to convert to speech
+        voice_id (str): ElevenLabs voice ID
+            Some popular voices:
+            - "21m00Tcm4TlvDq8ikWAM" (Rachel - conversational)
+            - "AZnzlk1XvdvUeBnXmlld" (Domi - narrative)
+            - "EXAVITQu4vr4xnSDxMaL" (Bella - children's stories)
+            - "MF3mGyEYCl7XYWbV9V6O" (Adam - professional)
+        api_key (str): Your ElevenLabs API key, if None will look for ELEVEN_API_KEY env var
+        model_id (str): ElevenLabs model ID
+        output_path (str): Path to save output audio file
+        
+    Returns:
+        str: Path to output audio file
+    """</span>
+    <span class="c1"># Get API key from environment if not provided
+</span>    <span class="k">if</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"ELEVEN_API_KEY"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"ElevenLabs API key not found. Please provide api_key or set ELEVEN_API_KEY environment variable."</span><span class="p">)</span>
+    
+    <span class="c1"># Prepare request data
+</span>    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"https://api.elevenlabs.io/v1/text-to-speech/</span><span class="si">{</span><span class="n">voice_id</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"Accept"</span><span class="p">:</span> <span class="s">"audio/mpeg"</span><span class="p">,</span>
+        <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span><span class="p">,</span>
+        <span class="s">"xi-api-key"</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+    
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"text"</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+        <span class="s">"model_id"</span><span class="p">:</span> <span class="n">model_id</span><span class="p">,</span>
+        <span class="s">"voice_settings"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>         <span class="c1"># Lower for more expressive, higher for more consistent
+</span>            <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>  <span class="c1"># How much to prioritize sounding like reference
+</span>            <span class="s">"style"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>             <span class="c1"># Experimental; control speaking style (-1.0 to 1.0)
+</span>            <span class="s">"use_speaker_boost"</span><span class="p">:</span> <span class="bp">True</span>  <span class="c1"># Enhances clarity and quality
+</span>        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating speech with ElevenLabs API: </span><span class="si">{</span><span class="n">text</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s">..."</span><span class="p">)</span>
+    
+    <span class="c1"># Make API call
+</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">response</span><span class="p">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="c1"># Save audio file
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="nb">file</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"ElevenLabs API Error: </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">error_details</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" - </span><span class="si">{</span><span class="n">error_details</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'detail'</span><span class="p">,</span> <span class="si">{}</span><span class="p">).</span><span class="n">get</span><span class="p">(</span><span class="s">'message'</span><span class="p">,</span> <span class="s">'Unknown error'</span><span class="p">)</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_voice_elevenlabs_with_emotion</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">,</span>
+    <span class="n">emotion</span><span class="o">=</span><span class="s">"neutral"</span><span class="p">,</span> 
+    <span class="n">voice_id</span><span class="o">=</span><span class="s">"21m00Tcm4TlvDq8ikWAM"</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="s">"elevenlabs_emotion_output.wav"</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate voice with specific emotion using ElevenLabs API
+    
+    Args:
+        text (str): Text to convert to speech
+        emotion (str): Desired emotion (neutral, happy, sad, angry, fear, surprise, etc.)
+        voice_id (str): ElevenLabs voice ID
+        api_key (str): Your ElevenLabs API key
+        output_path (str): Path to save output audio file
+    """</span>
+    <span class="c1"># Map emotions to voice settings
+</span>    <span class="n">emotion_settings</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"neutral"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="s">"happy"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.65</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="s">"excited"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+        <span class="s">"sad"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">},</span>
+        <span class="s">"angry"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">},</span>
+        <span class="s">"fear"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">},</span>
+        <span class="s">"surprise"</span><span class="p">:</span> <span class="p">{</span><span class="s">"stability"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s">"similarity_boost"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s">"style"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Apply SSML markup for additional control (where supported)
+</span>    <span class="n">ssml_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"""
+    &lt;speak&gt;
+      &lt;prosody pitch="</span><span class="si">{</span><span class="s">'+20%'</span> <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'happy'</span><span class="p">,</span> <span class="s">'excited'</span><span class="p">,</span> <span class="s">'surprise'</span><span class="p">]</span> <span class="k">else</span> <span class="s">'-10%'</span> <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'sad'</span><span class="p">,</span> <span class="s">'fear'</span><span class="p">]</span> <span class="k">else</span> <span class="s">'+0%'</span><span class="si">}</span><span class="s">" 
+               rate="</span><span class="si">{</span><span class="s">'+15%'</span> <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'excited'</span><span class="p">,</span> <span class="s">'angry'</span><span class="p">]</span> <span class="k">else</span> <span class="s">'-15%'</span> <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'sad'</span><span class="p">]</span> <span class="k">else</span> <span class="s">'+0%'</span><span class="si">}</span><span class="s">"&gt;
+        </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s">
+      &lt;/prosody&gt;
+    &lt;/speak&gt;
+    """</span>
+    
+    <span class="c1"># Get settings for the emotion
+</span>    <span class="n">settings</span> <span class="o">=</span> <span class="n">emotion_settings</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">emotion</span><span class="p">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">emotion_settings</span><span class="p">[</span><span class="s">"neutral"</span><span class="p">])</span>
+    
+    <span class="c1"># Create API request similar to the basic function, but with emotion settings
+</span>    <span class="c1"># Implementation depends on API version and capabilities
+</span>    
+    <span class="c1"># Here we would make the actual API call with the SSML markup and settings
+</span>    <span class="c1"># For simplicity, we'll call our base function and note that a complete implementation
+</span>    <span class="c1"># would use the SSML formatting and emotion-specific settings
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating speech with emotion: </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">generate_voice_elevenlabs</span><span class="p">(</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>  <span class="c1"># Use SSML text for proper implementation
+</span>        <span class="n">voice_id</span><span class="o">=</span><span class="n">voice_id</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span>
+    <span class="p">)</span>
+
+<span class="c1"># Example usage:
+# Set your API key in environment: export ELEVEN_API_KEY="your-api-key"
+# generate_voice_elevenlabs("Hello world, this is a test of the ElevenLabs API integration.")
+# generate_voice_elevenlabs_with_emotion("I'm so excited to meet you!", emotion="excited")
+</span></code></pre></div></div>
+
+<h3 id="using-elevenlabs-with-audiocraft">Using ElevenLabs with AudioCraft</h3>
+
+<p>Here’s an example of creating a complete audio experience combining ElevenLabs for narration with AudioCraft for background music and effects:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create_narrated_experience_with_elevenlabs</span><span class="p">(</span>
+    <span class="n">script</span><span class="p">,</span>
+    <span class="n">voice_id</span><span class="o">=</span><span class="s">"21m00Tcm4TlvDq8ikWAM"</span><span class="p">,</span>
+    <span class="n">background_music_prompt</span><span class="o">=</span><span class="s">"Gentle ambient music with soft piano"</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="s">"narrated_experience.wav"</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Create a complete audio experience with ElevenLabs narration and AudioCraft background
+    
+    Args:
+        script (list): List of script segments, each a dict with text and optional emotion
+        voice_id (str): ElevenLabs voice ID
+        background_music_prompt (str): Prompt for AudioCraft music generation
+        api_key (str): ElevenLabs API key
+        output_path (str): Path to save final audio
+    """</span>
+    <span class="c1"># Generate background music with AudioCraft
+</span>    <span class="n">_</span><span class="p">,</span> <span class="n">music_sr</span> <span class="o">=</span> <span class="n">generate_background_music</span><span class="p">(</span>
+        <span class="n">background_music_prompt</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>  <span class="c1"># Adjust based on expected narration length
+</span>        <span class="n">output_path</span><span class="o">=</span><span class="s">"temp_background.wav"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate all voice segments with ElevenLabs
+</span>    <span class="n">voice_segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>
+        <span class="c1"># Get text and emotion (default to neutral)
+</span>        <span class="n">text</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="s">"text"</span><span class="p">]</span>
+        <span class="n">emotion</span> <span class="o">=</span> <span class="n">segment</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"emotion"</span><span class="p">,</span> <span class="s">"neutral"</span><span class="p">)</span>
+        
+        <span class="c1"># Generate voice for this segment
+</span>        <span class="n">segment_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"temp_segment_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">.wav"</span>
+        <span class="n">generate_voice_elevenlabs_with_emotion</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">emotion</span><span class="o">=</span><span class="n">emotion</span><span class="p">,</span>
+            <span class="n">voice_id</span><span class="o">=</span><span class="n">voice_id</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="o">=</span><span class="n">segment_path</span>
+        <span class="p">)</span>
+        <span class="n">voice_segments</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment_path</span><span class="p">)</span>
+    
+    <span class="c1"># Combine all voice segments
+</span>    <span class="c1"># (In a real implementation, you would handle timing and transitions)
+</span>    <span class="n">concat_voice_path</span> <span class="o">=</span> <span class="s">"temp_voice_combined.wav"</span>
+    <span class="n">concatenate_audio_files</span><span class="p">(</span><span class="n">voice_segments</span><span class="p">,</span> <span class="n">concat_voice_path</span><span class="p">)</span>
+    
+    <span class="c1"># Mix voice and background music
+</span>    <span class="n">mix_voice_and_background</span><span class="p">(</span>
+        <span class="n">voice_path</span><span class="o">=</span><span class="n">concat_voice_path</span><span class="p">,</span>
+        <span class="n">background_path</span><span class="o">=</span><span class="s">"temp_background.wav"</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+        <span class="n">voice_level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">background_level</span><span class="o">=</span><span class="mf">0.3</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Clean up temporary files
+</span>    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">voice_segments</span> <span class="o">+</span> <span class="p">[</span><span class="s">"temp_background.wav"</span><span class="p">,</span> <span class="n">concat_voice_path</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Complete narrated experience saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_path</span>
+
+<span class="c1"># Helper function for concatenating audio files
+</span><span class="k">def</span> <span class="nf">concatenate_audio_files</span><span class="p">(</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>
+    <span class="s">"""Concatenate multiple audio files into one"""</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="kn">import</span> <span class="nn">torchaudio</span>
+    
+    <span class="c1"># Get info from first file to determine format
+</span>    <span class="n">info</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="n">file_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">info</span><span class="p">.</span><span class="n">sample_rate</span>
+    
+    <span class="c1"># Load and concatenate all files
+</span>    <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_paths</span><span class="p">:</span>
+        <span class="n">waveform</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sr</span> <span class="o">!=</span> <span class="n">sample_rate</span><span class="p">:</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">resample</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">segments</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+    
+    <span class="c1"># Concatenate along time dimension
+</span>    <span class="n">concatenated</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># Save the concatenated audio
+</span>    <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">concatenated</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">output_path</span>
+
+<span class="c1"># Example script
+</span><span class="n">narration_script</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s">"text"</span><span class="p">:</span> <span class="s">"Welcome to our audio journey."</span><span class="p">,</span> <span class="s">"emotion"</span><span class="p">:</span> <span class="s">"neutral"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"text"</span><span class="p">:</span> <span class="s">"Listen carefully as we explore the magical forest."</span><span class="p">,</span> <span class="s">"emotion"</span><span class="p">:</span> <span class="s">"excited"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"text"</span><span class="p">:</span> <span class="s">"Oh no! A storm is approaching."</span><span class="p">,</span> <span class="s">"emotion"</span><span class="p">:</span> <span class="s">"fear"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">"text"</span><span class="p">:</span> <span class="s">"But don't worry, we've found shelter beneath the ancient trees."</span><span class="p">,</span> <span class="s">"emotion"</span><span class="p">:</span> <span class="s">"happy"</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1"># create_narrated_experience_with_elevenlabs(narration_script)
+</span></code></pre></div></div>
+
+<h3 id="yourttsxtts-example">YourTTS/XTTS Example</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">TTS.api</span> <span class="kn">import</span> <span class="n">TTS</span>
+
+<span class="k">def</span> <span class="nf">generate_voice_xtts</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">voice</span><span class="o">=</span><span class="s">"en_female"</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"xtts_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Generate voice using XTTS"""</span>
+    <span class="c1"># Initialize TTS with XTTS model
+</span>    <span class="n">tts</span> <span class="o">=</span> <span class="n">TTS</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s">"tts_models/multilingual/multi-dataset/xtts_v2"</span><span class="p">)</span>
+    
+    <span class="c1"># Generate speech with the selected voice
+</span>    <span class="n">tts</span><span class="p">.</span><span class="n">tts_to_file</span><span class="p">(</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+        <span class="n">speaker</span><span class="o">=</span><span class="n">voice</span><span class="p">,</span>  <span class="c1"># Use different speaker IDs for voice variety
+</span>        <span class="n">language</span><span class="o">=</span><span class="s">"en"</span>
+    <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">output_path</span>
+</code></pre></div></div>
+
+<h3 id="tortoise-tts-example">Tortoise TTS Example</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">tortoise.api</span> <span class="kn">import</span> <span class="n">TextToSpeech</span>
+<span class="kn">from</span> <span class="nn">tortoise.utils.audio</span> <span class="kn">import</span> <span class="n">load_audio</span><span class="p">,</span> <span class="n">load_voice</span>
+
+<span class="k">def</span> <span class="nf">generate_voice_tortoise</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">voice_samples</span><span class="o">=</span><span class="s">"random"</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">"tortoise_output.wav"</span><span class="p">):</span>
+    <span class="s">"""Generate voice using Tortoise TTS"""</span>
+    <span class="c1"># Initialize Tortoise TTS
+</span>    <span class="n">tts</span> <span class="o">=</span> <span class="n">TextToSpeech</span><span class="p">()</span>
+    
+    <span class="c1"># Generate with specified voice or random preset
+</span>    <span class="k">if</span> <span class="n">voice_samples</span> <span class="o">==</span> <span class="s">"random"</span><span class="p">:</span>
+        <span class="c1"># Use a random preset voice
+</span>        <span class="n">voice_samples</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">preset</span> <span class="o">=</span> <span class="s">"standard"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Load custom voice samples
+</span>        <span class="n">voice_samples</span> <span class="o">=</span> <span class="n">load_voice</span><span class="p">(</span><span class="n">voice_samples</span><span class="p">)</span>
+        <span class="n">preset</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="c1"># Generate speech
+</span>    <span class="n">gen</span> <span class="o">=</span> <span class="n">tts</span><span class="p">.</span><span class="n">tts</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">voice_samples</span><span class="o">=</span><span class="n">voice_samples</span><span class="p">,</span>
+        <span class="n">preset</span><span class="o">=</span><span class="n">preset</span><span class="p">,</span>
+        <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Generate a single sample
+</span>        <span class="n">use_deterministic_seed</span><span class="o">=</span><span class="mi">42</span>  <span class="c1"># For reproducibility
+</span>    <span class="p">)</span>
+    
+    <span class="c1"># Save audio
+</span>    <span class="n">tts</span><span class="p">.</span><span class="n">save_wav</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">output_path</span>
+</code></pre></div></div>
+
+<h2 id="full-audio-production-example">Full Audio Production Example</h2>
+
+<p>For a complete example of a narrated audio production that combines voice narration, sound effects, and music, see our <a href="https://github.com/example/audio-narrative">audio narrative production example</a>.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ul>
+  <li>Experiment with different TTS systems to find the best voice quality and control</li>
+  <li>Create scripts with precise timing for professional audio narratives</li>
+  <li>Build a graphical timeline editor for easier audio production</li>
+  <li>Explore additional AudioCraft model parameters for better sound quality</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://github.com/suno-ai/bark">Bark GitHub Repository</a></li>
+  <li><a href="https://github.com/coqui-ai/TTS">YourTTS/Coqui TTS Documentation</a></li>
+  <li><a href="https://github.com/neonbjb/tortoise-tts">Tortoise TTS GitHub</a></li>
+  <li><a href="https://github.com/facebookresearch/audiocraft">AudioCraft Documentation</a></li>
+  <li><a href="https://example.com">Professional Audio Mixing Techniques</a></li>
+</ul>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

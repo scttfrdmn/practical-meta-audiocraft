@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CPU-Only Installation Guide for AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/getting-started/cpu-installation/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">CPU-Only Installation Guide for AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="cpu-only-installation-guide-for-audiocraft">CPU-Only Installation Guide for AudioCraft</h1>
+
+<p>This guide walks you through setting up Meta’s AudioCraft framework on systems without GPU acceleration, using CPU-only processing. While generation will be slower, this approach makes AudioCraft accessible on almost any modern computer.</p>
+
+<h2 id="system-requirements">System Requirements</h2>
+
+<ul>
+  <li>Modern multi-core CPU (4+ cores recommended)</li>
+  <li>8GB RAM minimum (16GB+ recommended)</li>
+  <li>Python 3.9 (recommended for AudioCraft)</li>
+  <li>5GB+ free disk space for models and environment</li>
+  <li>Any operating system (Windows, macOS, Linux)</li>
+</ul>
+
+<h2 id="installation-steps">Installation Steps</h2>
+
+<h3 id="1-set-up-a-python-environment">1. Set Up a Python Environment</h3>
+
+<p>We recommend using a virtual environment to avoid package conflicts.</p>
+
+<h4 id="using-conda-recommended">Using Conda (Recommended)</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install Miniconda (if not already installed)</span>
+<span class="c"># Visit https://docs.conda.io/en/latest/miniconda.html for OS-specific installers</span>
+
+<span class="c"># Create and activate a new environment</span>
+conda create <span class="nt">-n</span> audiocraft <span class="nv">python</span><span class="o">=</span>3.9
+conda activate audiocraft
+</code></pre></div></div>
+
+<h4 id="using-venv-alternative">Using venv (Alternative)</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a virtual environment</span>
+python <span class="nt">-m</span> venv audiocraft-env
+
+<span class="c"># Activate the environment</span>
+<span class="c"># On Windows</span>
+audiocraft-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+<span class="c"># On macOS/Linux</span>
+<span class="nb">source </span>audiocraft-env/bin/activate
+</code></pre></div></div>
+
+<h3 id="2-install-pytorch-cpu-version">2. Install PyTorch (CPU Version)</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Using pip (all platforms)</span>
+pip <span class="nb">install </span><span class="nv">torch</span><span class="o">==</span>2.1.0 <span class="nv">torchaudio</span><span class="o">==</span>2.1.0 <span class="nt">--index-url</span> https://download.pytorch.org/whl/cpu
+
+<span class="c"># Or using conda</span>
+conda <span class="nb">install </span><span class="nv">pytorch</span><span class="o">==</span>2.1.0 <span class="nv">torchaudio</span><span class="o">==</span>2.1.0 cpuonly <span class="nt">-c</span> pytorch
+</code></pre></div></div>
+
+<h3 id="3-install-audiocraft">3. Install AudioCraft</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install from PyPI</span>
+pip <span class="nb">install </span>audiocraft
+
+<span class="c"># Or install the latest version from GitHub</span>
+<span class="c"># pip install git+https://github.com/facebookresearch/audiocraft.git</span>
+</code></pre></div></div>
+
+<h3 id="4-install-additional-dependencies">4. Install Additional Dependencies</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install ffmpeg for audio processing</span>
+<span class="c"># On Windows (using conda)</span>
+conda <span class="nb">install </span>ffmpeg <span class="nt">-c</span> conda-forge
+
+<span class="c"># On macOS (using Homebrew)</span>
+brew <span class="nb">install </span>ffmpeg
+
+<span class="c"># On Linux (Ubuntu/Debian)</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install</span> <span class="nt">-y</span> ffmpeg
+</code></pre></div></div>
+
+<h2 id="verifying-installation">Verifying Installation</h2>
+
+<p>Create a simple test script to ensure AudioCraft works correctly:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># test_audiocraft_cpu.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Confirm we're using CPU
+</span><span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using device: </span><span class="si">{</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+
+<span class="c1"># Time the model loading
+</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Loading MusicGen small model..."</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'small'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Model loaded in </span><span class="si">{</span><span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+
+<span class="c1"># Set shorter generation length for testing
+</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">3.0</span>  <span class="c1"># 3 seconds for quick testing
+</span><span class="p">)</span>
+
+<span class="c1"># Generate a simple test
+</span><span class="n">prompt</span> <span class="o">=</span> <span class="s">"A gentle piano melody"</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+<span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio shape: </span><span class="si">{</span><span class="n">wav</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">, Sample rate: </span><span class="si">{</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Installation verified successfully!"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Run this script with <code class="language-plaintext highlighter-rouge">python test_audiocraft_cpu.py</code>. A successful test will load the model, generate a short audio clip, and report timing information.</p>
+
+<h2 id="cpu-optimization-strategies">CPU Optimization Strategies</h2>
+
+<p>When running AudioCraft on CPU, consider these optimizations:</p>
+
+<h3 id="1-model-size-selection">1. Model Size Selection</h3>
+
+<p>Always use the <code class="language-plaintext highlighter-rouge">small</code> model size for CPU inference:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'small'</span><span class="p">)</span>  <span class="c1"># or AudioGen.get_pretrained('small')
+</span></code></pre></div></div>
+
+<h3 id="2-shorter-generation-lengths">2. Shorter Generation Lengths</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># Keep under 10 seconds for reasonable generation times
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="3-enable-intel-mkl-optimizations-if-available">3. Enable Intel MKL Optimizations (if available)</h3>
+
+<p>On Intel CPUs, ensure Intel MKL (Math Kernel Library) is being used by PyTorch:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Set environment variables for better performance with PyTorch + MKL</span>
+<span class="c"># Windows (in Command Prompt before running Python)</span>
+<span class="nb">set </span><span class="nv">MKL_NUM_THREADS</span><span class="o">=</span>4
+<span class="nb">set </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span>4
+
+<span class="c"># Linux/macOS</span>
+<span class="nb">export </span><span class="nv">MKL_NUM_THREADS</span><span class="o">=</span>4
+<span class="nb">export </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span>4
+</code></pre></div></div>
+
+<p>Adjust the number of threads to match your CPU core count.</p>
+
+<h3 id="4-batch-processing-for-multiple-generations">4. Batch Processing for Multiple Generations</h3>
+
+<p>If you need to create multiple audio samples, use batch processing for better efficiency:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Generate multiple samples at once
+</span><span class="n">prompts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"Soft piano melody"</span><span class="p">,</span>
+    <span class="s">"Gentle acoustic guitar"</span><span class="p">,</span>
+    <span class="s">"Calm ambient music"</span>
+<span class="p">]</span>
+
+<span class="c1"># Single batch generation is more efficient than multiple individual generations
+</span><span class="n">wavs</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompts</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="expected-performance">Expected Performance</h2>
+
+<p>The generation time on CPU varies significantly depending on your hardware:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>CPU Type</th>
+      <th>Generation Time (5 seconds audio)</th>
+      <th>Model Loading Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Laptop (dual-core)</td>
+      <td>3-5 minutes</td>
+      <td>30-60 seconds</td>
+    </tr>
+    <tr>
+      <td>Desktop (quad-core)</td>
+      <td>1-3 minutes</td>
+      <td>20-40 seconds</td>
+    </tr>
+    <tr>
+      <td>Performance CPU (8+ cores)</td>
+      <td>30-90 seconds</td>
+      <td>10-30 seconds</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Note that the first generation is always slower due to model initialization.</p>
+
+<h2 id="memory-optimization">Memory Optimization</h2>
+
+<p>CPU-only generation can still be memory-intensive. If you encounter memory issues:</p>
+
+<ol>
+  <li><strong>Close other memory-intensive applications</strong></li>
+  <li><strong>Use the small model size only</strong></li>
+  <li><strong>Generate shorter audio clips</strong></li>
+  <li><strong>Clear memory between generations</strong>:</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">gc</span>
+
+<span class="c1"># After generation
+</span><span class="k">del</span> <span class="n">model</span>
+<span class="n">gc</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="c1"># Then reload the model if needed
+</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'small'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="running-audiocraft-in-google-colab-alternative">Running AudioCraft in Google Colab (Alternative)</h2>
+
+<p>If CPU-only generation is too slow on your system, consider using Google Colab with its free GPU:</p>
+
+<ol>
+  <li>Visit <a href="https://colab.research.google.com/">Google Colab</a></li>
+  <li>Create a new notebook</li>
+  <li>Enable GPU: Runtime &gt; Change runtime type &gt; Hardware accelerator &gt; GPU</li>
+  <li>Install and run AudioCraft:</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">audiocraft</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+
+<span class="c1"># Check for GPU
+</span><span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using device: </span><span class="si">{</span><span class="s">'cuda'</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">'cpu'</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+
+<span class="c1"># Load model and generate
+</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">'small'</span><span class="p">)</span>
+<span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="s">"Upbeat electronic music with a catchy melody"</span><span class="p">])</span>
+
+<span class="c1"># Play in Colab
+</span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Audio</span>
+<span class="n">Audio</span><span class="p">(</span><span class="n">wav</span><span class="p">.</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rate</span><span class="o">=</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="common-issues">Common Issues</h3>
+
+<ol>
+  <li><strong>Memory Errors</strong>
+    <ul>
+      <li>Reduce model size to ‘small’</li>
+      <li>Generate shorter audio clips</li>
+      <li>Close other applications</li>
+      <li>Use a system with more RAM</li>
+    </ul>
+  </li>
+  <li><strong>Slow Generation</strong>
+    <ul>
+      <li>CPU generation is inherently slower</li>
+      <li>Use the ‘small’ model size</li>
+      <li>Keep audio duration short (&lt;10 seconds)</li>
+      <li>Consider cloud alternatives or Google Colab</li>
+    </ul>
+  </li>
+  <li><strong>Missing Modules or Import Errors</strong>
+    <ul>
+      <li>Ensure you’re in the correct virtual environment</li>
+      <li>Reinstall dependencies with <code class="language-plaintext highlighter-rouge">pip install -r requirements.txt</code></li>
+      <li>Verify PyTorch installation: <code class="language-plaintext highlighter-rouge">python -c "import torch; print(torch.__version__)"</code></li>
+    </ul>
+  </li>
+  <li><strong>Audio Quality Issues</strong>
+    <ul>
+      <li>The ‘small’ model produces lower quality audio</li>
+      <li>Try different prompts for better results</li>
+      <li>Post-process audio with an audio editor if needed</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you have AudioCraft installed with CPU support:</p>
+
+<ol>
+  <li>Try the <a href="/practical-meta-audiocraft/tutorials/getting-started/basic-usage/">Basic Usage Tutorial</a> with shorter generation times</li>
+  <li>Explore <a href="/practical-meta-audiocraft/tutorials/musicgen/">MusicGen</a> or <a href="/practical-meta-audiocraft/tutorials/audiogen/">AudioGen</a> capabilities</li>
+  <li>Consider using a cloud service with GPU support for faster generation</li>
+</ol>
+
+<h2 id="getting-help">Getting Help</h2>
+
+<p>If you encounter issues, check:</p>
+<ul>
+  <li><a href="https://github.com/facebookresearch/audiocraft/issues">AudioCraft GitHub Issues</a></li>
+  <li><a href="https://discuss.pytorch.org/">PyTorch Forums</a></li>
+</ul>
+
+<p>Remember that while CPU generation is slower, it’s still viable for experimentation and learning how AudioCraft works, particularly with the ‘small’ model size and shorter audio clips.</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

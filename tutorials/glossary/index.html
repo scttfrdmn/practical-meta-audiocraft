@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AudioCraft Glossary</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/glossary/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">AudioCraft Glossary</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="audiocraft-glossary">AudioCraft Glossary</h1>
+
+<p>This glossary provides definitions for key terms and concepts used throughout the AudioCraft tutorials. Use this reference to understand technical terminology related to audio generation and machine learning.</p>
+
+<h2 id="audio-generation-terms">Audio Generation Terms</h2>
+
+<h3 id="audiocraft">AudioCraft</h3>
+<p>A framework developed by Meta AI Research for audio, music, and speech generation. It includes several models like MusicGen, AudioGen, and EnCodec.</p>
+
+<h3 id="musicgen">MusicGen</h3>
+<p>A text-to-music generation model within AudioCraft that can create musical compositions based on text descriptions.</p>
+
+<h3 id="audiogen">AudioGen</h3>
+<p>A text-to-audio generation model within AudioCraft specifically designed for environmental sounds and sound effects.</p>
+
+<h3 id="encodec">EnCodec</h3>
+<p>A neural audio codec that compresses and tokenizes audio for processing by language models and then reconstructs the audio from generated tokens.</p>
+
+<h3 id="text-to-audio">Text-to-Audio</h3>
+<p>The process of generating audio content from text descriptions or prompts.</p>
+
+<h3 id="text-conditioning">Text Conditioning</h3>
+<p>Using text descriptions to guide or control the attributes of generated audio.</p>
+
+<h3 id="melody-conditioning">Melody Conditioning</h3>
+<p>Using a reference melody or musical pattern to guide the generation of new music while maintaining melodic themes.</p>
+
+<h3 id="continuation-generation">Continuation Generation</h3>
+<p>Generating additional audio that naturally continues from an existing audio segment.</p>
+
+<h3 id="token">Token</h3>
+<p>A discrete unit of information used in sequence modeling. In AudioCraft, audio is converted into tokens which the language model processes.</p>
+
+<h3 id="sample-rate">Sample Rate</h3>
+<p>The number of audio samples per second, typically measured in Hertz (Hz). AudioCraft models generate audio at 32 kHz by default.</p>
+
+<h2 id="machine-learning-terms">Machine Learning Terms</h2>
+
+<h3 id="foundation-model">Foundation Model</h3>
+<p>A large AI model trained on extensive data that serves as a base for various applications. MusicGen and AudioGen are foundation models for audio generation.</p>
+
+<h3 id="language-model-lm">Language Model (LM)</h3>
+<p>In AudioCraft, a neural network architecture that generates sequences of audio tokens based on learned patterns.</p>
+
+<h3 id="inference">Inference</h3>
+<p>The process of running a trained model to generate outputs from inputs (e.g., creating audio from text prompts).</p>
+
+<h3 id="temperature">Temperature</h3>
+<p>A parameter that controls randomness in generation. Higher values (e.g., 1.5) produce more creative but potentially less coherent outputs, while lower values (e.g., 0.5) yield more predictable results.</p>
+
+<h3 id="top-k-sampling">Top-k Sampling</h3>
+<p>A text generation technique that restricts token selection to the k most likely options at each step, controlling diversity and coherence.</p>
+
+<h3 id="top-p-nucleus-sampling">Top-p (Nucleus) Sampling</h3>
+<p>A dynamic sampling method that selects from the smallest possible set of tokens whose cumulative probability exceeds probability p.</p>
+
+<h3 id="classifier-free-guidance-cfg">Classifier-Free Guidance (CFG)</h3>
+<p>A technique that balances between unconditional generation and text-conditioned generation. Higher CFG values make the output more closely follow the text prompt.</p>
+
+<h3 id="batch-processing">Batch Processing</h3>
+<p>Generating multiple outputs simultaneously, which is more efficient than sequential generation.</p>
+
+<h3 id="cuda">CUDA</h3>
+<p>NVIDIA’s parallel computing platform for GPU acceleration, often used to speed up neural network operations.</p>
+
+<h3 id="mps-metal-performance-shaders">MPS (Metal Performance Shaders)</h3>
+<p>Apple’s framework for GPU-accelerated computing on Apple Silicon hardware.</p>
+
+<h2 id="deployment-terms">Deployment Terms</h2>
+
+<h3 id="api-application-programming-interface">API (Application Programming Interface)</h3>
+<p>A set of rules that allows different software applications to communicate with each other. In AudioCraft, APIs enable integration of audio generation capabilities into other applications.</p>
+
+<h3 id="rest-api">REST API</h3>
+<p>A web API that follows Representational State Transfer architectural principles, commonly used for integrating AudioCraft into web services.</p>
+
+<h3 id="gradio">Gradio</h3>
+<p>A Python library for creating customizable web interfaces for machine learning models, useful for building demos of AudioCraft applications.</p>
+
+<h3 id="docker">Docker</h3>
+<p>A platform for developing, shipping, and running applications in isolated environments called containers, which simplifies deployment of AudioCraft applications.</p>
+
+<h3 id="containerization">Containerization</h3>
+<p>The process of packaging an application along with its dependencies into a standardized unit called a container.</p>
+
+<h3 id="inference-server">Inference Server</h3>
+<p>A server dedicated to running machine learning models for prediction or generation, often optimized for handling multiple requests.</p>
+
+<h3 id="streaming-response">Streaming Response</h3>
+<p>A technique where the API sends generated audio incrementally as it’s created rather than waiting for the entire generation to complete.</p>
+
+<h3 id="asynchronous-processing">Asynchronous Processing</h3>
+<p>Handling tasks like audio generation in the background while allowing the user interface to remain responsive.</p>
+
+<h2 id="audio-processing-terms">Audio Processing Terms</h2>
+
+<h3 id="waveform">Waveform</h3>
+<p>A visual representation of an audio signal showing how amplitude changes over time.</p>
+
+<h3 id="spectrogram">Spectrogram</h3>
+<p>A visual representation of the spectrum of frequencies in a sound as they vary with time.</p>
+
+<h3 id="amplitude">Amplitude</h3>
+<p>The maximum displacement or distance moved by a point on a vibrating body. In audio, relates to the loudness of a sound.</p>
+
+<h3 id="mono-vs-stereo">Mono vs. Stereo</h3>
+<p>Mono audio has a single channel, while stereo has two channels (left and right) for spatial audio reproduction.</p>
+
+<h3 id="normalization">Normalization</h3>
+<p>The process of adjusting the amplitude of audio to a standard level, often to prevent clipping or to standardize loudness.</p>
+
+<h3 id="resampling">Resampling</h3>
+<p>Converting audio from one sample rate to another, which may be necessary when working with different audio systems.</p>
+
+<h3 id="fft-fast-fourier-transform">FFT (Fast Fourier Transform)</h3>
+<p>An algorithm that converts a signal from its time domain to its frequency domain representation, useful for audio analysis.</p>
+
+<h3 id="db-decibel">dB (Decibel)</h3>
+<p>A logarithmic unit used to express the ratio of two values, commonly used to measure sound levels.</p>
+
+<h2 id="model-parameters">Model Parameters</h2>
+
+<h3 id="model-size">Model Size</h3>
+<p>In AudioCraft, models come in different sizes (small, medium, large) with varying capabilities and resource requirements.</p>
+
+<h3 id="duration">Duration</h3>
+<p>The length of the generated audio in seconds. MusicGen typically supports up to 30 seconds per generation.</p>
+
+<h3 id="prompt">Prompt</h3>
+<p>The text description provided to guide the audio generation process.</p>
+
+<h3 id="generation-parameters">Generation Parameters</h3>
+<p>Settings that control the behavior of the generation process, including temperature, top-k, top-p, and others.</p>
+
+<h3 id="seed">Seed</h3>
+<p>A value that initializes the random number generator to make generations reproducible. The same seed and prompt will produce the same output.</p>
+
+<h2 id="technical-environment">Technical Environment</h2>
+
+<h3 id="vram">VRAM</h3>
+<p>Video RAM, the memory on a graphics card. Larger models require more VRAM for generation.</p>
+
+<h3 id="cpu-vs-gpu-generation">CPU vs. GPU Generation</h3>
+<p>Audio can be generated using either CPU (slower) or GPU (faster) processing. GPU acceleration via CUDA or MPS is recommended for practical use.</p>
+
+<h3 id="quantization">Quantization</h3>
+<p>The process of reducing the precision of a model to decrease memory usage and increase inference speed, sometimes at the cost of quality.</p>
+
+<h3 id="batch-size">Batch Size</h3>
+<p>The number of samples processed simultaneously during generation. Larger batch sizes can be more efficient but require more memory.</p>
+
+<h2 id="file-formats">File Formats</h2>
+
+<h3 id="wav">WAV</h3>
+<p>A standard audio file format that stores audio in an uncompressed format, preserving full quality.</p>
+
+<h3 id="mp3">MP3</h3>
+<p>A compressed audio file format that reduces file size at the cost of some quality loss.</p>
+
+<h3 id="ogg">OGG</h3>
+<p>An open container format maintained by the Xiph.Org Foundation, often used for Vorbis audio compression.</p>
+
+<h3 id="flac">FLAC</h3>
+<p>Free Lossless Audio Codec, which compresses audio without quality loss.</p>
+
+<h2 id="additional-concepts">Additional Concepts</h2>
+
+<h3 id="latency">Latency</h3>
+<p>The time delay between initiating audio generation and receiving the output. Lower latency is desirable for interactive applications.</p>
+
+<h3 id="throughput">Throughput</h3>
+<p>The rate at which audio can be generated, typically measured in seconds of audio generated per unit of time.</p>
+
+<h3 id="fine-tuning">Fine-tuning</h3>
+<p>The process of adapting a pre-trained model to specific tasks or styles by training it further on specialized data.</p>
+
+<h3 id="generation-artifacts">Generation Artifacts</h3>
+<p>Unwanted anomalies or imperfections in generated audio, such as glitches, clicks, or unnatural transitions.</p>
+
+<h3 id="attribution">Attribution</h3>
+<p>Properly crediting AI-generated content as being created by artificial intelligence rather than human artists.</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

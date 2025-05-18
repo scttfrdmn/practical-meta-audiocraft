@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building a REST API for AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/deployment/rest_api/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Building a REST API for AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="building-a-rest-api-for-audiocraft">Building a REST API for AudioCraft</h1>
+
+<p>This tutorial will guide you through creating a robust REST API for AudioCraft, enabling you to integrate AI-powered audio generation into your applications. We’ll use Flask to create the API and implement best practices for security, performance, and scalability.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>AudioCraft successfully installed</li>
+  <li>Python 3.9+</li>
+  <li>Basic understanding of REST APIs</li>
+  <li>Familiarity with Flask or similar web frameworks</li>
+</ul>
+
+<h2 id="installation-requirements">Installation Requirements</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>flask flask-cors gunicorn pydub soundfile
+</code></pre></div></div>
+
+<h2 id="basic-api-implementation">Basic API Implementation</h2>
+
+<p>Let’s start with a simple implementation that provides endpoints for music generation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># app.py
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">send_file</span>
+<span class="kn">from</span> <span class="nn">flask_cors</span> <span class="kn">import</span> <span class="n">CORS</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="n">sf</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">pydub</span> <span class="kn">import</span> <span class="n">AudioSegment</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Create Flask app
+</span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">CORS</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>  <span class="c1"># Enable Cross-Origin Resource Sharing
+</span>
+<span class="c1"># Configuration
+</span><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">"generated_audio"</span><span class="p">)</span>
+<span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Global model references
+</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">):</span>
+    <span class="s">"""Load and cache model instances."""</span>
+    <span class="k">if</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Determine device
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using MPS (Metal) for </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using CUDA for </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using CPU for </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model (slow)"</span><span class="p">)</span>
+            
+        <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">].</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">]</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/health"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"GET"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">health_check</span><span class="p">():</span>
+    <span class="s">"""API health check endpoint."""</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+        <span class="s">"status"</span><span class="p">:</span> <span class="s">"healthy"</span><span class="p">,</span>
+        <span class="s">"version"</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">,</span>
+        <span class="s">"models_loaded"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">models</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="p">})</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/generate"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"POST"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">generate_audio</span><span class="p">():</span>
+    <span class="s">"""Generate audio from text prompt."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Parse request data
+</span>        <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">json</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"prompt"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">model_size</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"model_size"</span><span class="p">,</span> <span class="s">"small"</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">))</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"temperature"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">top_k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"top_k"</span><span class="p">,</span> <span class="mi">250</span><span class="p">))</span>
+        <span class="n">top_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"top_p"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="n">output_format</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"output_format"</span><span class="p">,</span> <span class="s">"wav"</span><span class="p">)</span>
+        <span class="n">return_type</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"return_type"</span><span class="p">,</span> <span class="s">"url"</span><span class="p">)</span>  <span class="c1"># 'url' or 'base64'
+</span>        
+        <span class="c1"># Validate inputs
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"Prompt is required"</span><span class="p">}),</span> <span class="mi">400</span>
+            
+        <span class="k">if</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"small"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"Invalid model size"</span><span class="p">}),</span> <span class="mi">400</span>
+            
+        <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mf">30.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"Duration must be between 1 and 30 seconds"</span><span class="p">}),</span> <span class="mi">400</span>
+            
+        <span class="c1"># Get model
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="n">top_p</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Start generation
+</span>        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating audio for prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Calculate generation time
+</span>        <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+        
+        <span class="c1"># Create unique filename
+</span>        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">wav_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Save the audio as WAV first
+</span>        <span class="n">sf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">wav_path</span><span class="p">,</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Convert to desired format if not WAV
+</span>        <span class="k">if</span> <span class="n">output_format</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s">"wav"</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.</span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">AudioSegment</span><span class="p">.</span><span class="n">from_wav</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>
+            <span class="n">audio</span><span class="p">.</span><span class="n">export</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">output_format</span><span class="p">)</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>  <span class="c1"># Remove WAV file
+</span>            <span class="n">final_path</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_path</span> <span class="o">=</span> <span class="n">wav_path</span>
+            
+        <span class="c1"># Generate response based on return type
+</span>        <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s">"base64"</span><span class="p">:</span>
+            <span class="c1"># Return base64 encoded audio
+</span>            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">final_path</span><span class="p">,</span> <span class="s">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">audio_file</span><span class="p">:</span>
+                <span class="n">encoded_audio</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">audio_file</span><span class="p">.</span><span class="n">read</span><span class="p">()).</span><span class="n">decode</span><span class="p">(</span><span class="s">"utf-8"</span><span class="p">)</span>
+                
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+                <span class="s">"success"</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                <span class="s">"generation_time"</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+                <span class="s">"audio"</span><span class="p">:</span> <span class="n">encoded_audio</span><span class="p">,</span>
+                <span class="s">"format"</span><span class="p">:</span> <span class="n">output_format</span><span class="p">,</span>
+                <span class="s">"sample_rate"</span><span class="p">:</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Return URL to audio file
+</span>            <span class="c1"># In a production environment, you would use proper URL generation
+</span>            <span class="c1"># This is a simplified example
+</span>            <span class="n">file_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"/audio/</span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">final_path</span><span class="p">)</span><span class="si">}</span><span class="s">"</span>
+            
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+                <span class="s">"success"</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                <span class="s">"generation_time"</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+                <span class="s">"audio_url"</span><span class="p">:</span> <span class="n">file_url</span><span class="p">,</span>
+                <span class="s">"format"</span><span class="p">:</span> <span class="n">output_format</span><span class="p">,</span>
+                <span class="s">"sample_rate"</span><span class="p">:</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+            <span class="p">})</span>
+            
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/audio/&lt;filename&gt;"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"GET"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">serve_audio</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="s">"""Serve generated audio files."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">send_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">as_attachment</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">404</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Pre-load the small model for faster first generation
+</span>    <span class="n">get_model</span><span class="p">(</span><span class="s">"small"</span><span class="p">)</span>
+    
+    <span class="c1"># Run the Flask application
+</span>    <span class="c1"># Note: In production, use gunicorn or another WSGI server
+</span>    <span class="n">app</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">"0.0.0.0"</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="running-the-api-server">Running the API Server</h2>
+
+<p>Save the code above as <code class="language-plaintext highlighter-rouge">app.py</code> and run it with:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Development server</span>
+python app.py
+
+<span class="c"># Production server (recommended)</span>
+gunicorn <span class="nt">-w</span> 4 <span class="nt">-b</span> 0.0.0.0:5000 app:app
+</code></pre></div></div>
+
+<h2 id="api-endpoints">API Endpoints</h2>
+
+<h3 id="health-check">Health Check</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /health
+</code></pre></div></div>
+
+<p>Returns the API status and information about loaded models.</p>
+
+<h3 id="generate-audio">Generate Audio</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /generate
+</code></pre></div></div>
+
+<p>Generate audio from a text prompt.</p>
+
+<p><strong>Request Body:</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"prompt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"An electronic dance track with a catchy melody"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"model_size"</span><span class="p">:</span><span class="w"> </span><span class="s2">"small"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"temperature"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"top_k"</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"top_p"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"output_format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mp3"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"return_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"url"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><strong>Parameters:</strong></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">prompt</code> (string, required): Text description of the audio to generate</li>
+  <li><code class="language-plaintext highlighter-rouge">model_size</code> (string, optional): Model size (“small”, “medium”, “large”), defaults to “small”</li>
+  <li><code class="language-plaintext highlighter-rouge">duration</code> (number, optional): Duration in seconds (1-30), defaults to 5.0</li>
+  <li><code class="language-plaintext highlighter-rouge">temperature</code> (number, optional): Controls randomness (0.1-2.0), defaults to 1.0</li>
+  <li><code class="language-plaintext highlighter-rouge">top_k</code> (number, optional): Controls diversity, defaults to 250</li>
+  <li><code class="language-plaintext highlighter-rouge">top_p</code> (number, optional): Nucleus sampling parameter, defaults to 0.0</li>
+  <li><code class="language-plaintext highlighter-rouge">output_format</code> (string, optional): Audio format (“wav”, “mp3”, “ogg”), defaults to “wav”</li>
+  <li><code class="language-plaintext highlighter-rouge">return_type</code> (string, optional): How to return audio (“url” or “base64”), defaults to “url”</li>
+</ul>
+
+<p><strong>Response (URL return type):</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"generation_time"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.45</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"audio_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/audio/a1b2c3d4-e5f6-7890-abcd-ef1234567890.mp3"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mp3"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sample_rate"</span><span class="p">:</span><span class="w"> </span><span class="mi">32000</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><strong>Response (base64 return type):</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"generation_time"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.45</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"audio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"base64encodedaudiodata..."</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mp3"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"sample_rate"</span><span class="p">:</span><span class="w"> </span><span class="mi">32000</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="serve-audio">Serve Audio</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /audio/&lt;filename&gt;
+</code></pre></div></div>
+
+<p>Returns the generated audio file.</p>
+
+<h2 id="adding-melody-conditioning">Adding Melody Conditioning</h2>
+
+<p>Let’s extend our API to support melody conditioning:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/generate-with-melody"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"POST"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">generate_with_melody</span><span class="p">():</span>
+    <span class="s">"""Generate audio based on a text prompt and melody."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get form data and files
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">form</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"prompt"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">model_size</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">form</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"model_size"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="n">form</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="n">form</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"temperature"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">output_format</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">form</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"output_format"</span><span class="p">,</span> <span class="s">"wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Check if melody file was uploaded
+</span>        <span class="k">if</span> <span class="s">"melody"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">request</span><span class="p">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"No melody file provided"</span><span class="p">}),</span> <span class="mi">400</span>
+            
+        <span class="n">melody_file</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">files</span><span class="p">[</span><span class="s">"melody"</span><span class="p">]</span>
+        
+        <span class="c1"># Save melody file temporarily
+</span>        <span class="n">temp_melody_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s">"temp_melody_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="n">melody_file</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp_melody_path</span><span class="p">)</span>
+        
+        <span class="c1"># Load and process the melody
+</span>        <span class="kn">import</span> <span class="nn">torchaudio</span>
+        <span class="n">melody</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">temp_melody_path</span><span class="p">)</span>
+        
+        <span class="c1"># If stereo, convert to mono
+</span>        <span class="k">if</span> <span class="n">melody</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">melody</span> <span class="o">=</span> <span class="n">melody</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Resample if needed
+</span>        <span class="k">if</span> <span class="n">sr</span> <span class="o">!=</span> <span class="mi">32000</span><span class="p">:</span>
+            <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="mi">32000</span><span class="p">)</span>
+            <span class="n">melody</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">melody</span><span class="p">)</span>
+        
+        <span class="c1"># Get model
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Determine device and move melody tensor
+</span>        <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()).</span><span class="n">device</span>
+        <span class="n">melody</span> <span class="o">=</span> <span class="n">melody</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Generate with melody conditioning
+</span>        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating audio with melody conditioning for prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate_with_chroma</span><span class="p">([</span><span class="n">prompt</span><span class="p">],</span> <span class="n">melody</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        
+        <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+        
+        <span class="c1"># Process and return audio (similar to the generate endpoint)
+</span>        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">wav_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Save the audio
+</span>        <span class="n">sf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">wav_path</span><span class="p">,</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Convert if needed
+</span>        <span class="k">if</span> <span class="n">output_format</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s">"wav"</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.</span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">AudioSegment</span><span class="p">.</span><span class="n">from_wav</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>
+            <span class="n">audio</span><span class="p">.</span><span class="n">export</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">output_format</span><span class="p">)</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>
+            <span class="n">final_path</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_path</span> <span class="o">=</span> <span class="n">wav_path</span>
+            
+        <span class="c1"># Clean up temporary melody file
+</span>        <span class="n">os</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_melody_path</span><span class="p">)</span>
+        
+        <span class="c1"># Return URL to audio file
+</span>        <span class="n">file_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"/audio/</span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">final_path</span><span class="p">)</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+            <span class="s">"success"</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">"generation_time"</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+            <span class="s">"audio_url"</span><span class="p">:</span> <span class="n">file_url</span><span class="p">,</span>
+            <span class="s">"format"</span><span class="p">:</span> <span class="n">output_format</span><span class="p">,</span>
+            <span class="s">"sample_rate"</span><span class="p">:</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+        <span class="p">})</span>
+        
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+</code></pre></div></div>
+
+<h2 id="implementing-background-processing">Implementing Background Processing</h2>
+
+<p>For longer generations, it’s better to process requests asynchronously. Let’s add a task queue system using Celery:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add to requirements:
+# pip install celery redis
+</span>
+<span class="c1"># tasks.py
+</span><span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="n">sf</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">pydub</span> <span class="kn">import</span> <span class="n">AudioSegment</span>
+
+<span class="c1"># Configure Celery
+</span><span class="n">celery_app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s">'audiocraft_api'</span><span class="p">,</span>
+                   <span class="n">broker</span><span class="o">=</span><span class="s">'redis://localhost:6379/0'</span><span class="p">,</span>
+                   <span class="n">backend</span><span class="o">=</span><span class="s">'redis://localhost:6379/0'</span><span class="p">)</span>
+
+<span class="n">celery_app</span><span class="p">.</span><span class="n">conf</span><span class="p">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">task_serializer</span><span class="o">=</span><span class="s">'json'</span><span class="p">,</span>
+    <span class="n">accept_content</span><span class="o">=</span><span class="p">[</span><span class="s">'json'</span><span class="p">],</span>
+    <span class="n">result_serializer</span><span class="o">=</span><span class="s">'json'</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s">'UTC'</span><span class="p">,</span>
+    <span class="n">enable_utc</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Global models dict
+</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">):</span>
+    <span class="s">"""Load and cache model instances."""</span>
+    <span class="k">if</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Determine device
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+            
+        <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">].</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">models</span><span class="p">[</span><span class="n">model_size</span><span class="p">]</span>
+
+<span class="o">@</span><span class="n">celery_app</span><span class="p">.</span><span class="n">task</span>
+<span class="k">def</span> <span class="nf">generate_audio_task</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_size</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">top_p</span><span class="p">,</span> <span class="n">output_format</span><span class="p">):</span>
+    <span class="s">"""Task to generate audio asynchronously."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get model
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="n">top_p</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Generate audio
+</span>        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Save audio
+</span>        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">"generated_audio"</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="kn">import</span> <span class="nn">uuid</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">wav_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Save as WAV first
+</span>        <span class="n">sf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">wav_path</span><span class="p">,</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Convert to desired format if not WAV
+</span>        <span class="k">if</span> <span class="n">output_format</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s">"wav"</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s">.</span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">AudioSegment</span><span class="p">.</span><span class="n">from_wav</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>
+            <span class="n">audio</span><span class="p">.</span><span class="n">export</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">output_format</span><span class="p">)</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wav_path</span><span class="p">)</span>
+            <span class="n">final_path</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final_path</span> <span class="o">=</span> <span class="n">wav_path</span>
+            
+        <span class="c1"># Return the filename for later retrieval
+</span>        <span class="k">return</span> <span class="p">{</span>
+            <span class="s">"success"</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">"filename"</span><span class="p">:</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">final_path</span><span class="p">),</span>
+            <span class="s">"format"</span><span class="p">:</span> <span class="n">output_format</span><span class="p">,</span>
+            <span class="s">"sample_rate"</span><span class="p">:</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+        <span class="p">}</span>
+        
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">"success"</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+</code></pre></div></div>
+
+<p>Now update your app.py file to use the Celery tasks:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># app.py (modified to use Celery)
+</span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">send_file</span>
+<span class="kn">from</span> <span class="nn">flask_cors</span> <span class="kn">import</span> <span class="n">CORS</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">tasks</span> <span class="kn">import</span> <span class="n">generate_audio_task</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">CORS</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">"generated_audio"</span><span class="p">)</span>
+<span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/generate-async"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"POST"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">generate_audio_async</span><span class="p">():</span>
+    <span class="s">"""Submit an asynchronous generation task."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">json</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"prompt"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">model_size</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"model_size"</span><span class="p">,</span> <span class="s">"small"</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">))</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"temperature"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">top_k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"top_k"</span><span class="p">,</span> <span class="mi">250</span><span class="p">))</span>
+        <span class="n">top_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"top_p"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="n">output_format</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"output_format"</span><span class="p">,</span> <span class="s">"wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Validate inputs
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"Prompt is required"</span><span class="p">}),</span> <span class="mi">400</span>
+        
+        <span class="c1"># Submit task to Celery
+</span>        <span class="n">task</span> <span class="o">=</span> <span class="n">generate_audio_task</span><span class="p">.</span><span class="n">delay</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="p">,</span> <span class="n">model_size</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">top_p</span><span class="p">,</span> <span class="n">output_format</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+            <span class="s">"task_id"</span><span class="p">:</span> <span class="n">task</span><span class="p">.</span><span class="nb">id</span><span class="p">,</span>
+            <span class="s">"status"</span><span class="p">:</span> <span class="s">"processing"</span>
+        <span class="p">})</span>
+        
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/tasks/&lt;task_id&gt;"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"GET"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">check_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
+    <span class="s">"""Check the status of an asynchronous task."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">generate_audio_task</span><span class="p">.</span><span class="n">AsyncResult</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">task</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="s">'PENDING'</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">'status'</span><span class="p">:</span> <span class="s">'processing'</span><span class="p">,</span>
+                <span class="s">'current'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s">'total'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">task</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="s">'SUCCESS'</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">task</span><span class="p">.</span><span class="n">result</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">'success'</span><span class="p">]:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s">'status'</span><span class="p">:</span> <span class="s">'completed'</span><span class="p">,</span>
+                    <span class="s">'result'</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span>
+                    <span class="s">'audio_url'</span><span class="p">:</span> <span class="sa">f</span><span class="s">"/audio/</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'filename'</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+                <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s">'status'</span><span class="p">:</span> <span class="s">'failed'</span><span class="p">,</span>
+                    <span class="s">'error'</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s">'error'</span><span class="p">]</span>
+                <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Failed task
+</span>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">'status'</span><span class="p">:</span> <span class="s">'failed'</span><span class="p">,</span>
+                <span class="s">'error'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">.</span><span class="n">info</span><span class="p">),</span>
+            <span class="p">}</span>
+            
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+</code></pre></div></div>
+
+<h2 id="running-the-asynchronous-api">Running the Asynchronous API</h2>
+
+<p>To run the asynchronous API, you’ll need:</p>
+
+<ol>
+  <li>A Redis server (for Celery message broker)</li>
+  <li>Celery workers</li>
+  <li>The Flask application</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Terminal 1: Start Redis (or install as a service)</span>
+redis-server
+
+<span class="c"># Terminal 2: Start Celery worker</span>
+celery <span class="nt">-A</span> tasks worker <span class="nt">--loglevel</span><span class="o">=</span>info
+
+<span class="c"># Terminal 3: Start Flask application</span>
+gunicorn <span class="nt">-w</span> 4 <span class="nt">-b</span> 0.0.0.0:5000 app:app
+</code></pre></div></div>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<ol>
+  <li><strong>API Rate Limiting</strong>: Implement rate limiting to prevent abuse</li>
+  <li><strong>Authentication</strong>: Add API key or OAuth authentication</li>
+  <li><strong>Input Validation</strong>: Validate all user inputs thoroughly</li>
+  <li><strong>Content Filtering</strong>: Consider filtering inappropriate prompts</li>
+  <li><strong>Resource Limits</strong>: Set maximum duration and number of concurrent generations</li>
+</ol>
+
+<p>Here’s a simple API key implementation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simple API key validation middleware
+</span><span class="n">API_KEYS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"your-api-key-here"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Development Key"</span><span class="p">,</span>
+        <span class="s">"rate_limit"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>  <span class="c1"># requests per day
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">require_api_key</span><span class="p">(</span><span class="n">view_function</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">view_function</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decorated_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">headers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'X-API-Key'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">api_key</span> <span class="ow">and</span> <span class="n">api_key</span> <span class="ow">in</span> <span class="n">API_KEYS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">view_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">"error"</span><span class="p">:</span> <span class="s">"Invalid or missing API key"</span><span class="p">}),</span> <span class="mi">401</span>
+    <span class="k">return</span> <span class="n">decorated_function</span>
+
+<span class="c1"># Apply to routes
+</span><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/generate"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">"POST"</span><span class="p">])</span>
+<span class="o">@</span><span class="n">require_api_key</span>
+<span class="k">def</span> <span class="nf">generate_audio</span><span class="p">():</span>
+    <span class="c1"># ...
+</span></code></pre></div></div>
+
+<h2 id="client-example">Client Example</h2>
+
+<p>Here’s a JavaScript example for calling your API:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Synchronous generation</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">generateAudio</span><span class="p">(</span><span class="nx">prompt</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://your-api-url/generate</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span><span class="p">,</span>
+      <span class="dl">'</span><span class="s1">X-API-Key</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">your-api-key-here</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+      <span class="na">prompt</span><span class="p">:</span> <span class="nx">prompt</span><span class="p">,</span>
+      <span class="na">model_size</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">modelSize</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">small</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">duration</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">duration</span> <span class="o">||</span> <span class="mf">5.0</span><span class="p">,</span>
+      <span class="na">temperature</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">temperature</span> <span class="o">||</span> <span class="mf">1.0</span><span class="p">,</span>
+      <span class="na">top_k</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">topK</span> <span class="o">||</span> <span class="mi">250</span><span class="p">,</span>
+      <span class="na">top_p</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">topP</span> <span class="o">||</span> <span class="mf">0.0</span><span class="p">,</span>
+      <span class="na">output_format</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">format</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">mp3</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">return_type</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">returnType</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">url</span><span class="dl">'</span>
+    <span class="p">})</span>
+  <span class="p">});</span>
+  
+  <span class="k">return</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// Asynchronous generation with polling</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">generateAudioAsync</span><span class="p">(</span><span class="nx">prompt</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="c1">// Submit task</span>
+  <span class="kd">const</span> <span class="nx">submitResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://your-api-url/generate-async</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span><span class="p">,</span>
+      <span class="dl">'</span><span class="s1">X-API-Key</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">your-api-key-here</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+      <span class="na">prompt</span><span class="p">:</span> <span class="nx">prompt</span><span class="p">,</span>
+      <span class="na">model_size</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">modelSize</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">small</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">duration</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">duration</span> <span class="o">||</span> <span class="mf">5.0</span><span class="p">,</span>
+      <span class="na">temperature</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">temperature</span> <span class="o">||</span> <span class="mf">1.0</span><span class="p">,</span>
+      <span class="na">top_k</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">topK</span> <span class="o">||</span> <span class="mi">250</span><span class="p">,</span>
+      <span class="na">top_p</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">topP</span> <span class="o">||</span> <span class="mf">0.0</span><span class="p">,</span>
+      <span class="na">output_format</span><span class="p">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">format</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">mp3</span><span class="dl">'</span>
+    <span class="p">})</span>
+  <span class="p">});</span>
+  
+  <span class="kd">const</span> <span class="nx">submitData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">submitResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">taskId</span> <span class="o">=</span> <span class="nx">submitData</span><span class="p">.</span><span class="nx">task_id</span><span class="p">;</span>
+  
+  <span class="c1">// Poll for result</span>
+  <span class="kd">const</span> <span class="nx">poll</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`https://your-api-url/tasks/</span><span class="p">${</span><span class="nx">taskId</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">headers</span><span class="p">:</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">X-API-Key</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">your-api-key-here</span><span class="dl">'</span> <span class="p">}</span>
+      <span class="p">});</span>
+      
+      <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+      
+      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">completed</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">resolve</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">failed</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">error</span><span class="p">));</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// Still processing, poll again after delay</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">poll</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">poll</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Example usage</span>
+<span class="nx">generateAudio</span><span class="p">(</span><span class="dl">"</span><span class="s2">A peaceful piano melody with gentle strings</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">result</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">audioPlayer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">audioPlayer</span><span class="dl">'</span><span class="p">);</span>
+      <span class="nx">audioPlayer</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">audio_url</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h2 id="further-improvements">Further Improvements</h2>
+
+<ol>
+  <li><strong>Caching</strong>: Implement Redis caching for commonly requested generations</li>
+  <li><strong>Logging</strong>: Add comprehensive logging for debugging and analytics</li>
+  <li><strong>Documentation</strong>: Add Swagger/OpenAPI documentation</li>
+  <li><strong>Load Balancing</strong>: Distribute workload across multiple servers</li>
+  <li><strong>Model Versioning</strong>: Support specific model versions</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This tutorial has shown you how to create a REST API for AudioCraft that can handle both synchronous and asynchronous audio generation requests. By following these patterns, you can integrate AudioCraft into your applications while ensuring good performance, scalability, and security.</p>
+
+<p>For production deployments, consider using a robust tech stack:</p>
+
+<ul>
+  <li><strong>Application</strong>: Flask/FastAPI with Gunicorn</li>
+  <li><strong>Task Queue</strong>: Celery with Redis/RabbitMQ</li>
+  <li><strong>Storage</strong>: AWS S3 or similar for audio files</li>
+  <li><strong>Authentication</strong>: OAuth or API key management system</li>
+  <li><strong>Monitoring</strong>: Prometheus + Grafana</li>
+  <li><strong>Deployment</strong>: Docker + Kubernetes</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ul>
+  <li>See the <a href="/practical-meta-audiocraft/tutorials/deployment/docker_containerization/">Docker Containerization Guide</a> for containerizing your API</li>
+  <li>Learn about <a href="scaling_strategies.md">Scaling Strategies</a> for handling high traffic</li>
+  <li>Explore <a href="websocket_integration.md">WebSocket Integration</a> for real-time applications</li>
+</ul>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

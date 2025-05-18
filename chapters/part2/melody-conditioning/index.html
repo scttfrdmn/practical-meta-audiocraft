@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Melody Conditioning for AI Music Generation</title>
+  <meta name="description" content="“I have these amazing melody ideas I’ve recorded on my phone and some piano sketches, but I’m not a skilled producer or arranger. I wish I could feed these m...">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part2/melody-conditioning/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty intermediate">Intermediate</span>
+      <span class="estimated-time">60</span>
+    </div>
+    <h1>Melody Conditioning for AI Music Generation</h1>
+  </div>
+  
+  
+  
+  <blockquote>
+  <p><em>“I have these amazing melody ideas I’ve recorded on my phone and some piano sketches, but I’m not a skilled producer or arranger. I wish I could feed these melodies into an AI and have it create fully produced tracks while keeping my original musical ideas intact.”</em></p>
+
+  <p>— Jamie Rodriguez, songwriter and composer</p>
+</blockquote>
+
+<h1 id="chapter-8-melody-conditioning-for-ai-music-generation">Chapter 8: Melody Conditioning for AI Music Generation</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>You’ve mastered generating music from text prompts and optimizing parameters, but sometimes you already have a specific melody in mind. Perhaps you’ve recorded a catchy tune on your phone, played a simple motif on piano, or have an existing melody from a royalty-free source that you want to transform.</p>
+
+<p>The challenge is to use MusicGen’s melody conditioning capabilities to create fully arranged, richly produced music that follows your specific melodic ideas while leveraging your text prompts for stylistic direction.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you will be able to:</p>
+
+<ul>
+  <li>Prepare and preprocess audio files for effective melody conditioning</li>
+  <li>Generate music that follows a reference melody using MusicGen</li>
+  <li>Combine text and melody conditioning for precise creative control</li>
+  <li>Apply different stylistic variations to the same melodic material</li>
+  <li>Build a complete melody transformation pipeline for your audio content</li>
+  <li>Troubleshoot common issues with melody conditioning</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>Basic understanding of MusicGen (Chapter 5)</li>
+  <li>Experience with prompt engineering for music (Chapter 6)</li>
+  <li>Familiarity with parameter optimization (Chapter 7)</li>
+  <li>Python environment with AudioCraft installed</li>
+  <li>Basic understanding of audio formats and processing</li>
+</ul>
+
+<h2 id="key-concepts-understanding-melody-conditioning">Key Concepts: Understanding Melody Conditioning</h2>
+
+<h3 id="what-is-melody-conditioning">What is Melody Conditioning?</h3>
+
+<p>Melody conditioning is one of MusicGen’s most powerful features. It allows you to provide a reference audio file containing a melody, which the model will then use as a structural framework for generation. The generated music will follow the melodic contour, rhythm, and overall musical structure of your reference, while applying the style specified in your text prompt.</p>
+
+<p>This creates a powerful combination:</p>
+<ul>
+  <li><strong>Melody (audio input)</strong>: Controls the musical structure and melodic content</li>
+  <li><strong>Text prompt</strong>: Controls the genre, instrumentation, and stylistic elements</li>
+</ul>
+
+<p>The result is a unique form of human-AI collaboration where you provide the core musical idea and MusicGen handles the arrangement and production.</p>
+
+<h3 id="how-melody-conditioning-works">How Melody Conditioning Works</h3>
+
+<p>Behind the scenes, MusicGen processes your melody reference through several steps:</p>
+
+<ol>
+  <li>
+    <p><strong>Audio preprocessing</strong>: The input audio is converted to mono, resampled to the model’s required sample rate, and normalized.</p>
+  </li>
+  <li>
+    <p><strong>Chroma extraction</strong>: The model extracts chromagram features from the audio, which represent pitch content over time, capturing the essential melodic information.</p>
+  </li>
+  <li>
+    <p><strong>Conditioning</strong>: During generation, these chroma features condition the model along with the text prompt, guiding it to create music that follows both the melodic structure and the requested style.</p>
+  </li>
+</ol>
+
+<p>This process differs from the standard text-only generation in that the model is now constrained to follow a specific musical path rather than freely interpreting just the text prompt.</p>
+
+<h2 id="preparing-audio-for-melody-conditioning">Preparing Audio for Melody Conditioning</h2>
+
+<p>Not all audio files work equally well for melody conditioning. Here are the key requirements and best practices:</p>
+
+<h3 id="audio-format-requirements">Audio Format Requirements</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">prepare_melody_for_conditioning</span><span class="p">(</span><span class="n">melody_file</span><span class="p">,</span> <span class="n">target_sr</span><span class="o">=</span><span class="mi">32000</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="s">"""
+    Prepare an audio file for use as melody conditioning in MusicGen.
+    
+    Args:
+        melody_file (str): Path to the melody audio file
+        target_sr (int): Target sample rate (32000 Hz for MusicGen)
+        plot (bool): Whether to plot and save the waveform for visualization
+        output_dir (str): Directory to save processed audio and plots
+        
+    Returns:
+        torch.Tensor: Processed audio tensor ready for melody conditioning
+        
+    Note:
+        Melody conditioning works best with:
+        - Clean, monophonic melodies (single notes, not chords)
+        - 3-15 seconds of audio (longer can work but may lose coherence)
+        - Minimal background noise or accompaniment
+        - Consistent tempo and clear note onsets
+    """</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="kn">import</span> <span class="nn">torchaudio</span>
+    <span class="kn">import</span> <span class="nn">torchaudio.transforms</span> <span class="k">as</span> <span class="n">T</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+    
+    <span class="c1"># Create output directory if specified and doesn't exist
+</span>    <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading melody file: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Load audio file
+</span>    <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+    
+    <span class="c1"># Step 1: Convert to mono by averaging channels if stereo
+</span>    <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Converting stereo to mono (melody conditioning requires mono)"</span><span class="p">)</span>
+        <span class="n">waveform</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Step 2: Resample to target sample rate if needed
+</span>    <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">!=</span> <span class="n">target_sr</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Resampling from </span><span class="si">{</span><span class="n">sample_rate</span><span class="si">}</span><span class="s">Hz to </span><span class="si">{</span><span class="n">target_sr</span><span class="si">}</span><span class="s">Hz"</span><span class="p">)</span>
+        <span class="n">resampler</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">target_sr</span><span class="p">)</span>
+        <span class="n">waveform</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+    
+    <span class="c1"># Step 3: Normalize audio to prevent extreme volumes
+</span>    <span class="c1"># Using peak normalization to maintain dynamics
+</span>    <span class="n">peak</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">waveform</span><span class="p">).</span><span class="nb">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">peak</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Normalizing audio (peak value: </span><span class="si">{</span><span class="n">peak</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">)"</span><span class="p">)</span>
+        <span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span> <span class="o">/</span> <span class="n">peak</span>
+    
+    <span class="c1"># Optionally plot the waveform for visualization
+</span>    <span class="k">if</span> <span class="n">plot</span> <span class="ow">and</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Creating waveform visualization"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">waveform</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Melody Waveform"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Sample"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Amplitude"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plot_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_waveform.png"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved waveform plot to </span><span class="si">{</span><span class="n">plot_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1"># Optionally save the processed audio
+</span>    <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"processed_melody.wav"</span><span class="p">)</span>
+        <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span> 
+            <span class="n">waveform</span><span class="p">,</span> 
+            <span class="n">target_sr</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="s">"PCM_S"</span><span class="p">,</span> 
+            <span class="n">bits_per_sample</span><span class="o">=</span><span class="mi">16</span>
+        <span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved processed audio to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Return the processed waveform
+</span>    <span class="k">return</span> <span class="n">waveform</span>
+</code></pre></div></div>
+
+<p>This function handles the key preprocessing steps required for effective melody conditioning:</p>
+
+<ol>
+  <li><strong>Conversion to mono</strong>: MusicGen’s melody conditioning expects mono audio</li>
+  <li><strong>Resampling to 32kHz</strong>: The model requires this exact sample rate</li>
+  <li><strong>Normalization</strong>: Ensures audio levels are appropriate</li>
+  <li><strong>Optional visualization</strong>: Helps you understand the audio input</li>
+</ol>
+
+<h3 id="optimal-melody-characteristics">Optimal Melody Characteristics</h3>
+
+<p>For best results with melody conditioning, your input audio should have these characteristics:</p>
+
+<ol>
+  <li><strong>Monophonic content</strong>: Single notes work better than chords or complex harmonies</li>
+  <li><strong>Clean recording</strong>: Minimal background noise or other instruments</li>
+  <li><strong>Clear note onsets</strong>: Well-defined beginnings of notes</li>
+  <li><strong>Moderate length</strong>: 5-15 seconds generally works best (longer clips may lose coherence)</li>
+  <li><strong>Consistent tempo</strong>: Regular rhythm helps the model follow the structure</li>
+</ol>
+
+<h3 id="recording-tips-for-melody-conditioning">Recording Tips for Melody Conditioning</h3>
+
+<p>If you’re creating your own melody recordings specifically for conditioning:</p>
+
+<ol>
+  <li>Record in a quiet environment with minimal reverb</li>
+  <li>Use a simple instrument (piano, guitar, voice) playing one note at a time</li>
+  <li>Play with clear articulation and consistent timing</li>
+  <li>Keep the melody relatively simple (8-16 bars)</li>
+  <li>Leave some space between phrases</li>
+</ol>
+
+<h2 id="basic-melody-conditioning-implementation">Basic Melody Conditioning Implementation</h2>
+
+<p>Let’s create a basic implementation of melody conditioning with MusicGen:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># melody_generator.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="k">def</span> <span class="nf">generate_from_melody</span><span class="p">(</span>
+    <span class="n">melody_file</span><span class="p">,</span> 
+    <span class="n">prompt</span><span class="p">,</span> 
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> 
+    <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"melody_generations"</span><span class="p">,</span>
+    <span class="n">plot_waveform</span><span class="o">=</span><span class="bp">False</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate music that follows a reference melody with MusicGen.
+    
+    Args:
+        melody_file (str): Path to the melody audio file
+        prompt (str): Text description of desired musical style
+        model_size (str): Size of MusicGen model ("small", "medium", or "large")
+        duration (float): Optional duration override (uses melody length if None)
+        output_dir (str): Directory to save generated audio and visualizations
+        plot_waveform (bool): Whether to plot and save melody waveform
+        
+    Returns:
+        str: Path to the generated audio file
+    """</span>
+    <span class="c1"># Create output directory
+</span>    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Determine the device to use
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load and process the melody file
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processing melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+    
+    <span class="c1"># Convert to mono if stereo
+</span>    <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">waveform</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Resample to 32kHz (MusicGen's expected sample rate)
+</span>    <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">!=</span> <span class="mi">32000</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Resampling from </span><span class="si">{</span><span class="n">sample_rate</span><span class="si">}</span><span class="s">Hz to 32000Hz"</span><span class="p">)</span>
+        <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="mi">32000</span><span class="p">)</span>
+        <span class="n">waveform</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">32000</span>
+    
+    <span class="c1"># Plot waveform if requested
+</span>    <span class="k">if</span> <span class="n">plot_waveform</span><span class="p">:</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">waveform</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Melody Waveform"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Sample"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Amplitude"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_waveform.png"</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="c1"># Calculate melody duration in seconds
+</span>    <span class="n">melody_duration</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sample_rate</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Melody duration: </span><span class="si">{</span><span class="n">melody_duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+    
+    <span class="c1"># Use melody duration if no explicit duration is provided
+</span>    <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">melody_duration</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using melody length as generation duration: </span><span class="si">{</span><span class="n">duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+    
+    <span class="c1"># Load MusicGen model
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Move melody tensor to the same device as the model
+</span>    <span class="n">melody</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Save information about the generation
+</span>    <span class="n">info_file</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"generation_info.txt"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">info_file</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Melody File: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Model Size: </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Melody Duration: </span><span class="si">{</span><span class="n">melody_duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation Duration: </span><span class="si">{</span><span class="n">duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Generate music conditioned on both text and melody
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music with prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate_with_chroma</span><span class="p">(</span>
+        <span class="n">descriptions</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">],</span>
+        <span class="n">chroma</span><span class="o">=</span><span class="n">melody</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Add batch dimension
+</span>    <span class="p">)</span>
+    
+    <span class="c1"># Save the generated audio
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_generation"</span><span class="p">)</span>
+    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span>
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation complete! Output saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Example usage
+</span>    <span class="n">melody_file</span> <span class="o">=</span> <span class="s">"path/to/your/melody.wav"</span>  <span class="c1"># Replace with your melody file
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="s">"A cinematic orchestral arrangement with strings, brass, and dramatic percussion"</span>
+    
+    <span class="n">generate_from_melody</span><span class="p">(</span>
+        <span class="n">melody_file</span><span class="o">=</span><span class="n">melody_file</span><span class="p">,</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+        <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"orchestral_arrangement"</span><span class="p">,</span>
+        <span class="n">plot_waveform</span><span class="o">=</span><span class="bp">True</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This implementation provides a solid foundation for melody conditioning. The key aspects are:</p>
+
+<ol>
+  <li><strong>Audio preprocessing</strong>: Converting to mono, resampling to 32kHz</li>
+  <li><strong>Using melody duration</strong>: Automatically adapting the generation length to match the input melody</li>
+  <li><strong>Melody device handling</strong>: Moving the melody tensor to the same device as the model</li>
+  <li><strong>Using <code class="language-plaintext highlighter-rouge">generate_with_chroma</code></strong>: The special method for melody-conditioned generation</li>
+</ol>
+
+<h2 id="advanced-techniques-style-variation-generator">Advanced Techniques: Style Variation Generator</h2>
+
+<p>One powerful application of melody conditioning is creating multiple stylistic variations of the same melody. Let’s implement a system that takes a melody and generates it in several different musical styles:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># melody_style_explorer.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">MelodyStyleExplorer</span><span class="p">:</span>
+    <span class="s">"""
+    A tool for generating multiple stylistic variations of a melody.
+    
+    This class allows you to take a single melody and render it in various
+    musical styles, genres, and arrangements using MusicGen's melody
+    conditioning capabilities.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""Initialize the style explorer with a MusicGen model."""</span>
+        <span class="c1"># Determine device automatically if not specified
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+                
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        
+        <span class="c1"># Load the model
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Predefined style categories and prompts
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"orchestral"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">"A grand orchestral arrangement with soaring strings and brass"</span><span class="p">,</span>
+                <span class="s">"A delicate chamber orchestra piece with strings and woodwinds"</span><span class="p">,</span>
+                <span class="s">"An epic cinematic orchestral theme with full percussion and brass stabs"</span>
+            <span class="p">],</span>
+            <span class="s">"electronic"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">"An EDM track with driving beat and synthesizer leads"</span><span class="p">,</span>
+                <span class="s">"A chillwave electronic piece with ambient pads and glitchy beats"</span><span class="p">,</span>
+                <span class="s">"A synthwave track with 80s drum machines and analog synth arpeggios"</span>
+            <span class="p">],</span>
+            <span class="s">"jazz"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">"A smooth jazz arrangement with saxophone, piano and brushed drums"</span><span class="p">,</span>
+                <span class="s">"A bebop jazz combo with walking bass, piano and trumpet"</span><span class="p">,</span>
+                <span class="s">"A jazz fusion piece with electric piano, synth bass and tight drums"</span>
+            <span class="p">],</span>
+            <span class="s">"rock"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">"A rock band arrangement with electric guitars, bass and drums"</span><span class="p">,</span>
+                <span class="s">"An indie rock track with jangly guitars and laid-back groove"</span><span class="p">,</span>
+                <span class="s">"A hard rock version with distorted guitars and powerful drums"</span>
+            <span class="p">],</span>
+            <span class="s">"folk"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s">"An acoustic folk arrangement with guitars, mandolin and light percussion"</span><span class="p">,</span>
+                <span class="s">"A Celtic folk interpretation with fiddle, flute and acoustic guitar"</span><span class="p">,</span>
+                <span class="s">"A folk ballad with fingerpicked guitar and subtle string accompaniment"</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+        
+    <span class="k">def</span> <span class="nf">process_melody</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">):</span>
+        <span class="s">"""
+        Process a melody file for conditioning.
+        
+        Args:
+            melody_file (str): Path to the melody audio file
+            
+        Returns:
+            tuple: Processed melody tensor and its duration in seconds
+        """</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processing melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+        
+        <span class="c1"># Convert to mono if stereo
+</span>        <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Resample to 32kHz (MusicGen's required sample rate)
+</span>        <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">!=</span> <span class="mi">32000</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Resampling from </span><span class="si">{</span><span class="n">sample_rate</span><span class="si">}</span><span class="s">Hz to 32000Hz"</span><span class="p">)</span>
+            <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="mi">32000</span><span class="p">)</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+            <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">32000</span>
+        
+        <span class="c1"># Calculate duration
+</span>        <span class="n">duration</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sample_rate</span>
+        
+        <span class="c1"># Move to appropriate device
+</span>        <span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">duration</span>
+    
+    <span class="k">def</span> <span class="nf">generate_style_variations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">styles</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">custom_prompts</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> 
+                                  <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">generation_params</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Generate multiple style variations of a melody.
+        
+        Args:
+            melody_file (str): Path to the melody audio file
+            styles (list): List of style categories to use (from self.style_presets)
+            custom_prompts (list): Additional custom prompts to use
+            duration (float): Duration override (uses melody length if None)
+            output_dir (str): Directory to save all variations
+            generation_params (dict): Override default generation parameters
+            
+        Returns:
+            dict: Information about the generated variations
+        """</span>
+        <span class="c1"># Process the melody file
+</span>        <span class="n">melody</span><span class="p">,</span> <span class="n">melody_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">process_melody</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+        
+        <span class="c1"># Use melody duration if no override is provided
+</span>        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">melody_duration</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using melody length as generation duration: </span><span class="si">{</span><span class="n">duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+        
+        <span class="c1"># Create output directory with timestamp
+</span>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"melody_variations_</span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Save the processed melody for reference
+</span>        <span class="n">melody_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"original_melody.wav"</span><span class="p">)</span>
+        <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+            <span class="n">melody_path</span><span class="p">,</span>
+            <span class="n">melody</span><span class="p">.</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="mi">32000</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Collect all prompts to use
+</span>        <span class="n">all_prompts</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Add prompts from requested style categories
+</span>        <span class="k">if</span> <span class="n">styles</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">styles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">:</span>
+                    <span class="n">all_prompts</span><span class="p">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">[</span><span class="n">style</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Warning: Style '</span><span class="si">{</span><span class="n">style</span><span class="si">}</span><span class="s">' not found in presets"</span><span class="p">)</span>
+        
+        <span class="c1"># Add any custom prompts
+</span>        <span class="k">if</span> <span class="n">custom_prompts</span><span class="p">:</span>
+            <span class="n">all_prompts</span><span class="p">.</span><span class="n">extend</span><span class="p">(</span><span class="n">custom_prompts</span><span class="p">)</span>
+        
+        <span class="c1"># If no prompts were specified, use a default selection
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_prompts</span><span class="p">:</span>
+            <span class="c1"># Take one prompt from each style category
+</span>            <span class="k">for</span> <span class="n">style</span><span class="p">,</span> <span class="n">prompts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">all_prompts</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">default_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'duration'</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s">'temperature'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s">'top_k'</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>
+            <span class="s">'top_p'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s">'cfg_coef'</span><span class="p">:</span> <span class="mf">3.0</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Override with any provided parameters
+</span>        <span class="k">if</span> <span class="n">generation_params</span><span class="p">:</span>
+            <span class="n">default_params</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">generation_params</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span><span class="o">**</span><span class="n">default_params</span><span class="p">)</span>
+        
+        <span class="c1"># Prepare melody with batch dimension for generation
+</span>        <span class="n">melody_input</span> <span class="o">=</span> <span class="n">melody</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Add batch dimension
+</span>        
+        <span class="c1"># Track generation results
+</span>        <span class="n">generation_results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'melody_file'</span><span class="p">:</span> <span class="n">melody_file</span><span class="p">,</span>
+            <span class="s">'processed_melody'</span><span class="p">:</span> <span class="n">melody_path</span><span class="p">,</span>
+            <span class="s">'melody_duration'</span><span class="p">:</span> <span class="n">melody_duration</span><span class="p">,</span>
+            <span class="s">'generation_duration'</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s">'model_size'</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span><span class="p">,</span>
+            <span class="s">'generation_params'</span><span class="p">:</span> <span class="n">default_params</span><span class="p">,</span>
+            <span class="s">'variations'</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Generate each variation
+</span>        <span class="n">total_prompts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_prompts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_prompts</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">total_prompts</span><span class="si">}</span><span class="s">] Generating variation: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+            
+            <span class="c1"># Create a prompt-based filename (simplified version of the prompt)
+</span>            <span class="n">prompt_filename</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">[</span><span class="s">','</span><span class="p">,</span> <span class="s">'.'</span><span class="p">,</span> <span class="s">"'"</span><span class="p">,</span> <span class="s">'"'</span><span class="p">,</span> <span class="s">'!'</span><span class="p">,</span> <span class="s">'?'</span><span class="p">,</span> <span class="s">':'</span><span class="p">,</span> <span class="s">';'</span><span class="p">,</span> <span class="s">'/'</span><span class="p">,</span> <span class="s">'</span><span class="se">\\</span><span class="s">'</span><span class="p">]:</span>
+                <span class="n">prompt_filename</span> <span class="o">=</span> <span class="n">prompt_filename</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span>
+            <span class="n">prompt_filename</span> <span class="o">=</span> <span class="n">prompt_filename</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'_'</span><span class="p">)[:</span><span class="mi">50</span><span class="p">]</span>  <span class="c1"># Limit length
+</span>            
+            <span class="n">output_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">prompt_filename</span><span class="si">}</span><span class="s">"</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+            
+            <span class="c1"># Generate with melody conditioning
+</span>            <span class="n">wav</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">generate_with_chroma</span><span class="p">(</span>
+                <span class="n">descriptions</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">],</span>
+                <span class="n">chroma</span><span class="o">=</span><span class="n">melody_input</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Save the audio
+</span>            <span class="n">audio_write</span><span class="p">(</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Record information about this variation
+</span>            <span class="n">generation_results</span><span class="p">[</span><span class="s">'variations'</span><span class="p">].</span><span class="n">append</span><span class="p">({</span>
+                <span class="s">'prompt'</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s">'output_file'</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+            <span class="p">})</span>
+            
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Save generation metadata
+</span>        <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"generation_metadata.json"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">generation_results</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Create a helpful README
+</span>        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"README.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"MELODY STYLE VARIATIONS</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"======================</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Original melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processed for MusicGen: </span><span class="si">{</span><span class="n">melody_path</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation duration: </span><span class="si">{</span><span class="n">duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Style variations:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">variation</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">generation_results</span><span class="p">[</span><span class="s">'variations'</span><span class="p">]):</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="s">. </span><span class="si">{</span><span class="n">variation</span><span class="p">[</span><span class="s">'prompt'</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"    File: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">variation</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">])</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Generation parameters:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">default_params</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Listen to each variation to compare how MusicGen interprets</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"the same melody in different musical styles and arrangements.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="se">\n</span><span class="s">Generated </span><span class="si">{</span><span class="n">total_prompts</span><span class="si">}</span><span class="s"> style variations in </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">generation_results</span>
+    
+    <span class="k">def</span> <span class="nf">create_comparative_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Generate a standard set of comparative styles covering major genres.
+        
+        This is a convenience method that generates one variation in each
+        major style category for easy comparison.
+        """</span>
+        <span class="c1"># Create custom prompt list with one from each category
+</span>        <span class="n">comparison_prompts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">style_descriptions</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">style</span><span class="p">,</span> <span class="n">prompts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">comparison_prompts</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">style_descriptions</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+        
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"melody_style_comparison_</span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate_style_variations</span><span class="p">(</span>
+            <span class="n">melody_file</span><span class="o">=</span><span class="n">melody_file</span><span class="p">,</span>
+            <span class="n">custom_prompts</span><span class="o">=</span><span class="n">comparison_prompts</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Add style categories to the README
+</span>        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"README.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+        
+        <span class="c1"># Add style categories to the output
+</span>        <span class="n">style_content</span> <span class="o">=</span> <span class="s">"Style categories:</span><span class="se">\n\n</span><span class="s">"</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">style</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">style_descriptions</span><span class="p">):</span>
+            <span class="n">style_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="s">. </span><span class="si">{</span><span class="n">style</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span> <span class="n">style_content</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="k">def</span> <span class="nf">batch_process_melodies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_files</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">output_base_dir</span><span class="o">=</span><span class="s">"batch_generations"</span><span class="p">):</span>
+        <span class="s">"""
+        Process multiple melody files with the same style prompt.
+        
+        Useful for processing a collection of melodies with consistent styling.
+        """</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_base_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Choose a prompt for the style
+</span>        <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">[</span><span class="n">style</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="n">style</span>  <span class="c1"># Use the style parameter directly as a prompt
+</span>        
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">melody_file</span> <span class="ow">in</span> <span class="n">melody_files</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_dir</span><span class="p">,</span> <span class="n">melody_name</span><span class="p">)</span>
+            
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processing melody: </span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate_style_variations</span><span class="p">(</span>
+                <span class="n">melody_file</span><span class="o">=</span><span class="n">melody_file</span><span class="p">,</span>
+                <span class="n">custom_prompts</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">],</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
+            <span class="p">)</span>
+            
+            <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        
+        <span class="c1"># Create a summary file
+</span>        <span class="n">summary_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_dir</span><span class="p">,</span> <span class="s">"batch_summary.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">summary_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"BATCH PROCESSING SUMMARY</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"=======================</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Style prompt: </span><span class="se">\"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\"\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processed melodies:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">. </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">'melody_file'</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"   Output: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'variations'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'output_file'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">explorer</span> <span class="o">=</span> <span class="n">MelodyStyleExplorer</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">)</span>
+    
+    <span class="c1"># Generate variations in all preset styles
+</span>    <span class="c1"># explorer.generate_style_variations(
+</span>    <span class="c1">#     melody_file="path/to/your/melody.wav",
+</span>    <span class="c1">#     styles=["orchestral", "electronic", "jazz", "rock", "folk"],
+</span>    <span class="c1">#     output_dir="complete_style_exploration"
+</span>    <span class="c1"># )
+</span>    
+    <span class="c1"># Or generate the standard comparison set
+</span>    <span class="n">explorer</span><span class="p">.</span><span class="n">create_comparative_styles</span><span class="p">(</span>
+        <span class="n">melody_file</span><span class="o">=</span><span class="s">"path/to/your/melody.wav"</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"melody_style_comparison"</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This advanced implementation builds on our basic approach and adds several powerful features:</p>
+
+<ol>
+  <li><strong>Style presets</strong>: Predefined genre categories with specific prompts</li>
+  <li><strong>Batch processing</strong>: Process multiple melodies with the same style</li>
+  <li><strong>Comparative analysis</strong>: Generate one example in each major style</li>
+  <li><strong>Detailed output</strong>: README files and metadata to track generations</li>
+  <li><strong>Style variation</strong>: Multiple prompts within the same genre category</li>
+</ol>
+
+<h2 id="melody-conditioning-with-parameter-optimization">Melody Conditioning with Parameter Optimization</h2>
+
+<p>To get the best results from melody conditioning, we need to optimize generation parameters. Different parameter settings can dramatically affect how closely the output follows the melody versus how creative it gets with the arrangement.</p>
+
+<p>Here’s a guide to parameter tuning specifically for melody conditioning:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Effect on Melody Conditioning</th>
+      <th>Recommended Setting</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>temperature</td>
+      <td>Controls how strictly the melody is followed</td>
+      <td>0.6-0.8 for accurate following, 1.0-1.3 for creative interpretation</td>
+    </tr>
+    <tr>
+      <td>cfg_coef</td>
+      <td>Balances melody following vs. prompt adherence</td>
+      <td>2.0-2.5 for melody-dominant, 3.0-3.5 for balanced approach</td>
+    </tr>
+    <tr>
+      <td>top_k</td>
+      <td>Affects diversity in the arrangement</td>
+      <td>150-250 for most cases, higher for more experimental arrangements</td>
+    </tr>
+    <tr>
+      <td>duration</td>
+      <td>Controls generation length</td>
+      <td>Match to melody length for best results</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For most melody conditioning applications, we recommend a balanced approach:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Balanced melody conditioning parameters
+</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">melody_duration</span><span class="p">,</span>  <span class="c1"># Match to melody length
+</span>    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>           <span class="c1"># Slightly conservative for better melody following
+</span>    <span class="n">top_k</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>                 <span class="c1"># Standard diversity
+</span>    <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>                 <span class="c1"># Disable nucleus sampling
+</span>    <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">2.8</span>               <span class="c1"># Slightly reduced to prioritize melody
+</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="complete-implementation-melody-transformation-pipeline">Complete Implementation: Melody Transformation Pipeline</h2>
+
+<p>Let’s create a complete melody transformation pipeline that combines all the concepts we’ve learned. This pipeline will:</p>
+
+<ol>
+  <li>Process and prepare melodies from various input formats</li>
+  <li>Apply multiple stylistic variations</li>
+  <li>Optimize parameters for different melody types</li>
+  <li>Provide a comprehensive API for melody-based music generation</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># melody_transformation_pipeline.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">MelodyTransformationPipeline</span><span class="p">:</span>
+    <span class="s">"""
+    End-to-end pipeline for transforming melody ideas into fully produced music.
+    
+    This class provides a comprehensive workflow for processing melodies,
+    transforming them with various styles, and generating high-quality
+    musical outputs using MusicGen's melody conditioning capabilities.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""Initialize the melody transformation pipeline."""</span>
+        <span class="c1"># Determine device automatically if not specified
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+                
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        
+        <span class="c1"># Load the model
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Define parameter presets optimized for melody conditioning
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">parameter_presets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"accurate"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'temperature'</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+                <span class="s">'top_k'</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+                <span class="s">'top_p'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s">'cfg_coef'</span><span class="p">:</span> <span class="mf">2.5</span>
+            <span class="p">},</span>
+            <span class="s">"balanced"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'temperature'</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+                <span class="s">'top_k'</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s">'top_p'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s">'cfg_coef'</span><span class="p">:</span> <span class="mf">2.8</span>
+            <span class="p">},</span>
+            <span class="s">"creative"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'temperature'</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+                <span class="s">'top_k'</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span>
+                <span class="s">'top_p'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s">'cfg_coef'</span><span class="p">:</span> <span class="mf">2.2</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Define style presets with prompts optimized for melody conditioning
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"orchestral"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"cinematic"</span><span class="p">:</span> <span class="s">"A cinematic orchestral arrangement with dramatic strings, brass, and percussion that builds to an epic climax"</span><span class="p">,</span>
+                <span class="s">"classical"</span><span class="p">:</span> <span class="s">"A classical orchestra arrangement with strings, woodwinds, and brass in a traditional symphonic style"</span><span class="p">,</span>
+                <span class="s">"chamber"</span><span class="p">:</span> <span class="s">"A delicate chamber orchestra arrangement with string quartet, piano, and light woodwinds"</span>
+            <span class="p">},</span>
+            <span class="s">"electronic"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"edm"</span><span class="p">:</span> <span class="s">"An upbeat electronic dance track with synthesizers, driving beat, and modern production"</span><span class="p">,</span>
+                <span class="s">"ambient"</span><span class="p">:</span> <span class="s">"An ambient electronic piece with atmospheric pads, subtle beats, and ethereal textures"</span><span class="p">,</span>
+                <span class="s">"synthwave"</span><span class="p">:</span> <span class="s">"A retro synthwave track with 80s drum machines, analog synth arpeggios, and neon atmosphere"</span>
+            <span class="p">},</span>
+            <span class="s">"band"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"rock"</span><span class="p">:</span> <span class="s">"A rock band arrangement with electric guitars, bass, drums, and energetic performance"</span><span class="p">,</span>
+                <span class="s">"jazz"</span><span class="p">:</span> <span class="s">"A jazz ensemble with piano, upright bass, drums, saxophone, and trumpet playing in a smooth style"</span><span class="p">,</span>
+                <span class="s">"acoustic"</span><span class="p">:</span> <span class="s">"An intimate acoustic arrangement with guitar, piano, light percussion, and warm atmosphere"</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+    <span class="k">def</span> <span class="nf">process_melody</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">analyze</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="s">"""
+        Process a melody file for conditioning.
+        
+        Args:
+            melody_file (str): Path to the melody audio file
+            output_dir (str): Directory to save processed files
+            analyze (bool): Whether to perform and save melody analysis
+            
+        Returns:
+            tuple: Processed melody tensor and its duration in seconds
+        """</span>
+        <span class="c1"># Create output directory if needed
+</span>        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processing melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+        
+        <span class="c1"># Save original audio information
+</span>        <span class="n">melody_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'original_file'</span><span class="p">:</span> <span class="n">melody_file</span><span class="p">,</span>
+            <span class="s">'original_sample_rate'</span><span class="p">:</span> <span class="n">sample_rate</span><span class="p">,</span>
+            <span class="s">'original_channels'</span><span class="p">:</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s">'original_duration'</span><span class="p">:</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sample_rate</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Processing steps with detailed logging
+</span>        <span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Step 1: Convert to mono if stereo
+</span>        <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">processing_steps</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">"Converting stereo to mono (averaged channels)"</span><span class="p">)</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Step 2: Resample to 32kHz (MusicGen's required sample rate)
+</span>        <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">!=</span> <span class="mi">32000</span><span class="p">:</span>
+            <span class="n">processing_steps</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s">"Resampling from </span><span class="si">{</span><span class="n">sample_rate</span><span class="si">}</span><span class="s">Hz to 32000Hz"</span><span class="p">)</span>
+            <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="mi">32000</span><span class="p">)</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
+            <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">32000</span>
+        
+        <span class="c1"># Step 3: Normalize audio to reasonable level
+</span>        <span class="n">peak</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">waveform</span><span class="p">).</span><span class="nb">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">peak</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">processing_steps</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s">"Peak normalizing (original peak: </span><span class="si">{</span><span class="n">peak</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">)"</span><span class="p">)</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span> <span class="o">/</span> <span class="n">peak</span>
+        
+        <span class="c1"># Calculate duration
+</span>        <span class="n">duration</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sample_rate</span>
+        <span class="n">melody_info</span><span class="p">[</span><span class="s">'processed_duration'</span><span class="p">]</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="n">melody_info</span><span class="p">[</span><span class="s">'processing_steps'</span><span class="p">]</span> <span class="o">=</span> <span class="n">processing_steps</span>
+        
+        <span class="c1"># Perform melody analysis if requested
+</span>        <span class="k">if</span> <span class="n">analyze</span> <span class="ow">and</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_info</span><span class="p">[</span><span class="s">'analysis'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_analyze_melody</span><span class="p">(</span><span class="n">waveform</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+        
+        <span class="c1"># Save the processed melody if output directory specified
+</span>        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">processed_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"processed_melody.wav"</span><span class="p">)</span>
+            <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+                <span class="n">processed_path</span><span class="p">,</span>
+                <span class="n">waveform</span><span class="p">,</span>
+                <span class="n">sample_rate</span>
+            <span class="p">)</span>
+            <span class="n">melody_info</span><span class="p">[</span><span class="s">'processed_file'</span><span class="p">]</span> <span class="o">=</span> <span class="n">processed_path</span>
+            
+            <span class="c1"># Save information about the melody
+</span>            <span class="n">info_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_info.json"</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">info_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">melody_info</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Processed melody saved to </span><span class="si">{</span><span class="n">processed_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Move to appropriate device
+</span>        <span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">melody_info</span>
+    
+    <span class="k">def</span> <span class="nf">_analyze_melody</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="s">"""
+        Perform analysis on the melody to extract useful features.
+        
+        This includes waveform visualization, spectral analysis, and
+        volume envelope detection.
+        """</span>
+        <span class="n">analysis_results</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># 1. Create waveform visualization
+</span>        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">waveform</span><span class="p">.</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Melody Waveform"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Sample"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Amplitude"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">waveform_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_waveform.png"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">waveform_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">analysis_results</span><span class="p">[</span><span class="s">'waveform_plot'</span><span class="p">]</span> <span class="o">=</span> <span class="n">waveform_path</span>
+        
+        <span class="c1"># 2. Compute and visualize spectrogram
+</span>        <span class="n">spec</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Spectrogram</span><span class="p">()(</span><span class="n">waveform</span><span class="p">.</span><span class="n">cpu</span><span class="p">())</span>
+        <span class="n">spec_db</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">AmplitudeToDB</span><span class="p">()(</span><span class="n">spec</span><span class="p">)</span>
+        
+        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spec_db</span><span class="p">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="s">'auto'</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">'lower'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Melody Spectrogram"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Time Frame"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Frequency Bin"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s">"%+2.0f dB"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">spec_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_spectrogram.png"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">spec_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">analysis_results</span><span class="p">[</span><span class="s">'spectrogram_plot'</span><span class="p">]</span> <span class="o">=</span> <span class="n">spec_path</span>
+        
+        <span class="c1"># 3. Compute amplitude envelope
+</span>        <span class="n">window_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">*</span> <span class="mf">0.03</span><span class="p">)</span>  <span class="c1"># 30ms windows
+</span>        <span class="n">hop_length</span> <span class="o">=</span> <span class="n">window_size</span> <span class="o">//</span> <span class="mi">2</span>
+        
+        <span class="c1"># Compute RMS energy
+</span>        <span class="n">waveform_numpy</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">n_frames</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="p">)</span> <span class="o">-</span> <span class="n">window_size</span><span class="p">)</span> <span class="o">//</span> <span class="n">hop_length</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_frames</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">hop_length</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">window_size</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">waveform_numpy</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+            <span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">frame</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        
+        <span class="c1"># Plot envelope
+</span>        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">envelope</span><span class="p">))</span> <span class="o">*</span> <span class="n">hop_length</span> <span class="o">/</span> <span class="n">sample_rate</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_axis</span><span class="p">,</span> <span class="n">envelope</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Amplitude Envelope"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Time (s)"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"RMS Amplitude"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">envelope_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_envelope.png"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">envelope_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">analysis_results</span><span class="p">[</span><span class="s">'envelope_plot'</span><span class="p">]</span> <span class="o">=</span> <span class="n">envelope_path</span>
+        
+        <span class="c1"># Calculate some basic statistics
+</span>        <span class="n">analysis_results</span><span class="p">[</span><span class="s">'stats'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'peak_amplitude'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="p">))),</span>
+            <span class="s">'rms_level'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="o">**</span><span class="mi">2</span><span class="p">))),</span>
+            <span class="s">'crest_factor'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="o">**</span><span class="mi">2</span><span class="p">))),</span>
+            <span class="s">'zero_crossings'</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">signbit</span><span class="p">(</span><span class="n">waveform_numpy</span><span class="p">))))),</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">analysis_results</span>
+    
+    <span class="k">def</span> <span class="nf">transform_melody</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">interpretation</span><span class="o">=</span><span class="s">"balanced"</span><span class="p">,</span> 
+                         <span class="n">duration</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Transform a melody with a specific prompt and interpretation style.
+        
+        Args:
+            melody_file (str): Path to the melody audio file
+            prompt (str): Text description of desired musical style
+            interpretation (str): How to interpret the melody: "accurate", 
+                                 "balanced", or "creative"
+            duration (float): Optional duration override (uses melody length if None)
+            output_dir (str): Directory to save generation
+            
+        Returns:
+            dict: Information about the generated music
+        """</span>
+        <span class="c1"># Create output directory with timestamp
+</span>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"melody_transform_</span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Process the melody file
+</span>        <span class="n">melody</span><span class="p">,</span> <span class="n">melody_duration</span><span class="p">,</span> <span class="n">melody_info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">process_melody</span><span class="p">(</span>
+            <span class="n">melody_file</span><span class="p">,</span> 
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">analyze</span><span class="o">=</span><span class="bp">True</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Use melody duration if no explicit duration is provided
+</span>        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">melody_duration</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using melody length as generation duration: </span><span class="si">{</span><span class="n">duration</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+        
+        <span class="c1"># Get parameters based on interpretation style
+</span>        <span class="k">if</span> <span class="n">interpretation</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">parameter_presets</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">parameter_presets</span><span class="p">[</span><span class="n">interpretation</span><span class="p">].</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default to balanced if invalid interpretation specified
+</span>            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Warning: Unknown interpretation '</span><span class="si">{</span><span class="n">interpretation</span><span class="si">}</span><span class="s">', using balanced"</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">parameter_presets</span><span class="p">[</span><span class="s">"balanced"</span><span class="p">].</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="c1"># Set duration in parameters
+</span>        <span class="n">params</span><span class="p">[</span><span class="s">'duration'</span><span class="p">]</span> <span class="o">=</span> <span class="n">duration</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        
+        <span class="c1"># Save information about the generation
+</span>        <span class="n">generation_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'melody_file'</span><span class="p">:</span> <span class="n">melody_file</span><span class="p">,</span>
+            <span class="s">'prompt'</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="s">'interpretation'</span><span class="p">:</span> <span class="n">interpretation</span><span class="p">,</span>
+            <span class="s">'parameters'</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+            <span class="s">'model_size'</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span><span class="p">,</span>
+            <span class="s">'timestamp'</span><span class="p">:</span> <span class="n">timestamp</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Add melody info (excluding redundant model attributes)
+</span>        <span class="n">generation_info</span><span class="p">[</span><span class="s">'melody_info'</span><span class="p">]</span> <span class="o">=</span> <span class="n">melody_info</span>
+        
+        <span class="c1"># Generate music conditioned on both text and melody
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating with prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using </span><span class="si">{</span><span class="n">interpretation</span><span class="si">}</span><span class="s"> interpretation with parameters: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Prepare melody with batch dimension for generation
+</span>        <span class="n">melody_input</span> <span class="o">=</span> <span class="n">melody</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Add batch dimension
+</span>        
+        <span class="c1"># Generate with melody conditioning
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">generate_with_chroma</span><span class="p">(</span>
+            <span class="n">descriptions</span><span class="o">=</span><span class="p">[</span><span class="n">prompt</span><span class="p">],</span>
+            <span class="n">chroma</span><span class="o">=</span><span class="n">melody_input</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save the generated audio
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"melody_transformation"</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Update generation info with output path
+</span>        <span class="n">generation_info</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+        
+        <span class="c1"># Save generation metadata
+</span>        <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"generation_metadata.json"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">generation_info</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation complete! Output saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">generation_info</span>
+    
+    <span class="k">def</span> <span class="nf">transform_with_style_variations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">style_category</span><span class="p">,</span> 
+                                       <span class="n">interpretation</span><span class="o">=</span><span class="s">"balanced"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Transform a melody using all prompts from a style category.
+        
+        Args:
+            melody_file (str): Path to the melody audio file
+            style_category (str): Category from self.style_presets
+            interpretation (str): Interpretation style for parameters
+            output_dir (str): Directory to save all variations
+            
+        Returns:
+            list: Information about all generated variations
+        """</span>
+        <span class="c1"># Check if style category exists
+</span>        <span class="k">if</span> <span class="n">style_category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error: Style category '</span><span class="si">{</span><span class="n">style_category</span><span class="si">}</span><span class="s">' not found"</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Available categories: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+            
+        <span class="c1"># Create output directory with timestamp
+</span>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"melody_style_</span><span class="si">{</span><span class="n">style_category</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Process the melody once for all variations
+</span>        <span class="n">melody_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"original_melody"</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">melody_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="n">melody</span><span class="p">,</span> <span class="n">melody_duration</span><span class="p">,</span> <span class="n">melody_info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">process_melody</span><span class="p">(</span>
+            <span class="n">melody_file</span><span class="p">,</span> 
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">melody_dir</span><span class="p">,</span>
+            <span class="n">analyze</span><span class="o">=</span><span class="bp">True</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Get style variations from the selected category
+</span>        <span class="n">styles</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">style_presets</span><span class="p">[</span><span class="n">style_category</span><span class="p">]</span>
+        
+        <span class="c1"># Generate each style variation
+</span>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">style_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">styles</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">style_category</span><span class="si">}</span><span class="s"> - </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s"> variation"</span><span class="p">)</span>
+            
+            <span class="c1"># Create subdirectory for this variation
+</span>            <span class="n">variation_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">variation_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Create symbolic link to original melody analysis
+</span>            <span class="c1"># for link_file in os.listdir(melody_dir):
+</span>            <span class="c1">#     os.symlink(
+</span>            <span class="c1">#         os.path.join(melody_dir, link_file),
+</span>            <span class="c1">#         os.path.join(variation_dir, link_file)
+</span>            <span class="c1">#     )
+</span>            
+            <span class="c1"># Transform with this prompt
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">transform_melody</span><span class="p">(</span>
+                <span class="n">melody_file</span><span class="o">=</span><span class="n">melody_file</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+                <span class="n">interpretation</span><span class="o">=</span><span class="n">interpretation</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">variation_dir</span>
+            <span class="p">)</span>
+            
+            <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s">'style_name'</span><span class="p">:</span> <span class="n">style_name</span><span class="p">,</span>
+                <span class="s">'prompt'</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                <span class="s">'output_file'</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">]</span>
+            <span class="p">})</span>
+        
+        <span class="c1"># Create a comparison README
+</span>        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"README.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">style_category</span><span class="p">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s"> STYLE VARIATIONS</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"="</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">style_category</span><span class="p">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s"> STYLE VARIATIONS"</span><span class="p">)</span><span class="o">+</span><span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Original melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Interpretation style: </span><span class="si">{</span><span class="n">interpretation</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Generated variations:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'style_name'</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Prompt: </span><span class="se">\"</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'prompt'</span><span class="p">]</span><span class="si">}</span><span class="se">\"\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Output: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">])</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Listen to each variation to compare how different prompts</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"within the </span><span class="si">{</span><span class="n">style_category</span><span class="si">}</span><span class="s"> category affect the arrangement of</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"the same melody.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="k">def</span> <span class="nf">explore_interpretations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">melody_file</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Generate variations with different interpretation parameters.
+        
+        This method generates the same melody and prompt with different
+        parameter settings to demonstrate the spectrum from accurate melody
+        reproduction to creative interpretation.
+        """</span>
+        <span class="c1"># Create output directory with timestamp
+</span>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">melody_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">melody_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"melody_interpretations_</span><span class="si">{</span><span class="n">melody_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Generate with each interpretation style
+</span>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">interpretation</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"accurate"</span><span class="p">,</span> <span class="s">"balanced"</span><span class="p">,</span> <span class="s">"creative"</span><span class="p">]:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating with </span><span class="si">{</span><span class="n">interpretation</span><span class="si">}</span><span class="s"> interpretation"</span><span class="p">)</span>
+            
+            <span class="c1"># Create subdirectory for this interpretation
+</span>            <span class="n">interp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">interpretation</span><span class="p">)</span>
+            
+            <span class="c1"># Transform with this interpretation
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">transform_melody</span><span class="p">(</span>
+                <span class="n">melody_file</span><span class="o">=</span><span class="n">melody_file</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+                <span class="n">interpretation</span><span class="o">=</span><span class="n">interpretation</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">interp_dir</span>
+            <span class="p">)</span>
+            
+            <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s">'interpretation'</span><span class="p">:</span> <span class="n">interpretation</span><span class="p">,</span>
+                <span class="s">'parameters'</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s">'parameters'</span><span class="p">],</span>
+                <span class="s">'output_file'</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">]</span>
+            <span class="p">})</span>
+        
+        <span class="c1"># Create a comparison README
+</span>        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"README.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"MELODY INTERPRETATION COMPARISON</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"===============================</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Original melody: </span><span class="si">{</span><span class="n">melody_file</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: </span><span class="se">\"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\"\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Interpretation styles:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'interpretation'</span><span class="p">].</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Parameters: temperature=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'parameters'</span><span class="p">][</span><span class="s">'temperature'</span><span class="p">]</span><span class="si">}</span><span class="s">, "</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"cfg_coef=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'parameters'</span><span class="p">][</span><span class="s">'cfg_coef'</span><span class="p">]</span><span class="si">}</span><span class="s">, "</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"top_k=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s">'parameters'</span><span class="p">][</span><span class="s">'top_k'</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Output: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">])</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Interpretation spectrum:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"- Accurate: Closely follows the melody with minimal creative license</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"- Balanced: Maintains the core melody while adding appropriate accompaniment</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"- Creative: Uses the melody as inspiration for a more elaborate composition</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="k">def</span> <span class="nf">create_custom_parameter_preset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">top_p</span><span class="p">,</span> <span class="n">cfg_coef</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">""</span><span class="p">):</span>
+        <span class="s">"""Create and save a custom parameter preset for melody conditioning."""</span>
+        <span class="n">preset</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'temperature'</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s">'top_k'</span><span class="p">:</span> <span class="n">top_k</span><span class="p">,</span>
+            <span class="s">'top_p'</span><span class="p">:</span> <span class="n">top_p</span><span class="p">,</span>
+            <span class="s">'cfg_coef'</span><span class="p">:</span> <span class="n">cfg_coef</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Add to parameter presets
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">parameter_presets</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">preset</span>
+        
+        <span class="c1"># Return the new preset
+</span>        <span class="k">return</span> <span class="p">{</span>
+            <span class="s">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s">'parameters'</span><span class="p">:</span> <span class="n">preset</span><span class="p">,</span>
+            <span class="s">'description'</span><span class="p">:</span> <span class="n">description</span>
+        <span class="p">}</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">MelodyTransformationPipeline</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">)</span>
+    
+    <span class="c1"># Example: Transform a melody with orchestral styling
+</span>    <span class="c1"># pipeline.transform_melody(
+</span>    <span class="c1">#     melody_file="path/to/your/melody.wav",
+</span>    <span class="c1">#     prompt="A cinematic orchestral arrangement with strings, brass, and dramatic percussion",
+</span>    <span class="c1">#     interpretation="balanced",
+</span>    <span class="c1">#     output_dir="orchestral_transformation"
+</span>    <span class="c1"># )
+</span>    
+    <span class="c1"># Example: Generate variations within a style category
+</span>    <span class="n">pipeline</span><span class="p">.</span><span class="n">transform_with_style_variations</span><span class="p">(</span>
+        <span class="n">melody_file</span><span class="o">=</span><span class="s">"path/to/your/melody.wav"</span><span class="p">,</span>
+        <span class="n">style_category</span><span class="o">=</span><span class="s">"orchestral"</span><span class="p">,</span>
+        <span class="n">interpretation</span><span class="o">=</span><span class="s">"balanced"</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"orchestral_variations"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Example: Compare different interpretation parameters
+</span>    <span class="c1"># pipeline.explore_interpretations(
+</span>    <span class="c1">#     melody_file="path/to/your/melody.wav",
+</span>    <span class="c1">#     prompt="A jazz ensemble with piano, bass, drums, and saxophone",
+</span>    <span class="c1">#     output_dir="interpretation_comparison"
+</span>    <span class="c1"># )
+</span></code></pre></div></div>
+
+<p>This comprehensive pipeline provides everything you need for melody-based music generation:</p>
+
+<ol>
+  <li><strong>Melody preprocessing</strong>: Thorough audio preparation for optimal results</li>
+  <li><strong>Melody analysis</strong>: Visualizations and statistics to understand your input</li>
+  <li><strong>Style variations</strong>: Predefined style categories with specialized prompts</li>
+  <li><strong>Interpretation control</strong>: Parameter presets for different levels of melody adherence</li>
+  <li><strong>Thorough documentation</strong>: Detailed output information and README files</li>
+</ol>
+
+<h2 id="common-pitfalls-and-solutions">Common Pitfalls and Solutions</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pitfall</th>
+      <th>Symptom</th>
+      <th>Solution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Low-quality melody recording</td>
+      <td>Generated output has artifacts or ignores melody</td>
+      <td>Clean up recording, remove background noise, use higher sample rate</td>
+    </tr>
+    <tr>
+      <td>Melody is too complex</td>
+      <td>Output loses structure, doesn’t follow melody well</td>
+      <td>Simplify the melody, use monophonic instruments, avoid dense chords</td>
+    </tr>
+    <tr>
+      <td>Melody is too long</td>
+      <td>Model loses coherence after 20-30 seconds</td>
+      <td>Split longer melodies into sections, generate separately</td>
+    </tr>
+    <tr>
+      <td>Too much specificity in prompt</td>
+      <td>Model ignores melody to follow prompt details</td>
+      <td>Simplify prompt, focus on style not specific instruments</td>
+    </tr>
+    <tr>
+      <td>Too little specificity in prompt</td>
+      <td>Output follows melody but lacks character</td>
+      <td>Add more style details to prompt, specify genre and mood</td>
+    </tr>
+    <tr>
+      <td>Temperature too high</td>
+      <td>Melody structure gets lost in randomness</td>
+      <td>Lower temperature to 0.6-0.8 for better melody following</td>
+    </tr>
+    <tr>
+      <td>Temperature too low</td>
+      <td>Output is repetitive, lacks development</td>
+      <td>Increase temperature to 0.9-1.1 for more variation</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="troubleshooting-guide">Troubleshooting Guide</h3>
+
+<p>If your melody conditioning isn’t working as expected:</p>
+
+<ol>
+  <li><strong>Melody isn’t recognized</strong>:
+    <ul>
+      <li>Ensure audio is mono, not stereo</li>
+      <li>Check that sample rate is exactly 32kHz after processing</li>
+      <li>Make sure melody is clearly audible and distinct</li>
+    </ul>
+  </li>
+  <li><strong>Melody is recognized but not followed well</strong>:
+    <ul>
+      <li>Try “accurate” interpretation parameters</li>
+      <li>Use simpler prompts that don’t compete with melody</li>
+      <li>Ensure your melody has clear note onsets</li>
+    </ul>
+  </li>
+  <li><strong>Output is boring or too simple</strong>:
+    <ul>
+      <li>Try “creative” interpretation parameters</li>
+      <li>Use more descriptive prompts with specific style elements</li>
+      <li>Increase temperature slightly</li>
+    </ul>
+  </li>
+  <li><strong>Output ignores parts of the melody</strong>:
+    <ul>
+      <li>Shorten melody if it’s over 15 seconds</li>
+      <li>Make sure all parts of melody are similar volume</li>
+      <li>Try using a more prominent instrument for the melody</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="hands-on-challenge-style-transformation-suite">Hands-on Challenge: Style Transformation Suite</h2>
+
+<p>Now it’s time to apply what you’ve learned to create a comprehensive style transformation for a melody:</p>
+
+<ol>
+  <li>Select or record a simple melody (8-15 seconds, monophonic)</li>
+  <li>Process the melody for optimal conditioning</li>
+  <li>Create at least three stylistic variations in different genres</li>
+  <li>Experiment with different interpretation parameters</li>
+  <li>Create a custom parameter preset optimized for your specific melody</li>
+  <li>Compare the results and analyze how well each variation preserves the melody</li>
+</ol>
+
+<p><strong>Bonus Challenge</strong>: Create a “production-ready” version by:</p>
+<ol>
+  <li>Generating multiple variations with different seeds</li>
+  <li>Selecting the best generation</li>
+  <li>Post-processing with EQ and reverb</li>
+  <li>Extending the arrangement by generating multiple sections</li>
+</ol>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Melody conditioning provides a powerful way to maintain creative control while leveraging AI</li>
+  <li>The combination of text prompts and melody conditioning offers precise creative direction</li>
+  <li>Audio preprocessing is critical for effective melody conditioning</li>
+  <li>Different parameter settings affect how strictly the model follows the melody</li>
+  <li>Style variations allow exploring different genres while preserving your core musical ideas</li>
+  <li>Melody conditioning works best with clean, monophonic melodies</li>
+  <li>The interpretation spectrum from “accurate” to “creative” offers flexibility in output style</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve mastered melody conditioning, you’re ready to move on to more advanced MusicGen features:</p>
+
+<ul>
+  <li><strong>Chapter 9: Batch Processing and Automation</strong> - Scale up your music generation workflow</li>
+  <li><strong>Chapter 10: Introduction to AudioGen</strong> - Move beyond music to sound effect generation</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://github.com/facebookresearch/audiocraft/blob/main/docs/MUSICGEN.md#using-melody-conditioning">AudioCraft GitHub: Melody Conditioning</a></li>
+  <li><a href="https://arxiv.org/abs/2306.05284">MusicGen: Simple and Controllable Music Generation</a></li>
+  <li><a href="https://librosa.org/doc/main/generated/librosa.feature.chroma_stft.html">Chromagram Feature Extraction</a></li>
+  <li><a href="https://towardsdatascience.com/audio-deep-learning-preprocessing-268852326ca5">Audio Preprocessing Techniques</a></li>
+  <li><a href="https://arxiv.org/abs/2206.09358">AI Assisted Music Production</a></li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part2/batch-processing-automation/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Batch Processing and Automation for AI Audio Generation</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/part2/parameter-optimization/" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Parameter Optimization for Music Generation</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

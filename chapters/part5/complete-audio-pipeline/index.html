@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 18: Building a Complete Audio Pipeline</title>
+  <meta name="description" content="“I need to create different types of audio for our game - from background music to environmental sounds and sound effects. Right now I’m using separate scrip...">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part5/complete-audio-pipeline/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty advanced">Advanced</span>
+      <span class="estimated-time">3 hours</span>
+    </div>
+    <h1>Chapter 18: Building a Complete Audio Pipeline</h1>
+  </div>
+  
+  
+  
+  <blockquote>
+  <p>“I need to create different types of audio for our game - from background music to environmental sounds and sound effects. Right now I’m using separate scripts and processes for each, and it’s becoming a maintenance nightmare.” — <em>Eliana Chen, Game Audio Director</em></p>
+</blockquote>
+
+<h1 id="chapter-18-building-a-complete-audio-pipeline">Chapter 18: Building a Complete Audio Pipeline</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>Modern interactive applications rarely require just one type of audio. Games, virtual reality experiences, and multimedia applications often need a combination of music, ambient sounds, and sound effects to create a rich audio experience. Managing multiple audio generation tools for different purposes quickly becomes unwieldy, with inconsistent interfaces, separate configuration settings, and no unified way to combine outputs.</p>
+
+<p>Audio engineers and developers need a way to streamline this process—a single, coherent pipeline that can handle diverse audio generation needs while providing a consistent interface. The ideal solution should allow for switching between different models, managing resources efficiently, and simplifying the process of combining various audio elements into cohesive soundscapes.</p>
+
+<p>In this chapter, you’ll learn how to build a comprehensive audio pipeline that unifies AudioCraft’s generation models into a single, flexible system. We’ll walk through the entire process from designing the architecture to implementing a full-featured pipeline that can generate and mix different types of audio seamlessly.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you’ll be able to:</p>
+
+<ul>
+  <li>Design and implement a unified pipeline that consolidates MusicGen and AudioGen functionality</li>
+  <li>Create a resource-efficient system for loading and managing different audio generation models</li>
+  <li>Develop mixing and processing capabilities for creating layered audio compositions</li>
+  <li>Build a flexible API that makes complex audio generation tasks simple and consistent</li>
+  <li>Implement best practices for memory management and performance optimization</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before proceeding, ensure you have:</p>
+<ul>
+  <li>Completed the chapters on basic MusicGen and AudioGen usage</li>
+  <li>Familiarity with Python class design and object-oriented programming</li>
+  <li>Understanding of audio processing concepts like mixing and normalization</li>
+  <li>Working AudioCraft installation with access to both MusicGen and AudioGen models</li>
+</ul>
+
+<h2 id="key-concepts">Key Concepts</h2>
+
+<h3 id="unified-pipeline-architecture">Unified Pipeline Architecture</h3>
+
+<p>A unified audio pipeline consolidates multiple audio generation tools behind a consistent interface, simplifying the developer experience and reducing complexity. Instead of managing separate systems for music and sound effects—each with their own quirks and configuration patterns—a unified pipeline provides a single access point with standardized methods.</p>
+
+<p>This architecture offers several advantages. First, it reduces cognitive load by providing consistent patterns for different audio generation tasks. Second, it enables more efficient resource management by intelligently loading models only when needed. Third, it facilitates the creation of complex audio compositions by providing built-in tools for combining different audio elements.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Conceptual example of a unified pipeline
+</span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TextToAudioPipeline</span><span class="p">()</span>
+
+<span class="c1"># Generate music the same way you generate sound effects
+</span><span class="n">music</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Ambient electronic music"</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s">"music"</span><span class="p">)</span>
+<span class="n">sfx</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Water splashing"</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s">"audio"</span><span class="p">)</span>
+
+<span class="c1"># Mix them together with a unified interface
+</span><span class="n">mixed</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">mix_audio</span><span class="p">([</span><span class="n">music</span><span class="p">,</span> <span class="n">sfx</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">])</span>
+</code></pre></div></div>
+
+<h3 id="on-demand-resource-management">On-Demand Resource Management</h3>
+
+<p>Audio generation models, particularly larger variants, require significant memory. Loading all possible models at startup would be inefficient and might exceed available resources on many systems. Instead, an effective pipeline implements on-demand resource management, loading models only when needed and potentially unloading them when they’re no longer in use.</p>
+
+<p>This approach is particularly important for production environments or systems with limited resources. By intelligently managing model loading, we can work with multiple model types even on hardware that couldn’t simultaneously hold all models in memory.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Conceptual example of on-demand resource management
+</span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TextToAudioPipeline</span><span class="p">()</span>
+
+<span class="c1"># Model is loaded only when first requested
+</span><span class="n">music</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Jazz piano solo"</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s">"music"</span><span class="p">)</span>
+
+<span class="c1"># Different model loaded only when needed
+</span><span class="n">sfx</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Thunder cracking"</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s">"audio"</span><span class="p">)</span>
+
+<span class="c1"># Memory can be freed when a model is no longer needed
+</span><span class="n">pipeline</span><span class="p">.</span><span class="n">unload_model</span><span class="p">(</span><span class="s">"music"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="solution-walkthrough">Solution Walkthrough</h2>
+
+<h3 id="1-designing-the-pipeline-interface">1. Designing the Pipeline Interface</h3>
+
+<p>Let’s begin by designing a clean, intuitive interface for our audio pipeline. The interface should abstract away the differences between models while providing access to their specific capabilities.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># text_to_audio_pipeline.py - Design of our pipeline interface
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span><span class="p">,</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">TextToAudioPipeline</span><span class="p">:</span>
+    <span class="s">"""
+    A unified pipeline for generating different types of audio from text descriptions.
+    
+    This class provides a high-level interface to Meta's AudioCraft models,
+    allowing seamless switching between music generation (MusicGen) and
+    sound effects generation (AudioGen).
+    """</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_gpu</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize the text-to-audio pipeline with hardware detection.
+        
+        Args:
+            use_gpu (bool): Whether to use GPU acceleration if available.
+        """</span>
+        <span class="c1"># Determine optimal computing device based on hardware and user preference
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_device</span><span class="p">()</span> <span class="k">if</span> <span class="n">use_gpu</span> <span class="k">else</span> <span class="s">"cpu"</span>
+        
+        <span class="c1"># Dictionary to store loaded models (loaded on demand to save memory)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Will be set when the first model is loaded (same for all models)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"TextToAudioPipeline initialized using device: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        Determine the best available compute device for the current hardware.
+        
+        Returns:
+            str: Device identifier ("mps" for Apple Silicon, "cuda" for NVIDIA, or "cpu")
+        """</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s">"mps"</span>  <span class="c1"># Apple Silicon GPU (M1/M2/M3)
+</span>        <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s">"cuda"</span>  <span class="c1"># NVIDIA GPU
+</span>        <span class="k">return</span> <span class="s">"cpu"</span>  <span class="c1"># Fallback to CPU
+</span></code></pre></div></div>
+
+<h3 id="2-implementing-model-management">2. Implementing Model Management</h3>
+
+<p>Now that we’ve set up our basic pipeline structure, we need to implement model loading and management. This involves loading models on demand and configuring them appropriately.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">):</span>
+    <span class="s">"""
+    Load a specific audio generation model into memory.
+    
+    This method handles loading the appropriate model type and size,
+    moving it to the correct device, and storing it for later use.
+    Models are loaded on demand to conserve memory.
+    
+    Args:
+        model_type (str): Type of model to load - either "music" (MusicGen) 
+                        or "audio" (AudioGen)
+        model_size (str): Size/variant of the model to load:
+                        - MusicGen: "small", "medium", or "large"
+                        - AudioGen: "medium" or "large" only
+                        
+    Raises:
+        ValueError: If invalid model type or size is specified
+    """</span>
+    <span class="c1"># Validate model type
+</span>    <span class="k">if</span> <span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"music"</span><span class="p">,</span> <span class="s">"audio"</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Model type must be 'music' or 'audio'"</span><span class="p">)</span>
+    
+    <span class="c1"># Validate model size based on model type
+</span>    <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span> <span class="ow">and</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"small"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"MusicGen size must be 'small', 'medium', or 'large'"</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"audio"</span> <span class="ow">and</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"AudioGen size must be 'medium' or 'large'"</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> model (</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">)..."</span><span class="p">)</span>
+    
+    <span class="c1"># Load appropriate model based on type
+</span>    <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="s">"music"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="s">"audio"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+    
+    <span class="c1"># Move model to the appropriate device (GPU/CPU)
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Store sample rate (same for all AudioCraft models: 32kHz)
+</span>    <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model (</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">) loaded successfully!"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">unload_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">):</span>
+    <span class="s">"""
+    Remove a model from memory to free up resources.
+    
+    Args:
+        model_type (str): Type of model to unload ("music" or "audio")
+        
+    Returns:
+        bool: True if model was unloaded, False if it wasn't loaded
+    """</span>
+    <span class="k">if</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+        <span class="c1"># Remove reference to the model
+</span>        <span class="k">del</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">]</span>
+        
+        <span class="c1"># Force garbage collection to free memory
+</span>        <span class="kn">import</span> <span class="nn">gc</span>
+        <span class="n">gc</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+        
+        <span class="c1"># Clear CUDA cache if using NVIDIA GPU
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">==</span> <span class="s">"cuda"</span><span class="p">:</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">empty_cache</span><span class="p">()</span>
+            
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model unloaded successfully"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    
+    <span class="k">return</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<h3 id="3-building-the-generation-interface">3. Building the Generation Interface</h3>
+
+<p>With model management in place, we can now implement the core generation functionality that will handle both music and sound effects creation through a single interface.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span><span class="p">):</span>
+    <span class="s">"""
+    Generate audio from a text prompt using the specified model.
+    
+    This method handles the actual generation process, applying the
+    specified parameters and returning the resulting audio as a tensor.
+    
+    Args:
+        prompt (str): Text prompt describing the audio to generate
+        model_type (str): Type of model to use ("music" or "audio")
+        duration (float): Length of audio to generate in seconds
+        temperature (float): Controls randomness/creativity of generation
+                          (higher = more random, lower = more deterministic)
+        top_k (int): Limits sampling to the top k most likely tokens
+        top_p (float): Nucleus sampling threshold (0.0 to disable)
+        cfg_coef (float): Classifier-free guidance scale (1.0-10.0)
+        
+    Returns:
+        torch.Tensor: Generated audio tensor (mono, 32kHz sample rate)
+        
+    Raises:
+        ValueError: If the specified model type has not been loaded
+    """</span>
+    <span class="c1"># Check if the requested model is loaded
+</span>    <span class="k">if</span> <span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model not loaded. Call load_model first."</span><span class="p">)</span>
+    
+    <span class="c1"># Get the appropriate model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">]</span>
+    
+    <span class="c1"># Configure generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>      <span class="c1"># Target duration in seconds
+</span>        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="c1"># Creativity/randomness control
+</span>        <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>            <span class="c1"># Sample from top k predictions
+</span>        <span class="n">top_p</span><span class="o">=</span><span class="n">top_p</span><span class="p">,</span>            <span class="c1"># Nucleus sampling threshold
+</span>        <span class="n">cfg_coef</span><span class="o">=</span><span class="n">cfg_coef</span>       <span class="c1"># Classifier-free guidance scale
+</span>    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> with prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    
+    <span class="c1"># Generate audio (with gradient tracking disabled for efficiency)
+</span>    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>  <span class="c1"># Model expects a batch of prompts
+</span>    
+    <span class="c1"># Return the first (and only) item in the batch, moved to CPU for compatibility
+</span>    <span class="k">return</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3 id="4-adding-audio-utility-functions">4. Adding Audio Utility Functions</h3>
+
+<p>Finally, we need to add utilities for saving and manipulating audio. These functions will handle common tasks like file saving and mixing multiple audio sources together.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">save_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_tensor</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"audio_output"</span><span class="p">):</span>
+    <span class="s">"""
+    Save an audio tensor to a WAV file with proper formatting.
+    
+    Args:
+        audio_tensor (torch.Tensor): Audio data to save
+        filename (str): Base filename (without extension)
+        output_dir (str): Directory to save the file in (created if doesn't exist)
+        
+    Returns:
+        str: Complete path to the saved WAV file
+    """</span>
+    <span class="c1"># Create output directory if it doesn't exist
+</span>    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Construct full output path
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    
+    <span class="c1"># Write audio file using AudioCraft's utility
+</span>    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span>              <span class="c1"># Path without extension (.wav added automatically)
+</span>        <span class="n">audio_tensor</span><span class="p">,</span>             <span class="c1"># Audio data tensor
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>         <span class="c1"># Sample rate (32kHz for AudioCraft models)
+</span>        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>       <span class="c1"># Normalize loudness for consistent volume
+</span>    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">def</span> <span class="nf">mix_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_tensors</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="s">"""
+    Mix multiple audio tensors together with optional weighting.
+    
+    This method allows combining multiple generated audio segments into
+    a single composite audio. For example, mixing background music with
+    sound effects or layering multiple environmental sounds.
+    
+    Args:
+        audio_tensors (list): List of audio tensors to mix together
+        weights (list, optional): Relative weights for each audio tensor.
+                                If not provided, equal weighting is used.
+        
+    Returns:
+        torch.Tensor: Mixed audio tensor
+        
+    Raises:
+        ValueError: If no audio tensors are provided or weights don't match
+    """</span>
+    <span class="c1"># Validate inputs
+</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">audio_tensors</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"No audio tensors provided for mixing"</span><span class="p">)</span>
+    
+    <span class="c1"># Default to equal weights if not specified
+</span>    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">)</span>
+    
+    <span class="c1"># Verify weights match the number of audio tensors
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Number of weights must match number of audio tensors"</span><span class="p">)</span>
+    
+    <span class="c1"># Convert all tensors to numpy arrays for easier manipulation
+</span>    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+    <span class="n">audio_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">tensor</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">audio_tensors</span><span class="p">]</span>
+    
+    <span class="c1"># Find the longest audio length (all must be padded to this length)
+</span>    <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">audio_arrays</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize output array with zeros (silence)
+</span>    <span class="n">mixed_audio</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+    
+    <span class="c1"># Mix each audio with its corresponding weight
+</span>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">audio_arrays</span><span class="p">,</span> <span class="n">weights</span><span class="p">)):</span>
+        <span class="c1"># Create padded version of this audio (filled with zeros/silence)
+</span>        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        
+        <span class="c1"># Copy actual audio data into the padded array (leaving zeros at the end)
+</span>        <span class="n">padded</span><span class="p">[:</span><span class="n">array</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">array</span>
+        
+        <span class="c1"># Add weighted audio to the mix
+</span>        <span class="n">mixed_audio</span> <span class="o">+=</span> <span class="n">padded</span> <span class="o">*</span> <span class="n">weight</span>
+    
+    <span class="c1"># Normalize to prevent clipping in the final mixed audio
+</span>    <span class="c1"># This ensures the maximum amplitude is within the valid range (-1 to 1)
+</span>    <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">mixed_audio</span> <span class="o">=</span> <span class="n">mixed_audio</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">))</span>
+    
+    <span class="c1"># Convert numpy array back to PyTorch tensor for compatibility
+</span>    <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="complete-implementation">Complete Implementation</h2>
+
+<p>Let’s put everything together into a complete, runnable example:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+# text_to_audio_pipeline.py - Unified pipeline for AudioCraft's generation models
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span><span class="p">,</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">TextToAudioPipeline</span><span class="p">:</span>
+    <span class="s">"""
+    A unified pipeline for generating different types of audio from text descriptions.
+    
+    This class provides a high-level interface to Meta's AudioCraft models,
+    allowing seamless switching between music generation (MusicGen) and
+    sound effects generation (AudioGen). It also includes utilities for
+    saving audio and mixing multiple generated audio segments together.
+    
+    Key features:
+    - Single interface for multiple audio generation models
+    - On-demand model loading to save memory
+    - Device management for optimal performance
+    - Audio mixing capabilities for creating layered soundscapes
+    - Consistent audio saving functionality
+    
+    Example usage:
+        pipeline = TextToAudioPipeline()
+        pipeline.load_model("music", "small")
+        music = pipeline.generate("Ambient piano with soft pads", "music")
+        pipeline.save_audio(music, "ambient_piano")
+    """</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_gpu</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize the text-to-audio pipeline with hardware detection.
+        
+        Args:
+            use_gpu (bool): Whether to use GPU acceleration if available.
+                           Set to False to force CPU usage even if a GPU is present.
+        """</span>
+        <span class="c1"># Determine optimal computing device based on hardware and user preference
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_device</span><span class="p">()</span> <span class="k">if</span> <span class="n">use_gpu</span> <span class="k">else</span> <span class="s">"cpu"</span>
+        
+        <span class="c1"># Dictionary to store loaded models (loaded on demand to save memory)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Will be set when the first model is loaded (same for all models)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"TextToAudioPipeline initialized using device: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_get_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        Determine the best available compute device for the current hardware.
+        
+        Returns:
+            str: Device identifier ("mps" for Apple Silicon, "cuda" for NVIDIA, or "cpu")
+            
+        Note:
+            MPS (Metal Performance Shaders) support is available on macOS with Apple Silicon.
+            CUDA support requires an NVIDIA GPU with appropriate drivers.
+        """</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s">"mps"</span>  <span class="c1"># Apple Silicon GPU (M1/M2/M3)
+</span>        <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s">"cuda"</span>  <span class="c1"># NVIDIA GPU
+</span>        <span class="k">return</span> <span class="s">"cpu"</span>  <span class="c1"># Fallback to CPU
+</span>    
+    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">):</span>
+        <span class="s">"""
+        Load a specific audio generation model into memory.
+        
+        This method handles loading the appropriate model type and size,
+        moving it to the correct device, and storing it for later use.
+        Models are loaded on demand to conserve memory.
+        
+        Args:
+            model_type (str): Type of model to load - either "music" (MusicGen) 
+                            or "audio" (AudioGen)
+            model_size (str): Size/variant of the model to load:
+                            - MusicGen: "small", "medium", or "large"
+                            - AudioGen: "medium" or "large" only
+                            
+        Raises:
+            ValueError: If invalid model type or size is specified
+            
+        Note:
+            Larger models produce higher quality output but require more memory
+            and take longer to generate.
+        """</span>
+        <span class="c1"># Validate model type
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"music"</span><span class="p">,</span> <span class="s">"audio"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Model type must be 'music' or 'audio'"</span><span class="p">)</span>
+        
+        <span class="c1"># Validate model size based on model type
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span> <span class="ow">and</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"small"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"MusicGen size must be 'small', 'medium', or 'large'"</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"audio"</span> <span class="ow">and</span> <span class="n">model_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"AudioGen size must be 'medium' or 'large'"</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> model (</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">)..."</span><span class="p">)</span>
+        
+        <span class="c1"># Load appropriate model based on type
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="s">"music"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="s">"audio"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+        
+        <span class="c1"># Move model to the appropriate device (GPU/CPU)
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Store sample rate (same for all AudioCraft models: 32kHz)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model (</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">) loaded successfully!"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">unload_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">):</span>
+        <span class="s">"""
+        Remove a model from memory to free up resources.
+        
+        Args:
+            model_type (str): Type of model to unload ("music" or "audio")
+            
+        Returns:
+            bool: True if model was unloaded, False if it wasn't loaded
+        """</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+            <span class="c1"># Remove reference to the model
+</span>            <span class="k">del</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">]</span>
+            
+            <span class="c1"># Force garbage collection to free memory
+</span>            <span class="kn">import</span> <span class="nn">gc</span>
+            <span class="n">gc</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+            
+            <span class="c1"># Clear CUDA cache if using NVIDIA GPU
+</span>            <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">==</span> <span class="s">"cuda"</span><span class="p">:</span>
+                <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">empty_cache</span><span class="p">()</span>
+                
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model unloaded successfully"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        
+        <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">cfg_coef</span><span class="o">=</span><span class="mf">3.0</span><span class="p">):</span>
+        <span class="s">"""
+        Generate audio from a text prompt using the specified model.
+        
+        This method handles the actual generation process, applying the
+        specified parameters and returning the resulting audio as a tensor.
+        
+        Args:
+            prompt (str): Text prompt describing the audio to generate
+            model_type (str): Type of model to use ("music" or "audio")
+            duration (float): Length of audio to generate in seconds
+            temperature (float): Controls randomness/creativity of generation
+                              (higher = more random, lower = more deterministic)
+            top_k (int): Limits sampling to the top k most likely tokens
+            top_p (float): Nucleus sampling threshold (0.0 to disable)
+            cfg_coef (float): Classifier-free guidance scale (1.0-10.0)
+            
+        Returns:
+            torch.Tensor: Generated audio tensor (mono, 32kHz sample rate)
+            
+        Raises:
+            ValueError: If the specified model type has not been loaded
+            
+        Note:
+            - MusicGen works best with prompts describing musical elements and styles
+            - AudioGen works best with prompts describing environmental sounds and effects
+        """</span>
+        <span class="c1"># Check if the requested model is loaded
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s"> model not loaded. Call load_model first."</span><span class="p">)</span>
+        
+        <span class="c1"># Get the appropriate model
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_type</span><span class="p">]</span>
+        
+        <span class="c1"># Configure generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>        <span class="c1"># Target duration in seconds
+</span>            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>  <span class="c1"># Creativity/randomness control
+</span>            <span class="n">top_k</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>              <span class="c1"># Sample from top k predictions
+</span>            <span class="n">top_p</span><span class="o">=</span><span class="n">top_p</span><span class="p">,</span>              <span class="c1"># Nucleus sampling threshold
+</span>            <span class="n">cfg_coef</span><span class="o">=</span><span class="n">cfg_coef</span>         <span class="c1"># Classifier-free guidance scale
+</span>        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> with prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="c1"># Generate audio (with gradient tracking disabled for efficiency)
+</span>        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>  <span class="c1"># Model expects a batch of prompts
+</span>        
+        <span class="c1"># Return the first (and only) item in the batch, moved to CPU for compatibility
+</span>        <span class="k">return</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">save_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_tensor</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"audio_output"</span><span class="p">):</span>
+        <span class="s">"""
+        Save an audio tensor to a WAV file with proper formatting.
+        
+        Args:
+            audio_tensor (torch.Tensor): Audio data to save
+            filename (str): Base filename (without extension)
+            output_dir (str): Directory to save the file in (created if doesn't exist)
+            
+        Returns:
+            str: Complete path to the saved WAV file
+            
+        Note:
+            This method uses AudioCraft's audio_write utility which handles
+            proper formatting and loudness normalization for optimal playback.
+        """</span>
+        <span class="c1"># Create output directory if it doesn't exist
+</span>        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Construct full output path
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        
+        <span class="c1"># Write audio file using AudioCraft's utility
+</span>        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>              <span class="c1"># Path without extension (.wav added automatically)
+</span>            <span class="n">audio_tensor</span><span class="p">,</span>             <span class="c1"># Audio data tensor
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>         <span class="c1"># Sample rate (32kHz for AudioCraft models)
+</span>            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>       <span class="c1"># Normalize loudness for consistent volume
+</span>        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+    
+    <span class="k">def</span> <span class="nf">mix_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_tensors</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Mix multiple audio tensors together with optional weighting.
+        
+        This method allows combining multiple generated audio segments into
+        a single composite audio. For example, mixing background music with
+        sound effects or layering multiple environmental sounds.
+        
+        Args:
+            audio_tensors (list): List of audio tensors to mix together
+            weights (list, optional): Relative weights for each audio tensor.
+                                    If not provided, equal weighting is used.
+            
+        Returns:
+            torch.Tensor: Mixed audio tensor
+            
+        Raises:
+            ValueError: If no audio tensors are provided or weights don't match
+            
+        Note:
+            - Audio segments of different lengths will be handled by padding shorter ones
+            - Audio is automatically normalized to prevent clipping
+            - Default mixing is equal parts if weights aren't specified
+        """</span>
+        <span class="c1"># Validate inputs
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">audio_tensors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"No audio tensors provided for mixing"</span><span class="p">)</span>
+        
+        <span class="c1"># Default to equal weights if not specified
+</span>        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">)</span>
+        
+        <span class="c1"># Verify weights match the number of audio tensors
+</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_tensors</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Number of weights must match number of audio tensors"</span><span class="p">)</span>
+        
+        <span class="c1"># Convert all tensors to numpy arrays for easier manipulation
+</span>        <span class="n">audio_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">tensor</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">audio_tensors</span><span class="p">]</span>
+        
+        <span class="c1"># Find the longest audio length (all must be padded to this length)
+</span>        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">audio_arrays</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize output array with zeros (silence)
+</span>        <span class="n">mixed_audio</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        
+        <span class="c1"># Mix each audio with its corresponding weight
+</span>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">audio_arrays</span><span class="p">,</span> <span class="n">weights</span><span class="p">)):</span>
+            <span class="c1"># Create padded version of this audio (filled with zeros/silence)
+</span>            <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+            
+            <span class="c1"># Copy actual audio data into the padded array (leaving zeros at the end)
+</span>            <span class="n">padded</span><span class="p">[:</span><span class="n">array</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">array</span>
+            
+            <span class="c1"># Add weighted audio to the mix
+</span>            <span class="n">mixed_audio</span> <span class="o">+=</span> <span class="n">padded</span> <span class="o">*</span> <span class="n">weight</span>
+        
+        <span class="c1"># Normalize to prevent clipping in the final mixed audio
+</span>        <span class="c1"># This ensures the maximum amplitude is within the valid range (-1 to 1)
+</span>        <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">mixed_audio</span> <span class="o">=</span> <span class="n">mixed_audio</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">))</span>
+        
+        <span class="c1"># Convert numpy array back to PyTorch tensor for compatibility
+</span>        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="s">"""
+    Demonstration of the TextToAudioPipeline's capabilities.
+    
+    This example shows how to:
+    1. Initialize the pipeline
+    2. Load different model types
+    3. Generate both music and sound effects
+    4. Save individual audio files
+    5. Create a mixed composition by combining elements
+    
+    The result is a layered soundscape with background music and environmental effects.
+    """</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"=== AudioCraft Text-to-Audio Pipeline Demo ==="</span><span class="p">)</span>
+    
+    <span class="c1"># Create the pipeline with automatic device selection
+</span>    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">TextToAudioPipeline</span><span class="p">()</span>
+    
+    <span class="c1"># Load both music and sound generation models
+</span>    <span class="c1"># We use smaller models for faster generation, but you can use larger ones for better quality
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[1] Loading generation models..."</span><span class="p">)</span>
+    <span class="n">pipeline</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="s">"music"</span><span class="p">,</span> <span class="s">"small"</span><span class="p">)</span>  <span class="c1"># MusicGen for musical elements
+</span>    <span class="n">pipeline</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="s">"audio"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">)</span>  <span class="c1"># AudioGen for sound effects
+</span>    
+    <span class="c1"># Generate background music track using MusicGen
+</span>    <span class="c1"># Lower temperature (0.7) for more consistent, less random results
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[2] Generating background music..."</span><span class="p">)</span>
+    <span class="n">music_prompt</span> <span class="o">=</span> <span class="s">"Gentle ambient music with soft piano and synthesizer pads, peaceful and calm"</span>
+    <span class="n">music_audio</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">music_prompt</span><span class="p">,</span> 
+        <span class="n">model_type</span><span class="o">=</span><span class="s">"music"</span><span class="p">,</span> 
+        <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>      <span class="c1"># 10 seconds of audio
+</span>        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span>     <span class="c1"># Lower temperature for more predictable music
+</span>    <span class="p">)</span>
+    
+    <span class="c1"># Generate environmental sound effects using AudioGen
+</span>    <span class="c1"># Higher temperature (1.0) for more varied and natural sounds
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[3] Generating environmental sounds..."</span><span class="p">)</span>
+    <span class="n">sfx_prompt</span> <span class="o">=</span> <span class="s">"Forest ambience with birds chirping, leaves rustling in a gentle breeze, and a distant stream"</span>
+    <span class="n">sfx_audio</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">sfx_prompt</span><span class="p">,</span> 
+        <span class="n">model_type</span><span class="o">=</span><span class="s">"audio"</span><span class="p">,</span> 
+        <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>      <span class="c1"># Same duration as music for easy mixing
+</span>        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>     <span class="c1"># Standard temperature for natural variation
+</span>    <span class="p">)</span>
+    
+    <span class="c1"># Save both individual audio tracks for reference
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[4] Saving individual audio tracks..."</span><span class="p">)</span>
+    <span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">music_audio</span><span class="p">,</span> <span class="s">"ambient_music"</span><span class="p">)</span>
+    <span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">sfx_audio</span><span class="p">,</span> <span class="s">"forest_ambience"</span><span class="p">)</span>
+    
+    <span class="c1"># Create a mixed composition by combining music and sound effects
+</span>    <span class="c1"># We weight music at 70% and sound effects at 50% for a balanced mix
+</span>    <span class="c1"># where the music forms a foundation with the nature sounds layered on top
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[5] Creating mixed soundscape..."</span><span class="p">)</span>
+    <span class="n">mixed_audio</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">mix_audio</span><span class="p">(</span>
+        <span class="n">audio_tensors</span><span class="o">=</span><span class="p">[</span><span class="n">music_audio</span><span class="p">,</span> <span class="n">sfx_audio</span><span class="p">],</span>
+        <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>  <span class="c1"># Music at 70%, SFX at 50% - these don't need to sum to 1.0
+</span>    <span class="p">)</span>
+    
+    <span class="c1"># Save the final mixed composition
+</span>    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">[6] Saving final composition..."</span><span class="p">)</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">,</span> <span class="s">"ambient_forest_scene"</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="se">\n</span><span class="s">Demo complete! Final mixed audio saved to: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Try experimenting with different prompts, model sizes, and mix weights!"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="variations-and-customizations">Variations and Customizations</h2>
+
+<p>Let’s explore some variations of our solution to address different needs or preferences.</p>
+
+<h3 id="variation-1-memory-optimized-pipeline">Variation 1: Memory-Optimized Pipeline</h3>
+
+<p>For systems with limited memory, we can create a variation that automatically unloads models when switching between them:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MemoryOptimizedPipeline</span><span class="p">(</span><span class="n">TextToAudioPipeline</span><span class="p">):</span>
+    <span class="s">"""
+    A memory-optimized version of the audio pipeline that automatically
+    unloads models when switching between them to minimize memory usage.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="s">"""
+        Generate audio, loading the required model and unloading any others.
+        
+        This overridden method handles model loading and unloading automatically,
+        ensuring only one model is in memory at a time.
+        
+        Args:
+            prompt (str): Text prompt describing the audio
+            model_type (str): Type of model to use ("music" or "audio")
+            model_size (str): Size of model to load
+            duration (float): Length of audio in seconds
+            temperature (float): Creativity control parameter
+            
+        Returns:
+            torch.Tensor: Generated audio
+        """</span>
+        <span class="c1"># First, unload any models that aren't the one we need
+</span>        <span class="k">for</span> <span class="n">loaded_type</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">loaded_type</span> <span class="o">!=</span> <span class="n">model_type</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">unload_model</span><span class="p">(</span><span class="n">loaded_type</span><span class="p">)</span>
+        
+        <span class="c1"># Check if we need to load the requested model
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+            <span class="c1"># For AudioGen, default to medium if small requested (small not available)
+</span>            <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"audio"</span> <span class="ow">and</span> <span class="n">model_size</span> <span class="o">==</span> <span class="s">"small"</span><span class="p">:</span>
+                <span class="n">model_size</span> <span class="o">=</span> <span class="s">"medium"</span>
+                
+            <span class="bp">self</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Now generate using the standard method
+</span>        <span class="k">return</span> <span class="nb">super</span><span class="p">().</span><span class="n">generate</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+
+<span class="c1"># Usage example
+</span><span class="n">memory_pipeline</span> <span class="o">=</span> <span class="n">MemoryOptimizedPipeline</span><span class="p">()</span>
+<span class="n">music</span> <span class="o">=</span> <span class="n">memory_pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Epic orchestral theme"</span><span class="p">,</span> <span class="s">"music"</span><span class="p">,</span> <span class="s">"small"</span><span class="p">)</span>
+<span class="c1"># The music model is automatically unloaded when we switch to audio
+</span><span class="n">sfx</span> <span class="o">=</span> <span class="n">memory_pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Thunderstorm with heavy rain"</span><span class="p">,</span> <span class="s">"audio"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="variation-2-scene-composition-system">Variation 2: Scene Composition System</h3>
+
+<p>We can extend our pipeline to support scene-based composition, automatically generating and mixing multiple elements:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene_description</span><span class="p">):</span>
+    <span class="s">"""
+    Generate a complete audio scene from a structured description.
+    
+    This method takes a dictionary describing a scene with multiple
+    audio elements and generates each one, then mixes them together
+    with the specified weights.
+    
+    Args:
+        scene_description (dict): A dictionary containing scene elements:
+            {
+                "name": "Scene name",
+                "duration": 10.0,
+                "elements": [
+                    {
+                        "type": "music",
+                        "model_size": "small",
+                        "prompt": "Ambient underscore",
+                        "weight": 0.7,
+                        "temperature": 0.8
+                    },
+                    {
+                        "type": "audio",
+                        "model_size": "medium", 
+                        "prompt": "Rain and thunder",
+                        "weight": 0.5,
+                        "temperature": 1.0
+                    }
+                ]
+            }
+            
+    Returns:
+        torch.Tensor: The fully mixed audio scene
+        
+    Note:
+        This automatically manages all required models and generates
+        elements at the same duration for proper mixing.
+    """</span>
+    <span class="n">scene_name</span> <span class="o">=</span> <span class="n">scene_description</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="s">"Unnamed Scene"</span><span class="p">)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">scene_description</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">scene_description</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"elements"</span><span class="p">,</span> <span class="p">[])</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">elements</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Scene must contain at least one audio element"</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating scene: </span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Generate each element
+</span>    <span class="n">generated_audio</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+        <span class="n">element_type</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">"type"</span><span class="p">]</span>
+        <span class="n">model_size</span> <span class="o">=</span> <span class="n">element</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"model_size"</span><span class="p">,</span> <span class="s">"small"</span> <span class="k">if</span> <span class="n">element_type</span> <span class="o">==</span> <span class="s">"music"</span> <span class="k">else</span> <span class="s">"medium"</span><span class="p">)</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">"prompt"</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">element</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"weight"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">element</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"temperature"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating element </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Load the appropriate model if needed
+</span>        <span class="k">if</span> <span class="n">element_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">element_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Generate this element
+</span>        <span class="n">audio</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">element_type</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span>
+        <span class="p">)</span>
+        
+        <span class="n">generated_audio</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span>
+        <span class="n">weights</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+        
+        <span class="c1"># Optionally save individual elements
+</span>        <span class="k">if</span> <span class="n">element</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"save"</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="n">safe_name</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="p">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s">"_"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">)[:</span><span class="mi">20</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">safe_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Mix all elements together
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Mixing </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">generated_audio</span><span class="p">)</span><span class="si">}</span><span class="s"> elements..."</span><span class="p">)</span>
+    <span class="n">mixed_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">mix_audio</span><span class="p">(</span><span class="n">generated_audio</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+    
+    <span class="c1"># Save the complete scene
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">mixed_scene</span><span class="p">,</span> <span class="n">scene_name</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">mixed_scene</span>
+
+<span class="c1"># Usage example
+</span><span class="n">rain_scene</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"name"</span><span class="p">:</span> <span class="s">"rainy_forest"</span><span class="p">,</span>
+    <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+    <span class="s">"elements"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s">"type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+            <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Soft piano music with melancholic mood"</span><span class="p">,</span>
+            <span class="s">"weight"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s">"type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+            <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Heavy rain on forest leaves"</span><span class="p">,</span>
+            <span class="s">"weight"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s">"type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+            <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Distant thunder rumbling"</span><span class="p">,</span>
+            <span class="s">"weight"</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.2</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">TextToAudioPipeline</span><span class="p">()</span>
+<span class="n">rain_forest_audio</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate_scene</span><span class="p">(</span><span class="n">rain_scene</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="common-pitfalls-and-troubleshooting">Common Pitfalls and Troubleshooting</h2>
+
+<h3 id="problem-memory-management-issues">Problem: Memory Management Issues</h3>
+
+<p>When working with multiple models, especially larger ones, you might encounter memory limitations.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Implement a memory management strategy that unloads models when not in use</li>
+  <li>Load only one model at a time if memory is constrained</li>
+  <li>Use smaller model variants when possible</li>
+  <li>Consider a deferred execution pattern where you generate one element at a time:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Sequence generations to minimize memory usage
+</span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">TextToAudioPipeline</span><span class="p">()</span>
+
+<span class="c1"># Generate and save music first
+</span><span class="n">pipeline</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="s">"music"</span><span class="p">,</span> <span class="s">"small"</span><span class="p">)</span>
+<span class="n">music</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Ambient music"</span><span class="p">,</span> <span class="s">"music"</span><span class="p">)</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="s">"ambient_track"</span><span class="p">)</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">unload_model</span><span class="p">(</span><span class="s">"music"</span><span class="p">)</span>
+
+<span class="c1"># Then generate and save sound effects
+</span><span class="n">pipeline</span><span class="p">.</span><span class="n">load_model</span><span class="p">(</span><span class="s">"audio"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">)</span>
+<span class="n">sfx</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">generate</span><span class="p">(</span><span class="s">"Ocean waves"</span><span class="p">,</span> <span class="s">"audio"</span><span class="p">)</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">sfx</span><span class="p">,</span> <span class="s">"ocean_waves"</span><span class="p">)</span>
+
+<span class="c1"># Load saved files for mixing instead of keeping tensors in memory
+</span><span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="n">music</span><span class="p">,</span> <span class="n">sr1</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"audio_output/ambient_track.wav"</span><span class="p">)</span>
+<span class="n">sfx</span><span class="p">,</span> <span class="n">sr2</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"audio_output/ocean_waves.wav"</span><span class="p">)</span>
+
+<span class="c1"># Mix them together
+</span><span class="n">mixed</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">.</span><span class="n">mix_audio</span><span class="p">([</span><span class="n">music</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sfx</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="n">pipeline</span><span class="p">.</span><span class="n">save_audio</span><span class="p">(</span><span class="n">mixed</span><span class="p">,</span> <span class="s">"mixed_composition"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="problem-inconsistent-audio-lengths">Problem: Inconsistent Audio Lengths</h3>
+
+<p>When mixing audio sources of different durations, you might get unexpected results.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Our mixing function automatically handles different lengths by padding shorter ones with silence</li>
+  <li>You can explicitly set the same duration for all generations to ensure consistency</li>
+  <li>For more control, use audio processing tools to trim or extend clips before mixing:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">trim_audio</span><span class="p">(</span><span class="n">audio_tensor</span><span class="p">,</span> <span class="n">target_length</span><span class="p">):</span>
+    <span class="s">"""Trim or pad an audio tensor to a specific length."""</span>
+    <span class="n">current_length</span> <span class="o">=</span> <span class="n">audio_tensor</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">current_length</span> <span class="o">&gt;</span> <span class="n">target_length</span><span class="p">:</span>
+        <span class="c1"># Trim to target length
+</span>        <span class="k">return</span> <span class="n">audio_tensor</span><span class="p">[:</span><span class="n">target_length</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">current_length</span> <span class="o">&lt;</span> <span class="n">target_length</span><span class="p">:</span>
+        <span class="c1"># Pad with zeros (silence)
+</span>        <span class="n">padding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_length</span> <span class="o">-</span> <span class="n">current_length</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">([</span><span class="n">audio_tensor</span><span class="p">,</span> <span class="n">padding</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Already the right length
+</span>        <span class="k">return</span> <span class="n">audio_tensor</span>
+</code></pre></div></div>
+
+<h3 id="problem-getting-realistic-sound-combinations">Problem: Getting Realistic Sound Combinations</h3>
+
+<p>Generating and mixing different audio elements doesn’t always result in natural-sounding combinations.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Adjust the mix weights carefully based on the prominence each element should have</li>
+  <li>Consider the frequency content of each element when setting weights (bass-heavy elements may need lower weights)</li>
+  <li>Use post-processing like equalization or compression to help elements blend:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">apply_simple_eq</span><span class="p">(</span><span class="n">mixed_audio</span><span class="p">,</span> <span class="n">bass_boost</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">treble_cut</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="s">"""Apply simple equalization to shape the frequency balance."""</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+    <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+    
+    <span class="c1"># Convert to numpy for signal processing
+</span>    <span class="n">audio_np</span> <span class="o">=</span> <span class="n">mixed_audio</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span>
+    
+    <span class="c1"># Apply bass boost if requested
+</span>    <span class="k">if</span> <span class="n">bass_boost</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Simple low-shelf filter
+</span>        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="p">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">300</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="s">'lowshelf'</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="n">bass_boost</span><span class="p">)</span>
+        <span class="n">audio_np</span> <span class="o">=</span> <span class="n">signal</span><span class="p">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">audio_np</span><span class="p">)</span>
+    
+    <span class="c1"># Apply treble cut if requested
+</span>    <span class="k">if</span> <span class="n">treble_cut</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Simple high-shelf filter
+</span>        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="p">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3000</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="s">'highshelf'</span><span class="p">,</span> <span class="n">gain</span><span class="o">=-</span><span class="n">treble_cut</span><span class="p">)</span>
+        <span class="n">audio_np</span> <span class="o">=</span> <span class="n">signal</span><span class="p">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">audio_np</span><span class="p">)</span>
+    
+    <span class="c1"># Return as tensor
+</span>    <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">audio_np</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="hands-on-challenge">Hands-on Challenge</h2>
+
+<p>Now it’s your turn to experiment with what you’ve learned. Try the following challenge:</p>
+
+<h3 id="challenge-interactive-scene-generator">Challenge: Interactive Scene Generator</h3>
+
+<p>Create an application that:</p>
+<ol>
+  <li>Provides a UI for defining audio scenes with multiple elements</li>
+  <li>Allows users to specify model types, prompts, and mix weights</li>
+  <li>Generates each element and provides a real-time preview</li>
+  <li>Saves the final mixed scene and its component parts</li>
+  <li>Implements memory-efficient generation for low-resource systems</li>
+</ol>
+
+<h3 id="bonus-challenge">Bonus Challenge</h3>
+
+<p>Extend the pipeline to support continuous generation for longer compositions. Implement a system that can generate audio in chunks and seamlessly stitch them together for extended playback.</p>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Unified pipeline architectures simplify audio generation by providing consistent interfaces across multiple model types</li>
+  <li>On-demand resource management is crucial for efficient operation, especially with large models</li>
+  <li>Combining different audio elements through properly weighted mixing creates rich, layered soundscapes</li>
+  <li>Memory management strategies enable working with multiple models even on resource-constrained systems</li>
+  <li>Scene-based composition approaches help organize complex audio generation workflows</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve mastered building a complete audio pipeline, you’re ready to explore:</p>
+
+<ul>
+  <li><strong>Text-to-Speech Integration</strong>: Learn how to combine AudioCraft with TTS systems for narrated audio experiences</li>
+  <li><strong>Interactive Audio Systems</strong>: Discover techniques for creating responsive audio that adapts to user input</li>
+  <li><strong>Research Extensions</strong>: Explore cutting-edge techniques for extending AudioCraft’s capabilities</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a> - Official source code and documentation</li>
+  <li><a href="https://ai.meta.com/blog/audiocraft-musicgen-audiogen-encodec-generative-ai-audio/">Meta AI Blog: AudioCraft</a> - Technical details and research insights</li>
+  <li><a href="https://www.dspguide.com/">Digital Signal Processing for Audio Applications</a> - In-depth guide to audio processing techniques</li>
+  <li><a href="https://www.routledge.com/Game-Audio-Implementation-A-Practical-Guide-to-Using-the-Unreal-Engine/Stevens-Raybould/p/book/9781138777248">Game Audio Implementation</a> - Advanced techniques for game audio pipelines</li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part3/sound-effect-techniques/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Sound Effect Generation Techniques</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/conclusion" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Conclusion: Your Journey with Meta AudioCraft</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

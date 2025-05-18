@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MusicGen Basics: Music Generation with AudioCraft</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/musicgen/musicgen_basics/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">MusicGen Basics: Music Generation with AudioCraft</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="musicgen-basics-music-generation-with-audiocraft">MusicGen Basics: Music Generation with AudioCraft</h1>
+
+<p>This tutorial introduces Meta’s MusicGen model and how to use it for generating music from text descriptions. We’ll explore the basic functionality and parameters that control the generation process.</p>
+
+<h2 id="introduction-to-musicgen">Introduction to MusicGen</h2>
+
+<p>MusicGen is a single model that generates high-quality music from textual descriptions such as “an upbeat pop song with catchy melodies” or “a soft jazz piece with piano and saxophone.” It was trained on a large dataset of licensed music and can produce impressive results across various musical genres and styles.</p>
+
+<p>Key features of MusicGen:</p>
+<ul>
+  <li>Generate music from text descriptions</li>
+  <li>Control the duration of generated audio</li>
+  <li>Adjust parameters to control the generation process</li>
+  <li>Condition on melody inputs to guide the music creation</li>
+</ul>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>Before we begin, make sure you have AudioCraft installed. If not, refer to the <a href="/practical-meta-audiocraft/tutorials/getting-started/">Getting Started Guide</a>.</p>
+
+<p>Let’s first create a simple script to generate music from a text prompt:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># musicgen_basic.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">generate_music</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s">"music_output"</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate music based on a text prompt.
+    
+    Args:
+        prompt (str): Text description of the music to generate
+        duration (float): Length of audio in seconds (max 30 seconds)
+        model_size (str): Size of model to use ("small", "medium", or "large")
+        output_dir (str): Directory to save output files
+        temperature (float): Controls randomness (higher = more random)
+    
+    Returns:
+        str: Path to the generated audio file
+    """</span>
+    <span class="c1"># Create output directory if it doesn't exist
+</span>    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music for prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using model size: </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">, duration: </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s"</span><span class="p">)</span>
+    
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="c1"># Determine device (MPS for Mac, CUDA for NVIDIA, CPU otherwise)
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load the model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate music
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Create a filename based on the prompt
+</span>    <span class="n">safe_prompt</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="p">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s">"_"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">prompt</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">safe_prompt</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s">s"</span>
+    
+    <span class="c1"># Save the audio file
+</span>    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span> 
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span> 
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> 
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Audio saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Example prompts to try
+</span>    <span class="n">prompts</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"An upbeat electronic dance track with a catchy melody and energetic rhythm"</span><span class="p">,</span>
+        <span class="s">"A peaceful piano solo with gentle melodies"</span><span class="p">,</span>
+        <span class="s">"An orchestral film score with dramatic strings and brass"</span><span class="p">,</span>
+        <span class="s">"A jazz fusion piece with funky bass and smooth saxophone"</span><span class="p">,</span>
+        <span class="s">"A lo-fi hip hop beat with relaxing atmosphere"</span>
+    <span class="p">]</span>
+    
+    <span class="c1"># Generate music for the first prompt
+</span>    <span class="c1"># Change the index to try different prompts
+</span>    <span class="n">generate_music</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">prompts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>  <span class="c1"># 10 seconds
+</span>        <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>  <span class="c1"># Use "small", "medium", or "large"
+</span>        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>  <span class="c1"># Default creativity level
+</span>    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>Save this script as <code class="language-plaintext highlighter-rouge">musicgen_basic.py</code> and run it to generate your first piece of music with MusicGen!</p>
+
+<h2 id="understanding-the-key-parameters">Understanding the Key Parameters</h2>
+
+<p>Let’s break down the important parameters that control MusicGen’s output:</p>
+
+<h3 id="model-size">Model Size</h3>
+
+<p>MusicGen comes in three sizes:</p>
+<ul>
+  <li><strong>small</strong>: Fastest generation, lowest memory usage, but less musical complexity</li>
+  <li><strong>medium</strong>: Balanced generation time and quality</li>
+  <li><strong>large</strong>: Highest quality output but slower and requires more memory</li>
+</ul>
+
+<p>Choose based on your hardware capabilities and quality requirements.</p>
+
+<h3 id="duration">Duration</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">duration</code> parameter controls how long the generated audio will be, in seconds. MusicGen officially supports up to 30 seconds of generation. For longer pieces, you’ll need to implement techniques for extending generation (covered in advanced tutorials).</p>
+
+<h3 id="temperature">Temperature</h3>
+
+<p>Temperature (between 0.0 and 2.0) controls the randomness of the generation:</p>
+<ul>
+  <li><strong>Lower values</strong> (0.1-0.5): More predictable, focused output</li>
+  <li><strong>Medium values</strong> (0.6-1.0): Balanced creativity</li>
+  <li><strong>Higher values</strong> (1.1-2.0): More experimental, diverse output</li>
+</ul>
+
+<h3 id="top-k-and-top-p-sampling">Top-k and Top-p Sampling</h3>
+
+<p>These parameters control the diversity of the generation:</p>
+
+<ul>
+  <li><strong>top_k</strong>: Limits sampling to the k most likely tokens at each step</li>
+  <li><strong>top_p</strong>: Uses nucleus sampling to dynamically select the most likely tokens (set to 0.0 to disable)</li>
+</ul>
+
+<p>In our example, we set <code class="language-plaintext highlighter-rouge">top_k=250</code> and disabled top-p sampling, which works well for many cases.</p>
+
+<h2 id="experimenting-with-prompts">Experimenting with Prompts</h2>
+
+<p>The text prompt is the most important input for guiding MusicGen. Here are some strategies for crafting effective prompts:</p>
+
+<h3 id="be-specific-about-genre-and-style">Be Specific About Genre and Style</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Specific genre prompts
+</span><span class="n">genres</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"A classical piano sonata in the style of Mozart"</span><span class="p">,</span>
+    <span class="s">"A heavy metal track with distorted guitars and double bass drums"</span><span class="p">,</span>
+    <span class="s">"A reggae song with laid-back rhythm and prominent bass"</span><span class="p">,</span>
+    <span class="s">"A techno track with pulsing synthesizers and four-on-the-floor beat"</span><span class="p">,</span>
+    <span class="s">"A bluegrass tune with fiddle and banjo"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="specify-instruments">Specify Instruments</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Instrument-focused prompts
+</span><span class="n">instruments</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"A guitar solo with virtuosic playing and melodic phrases"</span><span class="p">,</span>
+    <span class="s">"A drum and bass track with complex percussion patterns"</span><span class="p">,</span>
+    <span class="s">"A string quartet playing a melancholic piece"</span><span class="p">,</span>
+    <span class="s">"A synthesizer lead melody over a deep bass line"</span><span class="p">,</span>
+    <span class="s">"An accordion folk tune with traditional rhythms"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="describe-mood-and-emotion">Describe Mood and Emotion</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Emotional prompts
+</span><span class="n">moods</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"A triumphant and uplifting orchestral piece"</span><span class="p">,</span>
+    <span class="s">"A melancholic and introspective piano melody"</span><span class="p">,</span>
+    <span class="s">"An energetic and joyful pop song"</span><span class="p">,</span>
+    <span class="s">"A tense and suspenseful soundtrack for a thriller movie"</span><span class="p">,</span>
+    <span class="s">"A peaceful and serene ambient track for meditation"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h3 id="combine-descriptions-for-better-results">Combine Descriptions for Better Results</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Combined prompts for more specific guidance
+</span><span class="n">combined</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">"An energetic electronic dance track with arpeggiated synthesizers, punchy drums, and a catchy melody in the key of A minor"</span><span class="p">,</span>
+    <span class="s">"A calm acoustic guitar ballad with gentle finger picking, soft piano in the background, and a melancholic mood"</span><span class="p">,</span>
+    <span class="s">"A jazz fusion piece with complex chord progressions, virtuosic saxophone solo, and syncopated rhythm section"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="creating-a-genre-exploration-script">Creating a Genre Exploration Script</h2>
+
+<p>Let’s create a script that explores different musical genres:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># musicgen_genre_explorer.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">def</span> <span class="nf">explore_genres</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"genre_samples"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate samples across different musical genres.
+    
+    Args:
+        model_size (str): Size of model to use
+        duration (float): Length of each sample in seconds
+        output_dir (str): Directory to save samples
+    """</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define genre prompts
+</span>    <span class="n">genres</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"classical"</span><span class="p">:</span> <span class="s">"A classical orchestra playing a beautiful symphony with strings and woodwinds"</span><span class="p">,</span>
+        <span class="s">"jazz"</span><span class="p">:</span> <span class="s">"A jazz quartet with piano, bass, drums, and saxophone playing a smooth jazz piece"</span><span class="p">,</span>
+        <span class="s">"rock"</span><span class="p">:</span> <span class="s">"An energetic rock song with electric guitars, bass, and drums"</span><span class="p">,</span>
+        <span class="s">"electronic"</span><span class="p">:</span> <span class="s">"An electronic dance music track with synthesizers and a strong beat"</span><span class="p">,</span>
+        <span class="s">"ambient"</span><span class="p">:</span> <span class="s">"A peaceful ambient soundscape with soft pads and atmospheric textures"</span><span class="p">,</span>
+        <span class="s">"hiphop"</span><span class="p">:</span> <span class="s">"A hip hop beat with boom bap drums and a catchy sample"</span><span class="p">,</span>
+        <span class="s">"folk"</span><span class="p">:</span> <span class="s">"An acoustic folk song with guitar and soft vocals"</span><span class="p">,</span>
+        <span class="s">"latin"</span><span class="p">:</span> <span class="s">"A latin jazz piece with congas, piano, and brass section"</span><span class="p">,</span>
+        <span class="s">"metal"</span><span class="p">:</span> <span class="s">"A heavy metal song with distorted guitars, aggressive drums, and power chords"</span><span class="p">,</span>
+        <span class="s">"funk"</span><span class="p">:</span> <span class="s">"A funky groove with slap bass, rhythm guitar, and brass stabs"</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate music for each genre
+</span>    <span class="k">for</span> <span class="n">genre_name</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">genres</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">genre_name</span><span class="si">}</span><span class="s"> music..."</span><span class="p">)</span>
+        
+        <span class="c1"># Generate
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Save
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">genre_name</span><span class="si">}</span><span class="s">_sample"</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved </span><span class="si">{</span><span class="n">genre_name</span><span class="si">}</span><span class="s"> sample to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">explore_genres</span><span class="p">(</span><span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This script will generate samples across 10 different musical genres, letting you hear how MusicGen interprets various genre descriptions.</p>
+
+<h2 id="temperature-exploration">Temperature Exploration</h2>
+
+<p>Let’s also create a script to explore how temperature affects generation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># musicgen_temperature_explorer.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">def</span> <span class="nf">explore_temperatures</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"temperature_samples"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate variations of the same prompt at different temperatures.
+    
+    Args:
+        prompt (str): Text description of music to generate
+        model_size (str): Size of model to use
+        duration (float): Length of each sample in seconds
+        output_dir (str): Directory to save samples
+    """</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define temperatures to explore
+</span>    <span class="n">temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">]</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># Generate music at each temperature
+</span>    <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">temperatures</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating with temperature </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s">..."</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Generate
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Save
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"temp_</span><span class="si">{</span><span class="n">temp</span><span class="p">:.</span><span class="mi">1</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved temperature </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s"> sample to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Choose a prompt that works well for temperature exploration
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="s">"A melodic piano piece with gentle strings in the background"</span>
+    <span class="n">explore_temperatures</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This script generates variations of the same prompt at different temperature settings, allowing you to hear how this parameter affects creativity and variation.</p>
+
+<h2 id="exercises">Exercises</h2>
+
+<ol>
+  <li>
+    <p><strong>Genre Blending</strong>: Try creating prompts that blend multiple genres (e.g., “A jazz-rock fusion with elements of electronic music”).</p>
+  </li>
+  <li>
+    <p><strong>Parameter Exploration</strong>: Modify the temperature explorer script to test different <code class="language-plaintext highlighter-rouge">top_k</code> values while keeping temperature constant.</p>
+  </li>
+  <li>
+    <p><strong>Instrument Focus</strong>: Create a script similar to the genre explorer but focusing on different solo instruments.</p>
+  </li>
+  <li>
+    <p><strong>Mood Generator</strong>: Build a script that generates music for different emotional moods and compares the results.</p>
+  </li>
+</ol>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you understand the basics of MusicGen, you can:</p>
+
+<ol>
+  <li>Experiment with different prompts and parameters</li>
+  <li>Try using different model sizes to see quality differences</li>
+  <li>Explore melody conditioning in the <a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_advanced/">Advanced MusicGen</a> tutorial</li>
+  <li>Learn how to create longer pieces with <a href="musicgen_extended.md">Extended Generation Techniques</a></li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>MusicGen provides an impressive capability to generate music from text descriptions. By understanding how to craft effective prompts and adjust generation parameters, you can create a wide variety of musical outputs. As you continue with these tutorials, you’ll discover more advanced techniques for fine-tuning and controlling the generation process.</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

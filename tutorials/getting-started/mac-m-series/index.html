@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setting Up AudioCraft on Apple Silicon Macs (M-Series)</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/getting-started/mac-m-series/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Setting Up AudioCraft on Apple Silicon Macs (M-Series)</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="setting-up-audiocraft-on-apple-silicon-macs-m-series">Setting Up AudioCraft on Apple Silicon Macs (M-Series)</h1>
+
+<p>This guide will help you set up Meta’s AudioCraft framework on Apple Silicon Macs, including M1, M2, M3, and M4 chips. We’ll leverage the Metal Performance Shaders (MPS) backend for GPU acceleration.</p>
+
+<h2 id="system-requirements">System Requirements</h2>
+
+<ul>
+  <li>macOS 12.3 or newer</li>
+  <li>Apple Silicon Mac (M1, M2, M3, or M4 series)</li>
+  <li>Python 3.9 (recommended for AudioCraft)</li>
+  <li>Miniforge or Miniconda (recommended for Apple Silicon)</li>
+</ul>
+
+<h2 id="installation-steps">Installation Steps</h2>
+
+<h3 id="1-set-up-conda-for-apple-silicon">1. Set Up Conda for Apple Silicon</h3>
+
+<p>First, download and install Miniforge, which provides Conda optimized for Apple Silicon:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Download Miniforge</span>
+curl <span class="nt">-L</span> <span class="nt">-O</span> <span class="s2">"https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh"</span>
+bash Miniforge3-MacOSX-arm64.sh
+</code></pre></div></div>
+
+<h3 id="2-create-and-activate-a-conda-environment">2. Create and Activate a Conda Environment</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a new environment with Python 3.9</span>
+conda create <span class="nt">-n</span> audiocraft <span class="nv">python</span><span class="o">=</span>3.9
+conda activate audiocraft
+</code></pre></div></div>
+
+<h3 id="3-install-pytorch-with-metal-support">3. Install PyTorch with Metal Support</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install PyTorch 2.1.0 with MPS support</span>
+pip <span class="nb">install </span><span class="nv">torch</span><span class="o">==</span>2.1.0 <span class="nv">torchaudio</span><span class="o">==</span>2.1.0
+</code></pre></div></div>
+
+<h3 id="4-install-audiocraft">4. Install AudioCraft</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install AudioCraft from PyPI</span>
+pip <span class="nb">install </span>audiocraft
+
+<span class="c"># Or install directly from GitHub for the latest version</span>
+<span class="c"># pip install git+https://github.com/facebookresearch/audiocraft.git</span>
+</code></pre></div></div>
+
+<h3 id="5-install-additional-dependencies">5. Install Additional Dependencies</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install FFmpeg (for audio processing)</span>
+conda <span class="nb">install </span>ffmpeg <span class="nt">-c</span> conda-forge
+</code></pre></div></div>
+
+<h2 id="verifying-metal-gpu-support">Verifying Metal GPU Support</h2>
+
+<p>Create a simple Python script to verify that MPS (Metal Performance Shaders) is working:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># Check if MPS is available
+</span><span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"MPS available: </span><span class="si">{</span><span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="c1"># Create an MPS device
+</span>    <span class="n">mps_device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"mps"</span><span class="p">)</span>
+    
+    <span class="c1"># Create a tensor on MPS device
+</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">mps_device</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Tensor on MPS device: </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># You'll see output at this point if MPS is working correctly
+</span><span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"MPS device not found. Check your PyTorch installation."</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Save this as <code class="language-plaintext highlighter-rouge">test_mps.py</code> and run it with <code class="language-plaintext highlighter-rouge">python test_mps.py</code>. If everything is set up correctly, you should see that MPS is available and a tensor created on the MPS device.</p>
+
+<h2 id="performance-optimization-for-m-series-macs">Performance Optimization for M-Series Macs</h2>
+
+<h3 id="memory-management">Memory Management</h3>
+
+<p>Apple Silicon Macs have unified memory architecture, which means CPU and GPU share the same memory. To optimize performance:</p>
+
+<ol>
+  <li><strong>Monitor Memory Usage</strong>: Use Activity Monitor to keep an eye on memory pressure.</li>
+  <li><strong>Batch Size Adjustment</strong>: Start with smaller batch sizes and gradually increase until you find the optimal balance.</li>
+  <li><strong>Model Size Selection</strong>: Choose appropriate model sizes (small, medium, large) based on your Mac’s capabilities.</li>
+</ol>
+
+<h3 id="recommended-settings-for-different-mac-models">Recommended Settings for Different Mac Models</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Mac Model</th>
+      <th>MusicGen Model Size</th>
+      <th>AudioGen Model Size</th>
+      <th>Batch Size</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>M1/M2</td>
+      <td>small/medium</td>
+      <td>small/medium</td>
+      <td>1-4</td>
+      <td>Limit generation duration to 30 seconds</td>
+    </tr>
+    <tr>
+      <td>M3</td>
+      <td>medium/large</td>
+      <td>medium/large</td>
+      <td>2-8</td>
+      <td>Can handle longer generations</td>
+    </tr>
+    <tr>
+      <td>M4 Max</td>
+      <td>large/xlarge</td>
+      <td>large</td>
+      <td>4-16</td>
+      <td>Can handle complex generations</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="common-issues">Common Issues</h3>
+
+<ol>
+  <li><strong>Out of Memory Errors</strong>
+    <ul>
+      <li>Solution: Reduce batch size or model size</li>
+      <li>Try closing other applications to free up memory</li>
+    </ul>
+  </li>
+  <li><strong>Slow Generation Times</strong>
+    <ul>
+      <li>Metal initialization has some overhead</li>
+      <li>First generation is always slower; subsequent generations are faster</li>
+      <li>Try running in batches instead of one-by-one</li>
+    </ul>
+  </li>
+  <li><strong>PyTorch Version Issues</strong>
+    <ul>
+      <li>Make sure you’re using PyTorch 2.1.0 or newer</li>
+      <li>MPS requires macOS 12.3+</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="getting-help">Getting Help</h3>
+
+<p>If you encounter issues, check:</p>
+<ul>
+  <li><a href="https://github.com/facebookresearch/audiocraft/issues">AudioCraft GitHub Issues</a></li>
+  <li><a href="https://discuss.pytorch.org/">PyTorch Forums</a></li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you have AudioCraft running on your Apple Silicon Mac, proceed to our <a href="/practical-meta-audiocraft/tutorials/musicgen/">MusicGen tutorial</a> or <a href="/practical-meta-audiocraft/tutorials/audiogen/">AudioGen tutorial</a> to start generating audio!</p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

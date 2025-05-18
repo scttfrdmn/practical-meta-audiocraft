@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Scene Composition</title>
+  <meta name="description" content="“We’re creating an immersive VR experience set in different biomes across the world. Each environment needs a complete, cohesive soundscape that blends ambie...">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part3/audio-scene-composition/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty intermediate">Intermediate</span>
+      <span class="estimated-time">60</span>
+    </div>
+    <h1>Audio Scene Composition</h1>
+  </div>
+  
+  
+  
+  <blockquote>
+  <p><em>“We’re creating an immersive VR experience set in different biomes across the world. Each environment needs a complete, cohesive soundscape that blends ambient sounds, wildlife, weather, and subtle music. We want users to feel truly present in these spaces, and the audio has to adjust based on time of day and weather conditions. Creating all these audio environments manually would take months of work.”</em></p>
+
+  <p>— Sophia Ramirez, VR experience producer</p>
+</blockquote>
+
+<h1 id="chapter-12-audio-scene-composition">Chapter 12: Audio Scene Composition</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>Generating individual sound effects is powerful, but real-world applications often require complete audio scenes—cohesive soundscapes that combine multiple audio elements to create immersive environments. These environments need to feel natural, balanced, and appropriate for their context, whether it’s a rainforest at dawn, a cyberpunk cityscape at night, or an alien world with exotic phenomena.</p>
+
+<p>In this chapter, we’ll explore techniques for composing complete audio scenes by combining multiple AI-generated elements into coherent, multi-layered soundscapes.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you will be able to:</p>
+
+<ul>
+  <li>Create multi-layered audio scenes that combine different sound categories</li>
+  <li>Implement dynamic audio environments that respond to parameter changes</li>
+  <li>Balance and mix multiple audio elements for natural, cohesive soundscapes</li>
+  <li>Design flexible scene templates for different environment types</li>
+  <li>Apply spatial audio concepts to create immersive 3D soundscapes</li>
+  <li>Develop scene transition systems for smooth audio changes</li>
+  <li>Export and integrate composed audio scenes into various applications</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>Understanding of AudioGen basics (Chapter 10)</li>
+  <li>Experience with sound effect generation techniques (Chapter 11)</li>
+  <li>Python environment with AudioCraft installed</li>
+  <li>Basic understanding of audio mixing concepts</li>
+</ul>
+
+<h2 id="key-concepts-audio-scene-architecture">Key Concepts: Audio Scene Architecture</h2>
+
+<h3 id="understanding-audio-scene-layers">Understanding Audio Scene Layers</h3>
+
+<p>Complete audio scenes typically consist of multiple layers, each serving a different purpose:</p>
+
+<ol>
+  <li><strong>Ambient Background</strong>: Continuous, relatively uniform sounds that establish the base atmosphere (room tone, environmental ambience)</li>
+  <li><strong>Environmental Elements</strong>: Distinctive sounds that characterize the environment (weather, machinery, nature)</li>
+  <li><strong>Dynamic Events</strong>: Occasional, non-continuous sounds that add interest and variation (animals, vehicles, interactions)</li>
+  <li><strong>Musical Elements</strong>: Optional background music or tonal elements that enhance mood</li>
+  <li><strong>Narrative Elements</strong>: Sounds that support the story or context (dialogue, key sound objects)</li>
+</ol>
+
+<p>These layers combine to create a complete sonic environment that feels alive and immersive.</p>
+
+<h3 id="scene-composition-principles">Scene Composition Principles</h3>
+
+<p>When composing audio scenes, several key principles help create effective results:</p>
+
+<ol>
+  <li><strong>Proper Layering</strong>: Each element should occupy its appropriate space in the mix</li>
+  <li><strong>Frequency Balance</strong>: Different elements should occupy different frequency ranges</li>
+  <li><strong>Dynamic Spacing</strong>: Sounds should be timed to avoid overwhelming the listener</li>
+  <li><strong>Contextual Relevance</strong>: All elements should make sense in the environment</li>
+  <li><strong>Emotional Coherence</strong>: The emotional tone should be consistent across elements</li>
+</ol>
+
+<h2 id="building-a-scene-composition-system">Building a Scene Composition System</h2>
+
+<p>Let’s implement a complete scene composition system:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># audio_scene_composer.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span><span class="p">,</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">AudioSceneComposer</span><span class="p">:</span>
+    <span class="s">"""
+    System for composing complete audio scenes by combining multiple
+    AI-generated elements into cohesive soundscapes.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span> <span class="n">audio_model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""Initialize the scene composer with music and audio models."""</span>
+        <span class="c1"># Determine device automatically if not specified
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="c1"># Load the models
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">music_model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">music_model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading AudioGen </span><span class="si">{</span><span class="n">audio_model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">audio_model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Store sample rate
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span><span class="p">.</span><span class="n">sample_rate</span>  <span class="c1"># Same for both models
+</span>        
+        <span class="c1"># Track generated elements
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">def</span> <span class="nf">generate_scene_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="s">"""
+        Generate a single scene element.
+        
+        Args:
+            element_id (str): Identifier for this element
+            prompt (str): Description of the sound to generate
+            model_type (str): Type of model to use ("music" or "audio")
+            duration (float): Duration in seconds
+            temperature (float): Generation temperature
+            
+        Returns:
+            torch.Tensor: Generated audio tensor
+        """</span>
+        <span class="c1"># Choose the appropriate model
+</span>        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">'..."</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="c1"># Generate the audio
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        <span class="n">audio_tensor</span> <span class="o">=</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+        
+        <span class="c1"># Store element info
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="s">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+            <span class="s">"duration"</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s">"audio"</span><span class="p">:</span> <span class="n">audio_tensor</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">audio_tensor</span>
+    
+    <span class="k">def</span> <span class="nf">mix_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">volumes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Mix multiple scene elements into a cohesive scene.
+        
+        Args:
+            element_ids (list): List of element IDs to include (uses all if None)
+            volumes (dict): Dictionary mapping element IDs to volume levels (0.0-1.0)
+            output_path (str): Path to save the final scene audio
+            
+        Returns:
+            torch.Tensor: Mixed scene audio tensor
+        """</span>
+        <span class="c1"># Use all elements if none specified
+</span>        <span class="k">if</span> <span class="n">element_ids</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">element_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+        
+        <span class="c1"># Verify elements exist
+</span>        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">' not found. Generate it first."</span><span class="p">)</span>
+        
+        <span class="c1"># Default to equal volumes if not specified
+</span>        <span class="k">if</span> <span class="n">volumes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">volumes</span> <span class="o">=</span> <span class="p">{</span><span class="n">element_id</span><span class="p">:</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">}</span>
+        
+        <span class="c1"># Ensure all elements have volume settings
+</span>        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">volumes</span><span class="p">:</span>
+                <span class="n">volumes</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Mixing scene with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">element_ids</span><span class="p">)</span><span class="si">}</span><span class="s"> elements:"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s"> (volume: </span><span class="si">{</span><span class="n">volumes</span><span class="p">[</span><span class="n">element_id</span><span class="p">]:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">)"</span><span class="p">)</span>
+        
+        <span class="c1"># Find the longest element
+</span>        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">][</span><span class="s">"audio"</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">)</span>
+        
+        <span class="c1"># Create empty output array
+</span>        <span class="n">scene_audio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        
+        <span class="c1"># Mix elements
+</span>        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">"audio"</span><span class="p">]</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">volumes</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+            
+            <span class="c1"># Apply volume and add to scene (up to element length)
+</span>            <span class="n">scene_audio</span><span class="p">[:</span><span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">audio</span> <span class="o">*</span> <span class="n">volume</span>
+        
+        <span class="c1"># Normalize if needed to prevent clipping
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">scene_audio</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">scene_audio</span> <span class="o">=</span> <span class="n">scene_audio</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">scene_audio</span><span class="p">))</span>
+        
+        <span class="c1"># Save the scene if output path is provided
+</span>        <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+            <span class="c1"># Create directory if needed
+</span>            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Save the audio
+</span>            <span class="n">audio_write</span><span class="p">(</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">scene_audio</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+            <span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Scene saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">scene_audio</span>
+    
+    <span class="k">def</span> <span class="nf">save_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_id</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"scene_elements"</span><span class="p">):</span>
+        <span class="s">"""
+        Save a generated scene element to disk.
+        
+        Args:
+            element_id (str): ID of the element to save
+            output_dir (str): Directory to save the element
+            
+        Returns:
+            str: Path to the saved file
+        """</span>
+        <span class="k">if</span> <span class="n">element_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">' not found. Generate it first."</span><span class="p">)</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">element_id</span><span class="p">)</span>
+        
+        <span class="c1"># Save the audio
+</span>        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">"audio"</span><span class="p">],</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save metadata
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.json"</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">"element_id"</span><span class="p">:</span> <span class="n">element_id</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="n">element</span><span class="p">[</span><span class="s">"prompt"</span><span class="p">],</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="n">element</span><span class="p">[</span><span class="s">"model_type"</span><span class="p">],</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="n">element</span><span class="p">[</span><span class="s">"duration"</span><span class="p">],</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="n">element</span><span class="p">[</span><span class="s">"temperature"</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">' to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+    
+    <span class="k">def</span> <span class="nf">save_all_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"scene_elements"</span><span class="p">):</span>
+        <span class="s">"""Save all generated scene elements to disk."""</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">save_element</span><span class="p">(</span><span class="n">element_id</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">paths</span>
+    
+    <span class="k">def</span> <span class="nf">create_scene_from_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Create a complete scene based on a scene template.
+        
+        Args:
+            template (dict): Scene template with elements, mixing rules, etc.
+            parameters (dict): Parameters to customize the scene
+            output_dir (str): Directory to save scene files
+            
+        Returns:
+            dict: Information about the generated scene
+        """</span>
+        <span class="c1"># Default parameter values if not specified
+</span>        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Get scene name and create output directory
+</span>        <span class="n">scene_name</span> <span class="o">=</span> <span class="n">template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="s">"unnamed_scene"</span><span class="p">)</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"scene_</span><span class="si">{</span><span class="n">scene_name</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'_'</span><span class="p">).</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"elements"</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Creating scene: </span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Process each element in the template
+</span>        <span class="n">elements</span> <span class="o">=</span> <span class="n">template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"elements"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">volumes</span> <span class="o">=</span> <span class="n">template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"volumes"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">generated_elements</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">element_id</span><span class="p">,</span> <span class="n">element_config</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Get base configuration
+</span>            <span class="n">model_type</span> <span class="o">=</span> <span class="n">element_config</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"model_type"</span><span class="p">,</span> <span class="s">"audio"</span><span class="p">)</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">element_config</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"duration"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+            <span class="n">temperature</span> <span class="o">=</span> <span class="n">element_config</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"temperature"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            
+            <span class="c1"># Format the prompt with parameters
+</span>            <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">element_config</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"prompt"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Only format if parameters are provided in the prompt template
+</span>                <span class="k">if</span> <span class="s">"{"</span> <span class="ow">in</span> <span class="n">prompt_template</span> <span class="ow">and</span> <span class="s">"}"</span> <span class="ow">in</span> <span class="n">prompt_template</span><span class="p">:</span>
+                    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_template</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">parameters</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_template</span>
+            <span class="k">except</span> <span class="nb">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Handle missing parameters
+</span>                <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Warning: Missing parameter </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s"> for element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+                <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_template</span>
+            
+            <span class="c1"># Generate the element
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">generate_scene_element</span><span class="p">(</span>
+                <span class="n">element_id</span><span class="o">=</span><span class="n">element_id</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+                <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Save individual element
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">save_element</span><span class="p">(</span><span class="n">element_id</span><span class="p">,</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"elements"</span><span class="p">))</span>
+            <span class="n">generated_elements</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span>
+        
+        <span class="c1"># Mix and save the full scene
+</span>        <span class="n">scene_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scene_name</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'_'</span><span class="p">).</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">mix_scene</span><span class="p">(</span>
+            <span class="n">element_ids</span><span class="o">=</span><span class="n">generated_elements</span><span class="p">,</span>
+            <span class="n">volumes</span><span class="o">=</span><span class="n">volumes</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="o">=</span><span class="n">scene_path</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save scene configuration
+</span>        <span class="n">scene_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"name"</span><span class="p">:</span> <span class="n">scene_name</span><span class="p">,</span>
+            <span class="s">"template"</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span>
+            <span class="s">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+            <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span><span class="n">eid</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="s">"prompt"</span><span class="p">]</span> <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">generated_elements</span><span class="p">},</span>
+            <span class="s">"volumes"</span><span class="p">:</span> <span class="n">volumes</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+            <span class="s">"output_file"</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scene_path</span><span class="si">}</span><span class="s">.wav"</span>
+        <span class="p">}</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"scene_config.json"</span><span class="p">),</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">scene_config</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Create README
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"README.txt"</span><span class="p">),</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"AUDIO SCENE: </span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"="</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scene_name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">13</span><span class="p">)</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Scene elements:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">generated_elements</span><span class="p">:</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Prompt: </span><span class="se">\"</span><span class="si">{</span><span class="n">element</span><span class="p">[</span><span class="s">'prompt'</span><span class="p">]</span><span class="si">}</span><span class="se">\"\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Model: </span><span class="si">{</span><span class="n">element</span><span class="p">[</span><span class="s">'model_type'</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Duration: </span><span class="si">{</span><span class="n">element</span><span class="p">[</span><span class="s">'duration'</span><span class="p">]</span><span class="si">}</span><span class="s">s</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Temperature: </span><span class="si">{</span><span class="n">element</span><span class="p">[</span><span class="s">'temperature'</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Volume in mix: </span><span class="si">{</span><span class="n">volumes</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">element_id</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"Complete scene file: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">scene_path</span><span class="p">)</span><span class="si">}</span><span class="s">.wav</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Scene '</span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="s">' created successfully!"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Scene files saved to </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">scene_config</span>
+</code></pre></div></div>
+
+<p>This scene composer provides a flexible foundation for creating multi-layered audio scenes. It handles:</p>
+
+<ol>
+  <li>Generating individual scene elements with appropriate models</li>
+  <li>Mixing elements with customizable volume levels</li>
+  <li>Saving both individual elements and complete scenes</li>
+  <li>Creating scenes from templates with parameters</li>
+</ol>
+
+<h2 id="scene-templates-for-different-environments">Scene Templates for Different Environments</h2>
+
+<p>Different environments require different approaches to scene composition. Let’s create a library of scene templates:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># scene_template_library.py
+</span>
+<span class="c1"># Natural Environment Templates
+</span><span class="n">natural_templates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"forest"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Forest Environment"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_background"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Continuous forest ambient background with light wind through leaves and distant bird calls"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+            <span class="p">},</span>
+            <span class="s">"weather"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{weather} conditions in a forest with appropriate sounds and intensity"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.9</span>
+            <span class="p">},</span>
+            <span class="s">"wildlife"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Forest wildlife sounds with {wildlife_type} being active and occasional movement in underbrush"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Subtle {mood} ambient music inspired by forest environments, with soft {instrument} and natural tones"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_background"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s">"weather"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"wildlife"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.4</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    
+    <span class="s">"ocean"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Ocean Environment"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"waves"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{wave_intensity} ocean waves breaking on {shore_type} shore with natural water movement and rhythm"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+            <span class="p">},</span>
+            <span class="s">"wind"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{wind_intensity} sea breeze with appropriate air movement and subtle effects on the environment"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">},</span>
+            <span class="s">"wildlife"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Coastal wildlife with {seabird_type} calls, movement, and occasional water interaction"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Peaceful {mood} ambient music inspired by ocean sounds, with flowing {instrument} and maritime qualities"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"waves"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s">"wind"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"wildlife"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.35</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Urban Environment Templates
+</span><span class="n">urban_templates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"city_street"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"City Street"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"traffic"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{traffic_intensity} city traffic with vehicle movement, engines, and occasional horns in a {city_type} setting"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">},</span>
+            <span class="s">"people"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{crowd_density} pedestrian activity with footsteps, conversations, and movement on city streets"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.9</span>
+            <span class="p">},</span>
+            <span class="s">"urban_elements"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Urban environment sounds like construction, shops, and city infrastructure during {time_of_day}"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Urban {mood} background music with {instrument} that complements a city environment"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"traffic"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s">"people"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"urban_elements"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    
+    <span class="s">"cafe"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Cafe Environment"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_background"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Interior cafe ambience with {crowd_level} customer activity and general restaurant sounds"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+            <span class="p">},</span>
+            <span class="s">"service_sounds"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Cafe service sounds with coffee machines, dishware, and staff activity in a {cafe_type} establishment"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.9</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{genre} music playing through cafe speakers with appropriate volume and acoustics for a cafe environment"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+            <span class="p">},</span>
+            <span class="s">"outside_ambience"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Muffled outside sounds entering a cafe, including {outside_elements} with subtle indoor filtering"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_background"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s">"service_sounds"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s">"outside_ambience"</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Fantasy/Sci-Fi Environment Templates
+</span><span class="n">fictional_templates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"spaceship"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Spaceship Environment"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"engine_core"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Spaceship {engine_type} engine core with mechanical and energy hum at {power_level} power"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.7</span>
+            <span class="p">},</span>
+            <span class="s">"systems"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Spacecraft systems with computers, life support, and {tech_level} technology operating in background"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">},</span>
+            <span class="s">"crew_activity"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"{activity_level} crew movement and operations throughout the spacecraft with appropriate sounds"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.9</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Sci-fi ambient {mood} music with {instrument} creating a {atmosphere_type} spaceship atmosphere"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"engine_core"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"systems"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s">"crew_activity"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.4</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    
+    <span class="s">"magical_realm"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">"name"</span><span class="p">:</span> <span class="s">"Magical Realm"</span><span class="p">,</span>
+        <span class="s">"elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_magic"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Ambient magical environment with {magic_type} energy, mystical resonances, and enchanted atmosphere"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">},</span>
+            <span class="s">"creatures"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Magical creatures with {creature_type} sounds, movements, and activities in an enchanted realm"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="p">},</span>
+            <span class="s">"environment"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"audio"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Fantasy {environment_type} with magical plants, structures, and phenomena creating unique sounds"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.9</span>
+            <span class="p">},</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="s">"music"</span><span class="p">,</span>
+                <span class="s">"prompt"</span><span class="p">:</span> <span class="s">"Ethereal {mood} fantasy music with {instrument} and magical qualities appropriate for an enchanted realm"</span><span class="p">,</span>
+                <span class="s">"duration"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.8</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">"volumes"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"ambient_magic"</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s">"creatures"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+            <span class="s">"environment"</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s">"music"</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Combined template library
+</span><span class="n">scene_templates</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">natural_templates</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">urban_templates</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">fictional_templates</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>These templates provide structured frameworks for different environment types, with:</p>
+<ol>
+  <li>Appropriate element types for each environment</li>
+  <li>Balanced volume mixing recommendations</li>
+  <li>Parameter placeholders for customization</li>
+  <li>Duration and temperature settings optimized for each element type</li>
+</ol>
+
+<h2 id="implementing-a-dynamic-audio-environment-system">Implementing a Dynamic Audio Environment System</h2>
+
+<p>Let’s create a dynamic audio environment system that can respond to parameter changes in real-time:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># dynamic_audio_environment.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">audio_scene_composer</span> <span class="kn">import</span> <span class="n">AudioSceneComposer</span>
+<span class="kn">from</span> <span class="nn">scene_template_library</span> <span class="kn">import</span> <span class="n">scene_templates</span>
+
+<span class="k">class</span> <span class="nc">DynamicAudioEnvironment</span><span class="p">:</span>
+    <span class="s">"""
+    System for creating parametric audio environments that can
+    transition between different states dynamically.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Initialize the dynamic audio environment system."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">composer</span> <span class="o">=</span> <span class="n">AudioSceneComposer</span><span class="p">()</span>
+        
+        <span class="c1"># Available parameter options
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">parameter_options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># Weather parameters
+</span>            <span class="s">"weather"</span><span class="p">:</span> <span class="p">[</span><span class="s">"clear"</span><span class="p">,</span> <span class="s">"light_rain"</span><span class="p">,</span> <span class="s">"heavy_rain"</span><span class="p">,</span> <span class="s">"storm"</span><span class="p">,</span> <span class="s">"windy"</span><span class="p">,</span> <span class="s">"foggy"</span><span class="p">,</span> <span class="s">"snowy"</span><span class="p">],</span>
+            <span class="s">"wind_intensity"</span><span class="p">:</span> <span class="p">[</span><span class="s">"none"</span><span class="p">,</span> <span class="s">"light"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">,</span> <span class="s">"strong"</span><span class="p">,</span> <span class="s">"gale"</span><span class="p">],</span>
+            <span class="s">"precipitation"</span><span class="p">:</span> <span class="p">[</span><span class="s">"none"</span><span class="p">,</span> <span class="s">"drizzle"</span><span class="p">,</span> <span class="s">"rain"</span><span class="p">,</span> <span class="s">"downpour"</span><span class="p">,</span> <span class="s">"hail"</span><span class="p">,</span> <span class="s">"snow"</span><span class="p">,</span> <span class="s">"sleet"</span><span class="p">],</span>
+            
+            <span class="c1"># Time parameters
+</span>            <span class="s">"time_of_day"</span><span class="p">:</span> <span class="p">[</span><span class="s">"dawn"</span><span class="p">,</span> <span class="s">"morning"</span><span class="p">,</span> <span class="s">"midday"</span><span class="p">,</span> <span class="s">"afternoon"</span><span class="p">,</span> <span class="s">"evening"</span><span class="p">,</span> <span class="s">"night"</span><span class="p">,</span> <span class="s">"midnight"</span><span class="p">],</span>
+            <span class="s">"daylight"</span><span class="p">:</span> <span class="p">[</span><span class="s">"bright"</span><span class="p">,</span> <span class="s">"overcast"</span><span class="p">,</span> <span class="s">"dim"</span><span class="p">,</span> <span class="s">"dark"</span><span class="p">],</span>
+            
+            <span class="c1"># Nature parameters
+</span>            <span class="s">"wildlife_type"</span><span class="p">:</span> <span class="p">[</span><span class="s">"birds"</span><span class="p">,</span> <span class="s">"insects"</span><span class="p">,</span> <span class="s">"mammals"</span><span class="p">,</span> <span class="s">"reptiles"</span><span class="p">,</span> <span class="s">"mixed"</span><span class="p">],</span>
+            <span class="s">"wildlife_activity"</span><span class="p">:</span> <span class="p">[</span><span class="s">"quiet"</span><span class="p">,</span> <span class="s">"sparse"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">,</span> <span class="s">"active"</span><span class="p">,</span> <span class="s">"intense"</span><span class="p">],</span>
+            <span class="s">"vegetation"</span><span class="p">:</span> <span class="p">[</span><span class="s">"sparse"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">,</span> <span class="s">"dense"</span><span class="p">,</span> <span class="s">"lush"</span><span class="p">],</span>
+            
+            <span class="c1"># Urban parameters
+</span>            <span class="s">"traffic_intensity"</span><span class="p">:</span> <span class="p">[</span><span class="s">"none"</span><span class="p">,</span> <span class="s">"light"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">,</span> <span class="s">"heavy"</span><span class="p">,</span> <span class="s">"congested"</span><span class="p">],</span>
+            <span class="s">"crowd_density"</span><span class="p">:</span> <span class="p">[</span><span class="s">"empty"</span><span class="p">,</span> <span class="s">"sparse"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">,</span> <span class="s">"busy"</span><span class="p">,</span> <span class="s">"crowded"</span><span class="p">],</span>
+            <span class="s">"city_type"</span><span class="p">:</span> <span class="p">[</span><span class="s">"small_town"</span><span class="p">,</span> <span class="s">"suburb"</span><span class="p">,</span> <span class="s">"downtown"</span><span class="p">,</span> <span class="s">"metropolis"</span><span class="p">,</span> <span class="s">"industrial"</span><span class="p">],</span>
+            
+            <span class="c1"># Mood parameters
+</span>            <span class="s">"mood"</span><span class="p">:</span> <span class="p">[</span><span class="s">"peaceful"</span><span class="p">,</span> <span class="s">"tense"</span><span class="p">,</span> <span class="s">"mysterious"</span><span class="p">,</span> <span class="s">"cheerful"</span><span class="p">,</span> <span class="s">"melancholic"</span><span class="p">,</span> <span class="s">"epic"</span><span class="p">,</span> <span class="s">"intimate"</span><span class="p">],</span>
+            <span class="s">"atmosphere_type"</span><span class="p">:</span> <span class="p">[</span><span class="s">"calm"</span><span class="p">,</span> <span class="s">"threatening"</span><span class="p">,</span> <span class="s">"magical"</span><span class="p">,</span> <span class="s">"technological"</span><span class="p">,</span> <span class="s">"ancient"</span><span class="p">,</span> <span class="s">"futuristic"</span><span class="p">],</span>
+            
+            <span class="c1"># Music parameters
+</span>            <span class="s">"genre"</span><span class="p">:</span> <span class="p">[</span><span class="s">"ambient"</span><span class="p">,</span> <span class="s">"classical"</span><span class="p">,</span> <span class="s">"electronic"</span><span class="p">,</span> <span class="s">"jazz"</span><span class="p">,</span> <span class="s">"folk"</span><span class="p">],</span>
+            <span class="s">"instrument"</span><span class="p">:</span> <span class="p">[</span><span class="s">"piano"</span><span class="p">,</span> <span class="s">"strings"</span><span class="p">,</span> <span class="s">"synth"</span><span class="p">,</span> <span class="s">"guitar"</span><span class="p">,</span> <span class="s">"woodwinds"</span><span class="p">,</span> <span class="s">"percussion"</span><span class="p">],</span>
+            
+            <span class="c1"># Sci-fi parameters
+</span>            <span class="s">"tech_level"</span><span class="p">:</span> <span class="p">[</span><span class="s">"primitive"</span><span class="p">,</span> <span class="s">"contemporary"</span><span class="p">,</span> <span class="s">"advanced"</span><span class="p">,</span> <span class="s">"futuristic"</span><span class="p">,</span> <span class="s">"alien"</span><span class="p">],</span>
+            <span class="s">"power_level"</span><span class="p">:</span> <span class="p">[</span><span class="s">"low"</span><span class="p">,</span> <span class="s">"standard"</span><span class="p">,</span> <span class="s">"high"</span><span class="p">,</span> <span class="s">"critical"</span><span class="p">,</span> <span class="s">"overload"</span><span class="p">],</span>
+            <span class="s">"activity_level"</span><span class="p">:</span> <span class="p">[</span><span class="s">"abandoned"</span><span class="p">,</span> <span class="s">"minimal"</span><span class="p">,</span> <span class="s">"normal"</span><span class="p">,</span> <span class="s">"busy"</span><span class="p">,</span> <span class="s">"emergency"</span><span class="p">]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Current environment state
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">last_generation_time</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">initialize_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize an audio environment using a template and parameters.
+        
+        Args:
+            template_name (str): Name of the template to use
+            parameters (dict): Custom parameters for the environment
+            output_dir (str): Directory to save environment files
+            
+        Returns:
+            dict: Information about the generated environment
+        """</span>
+        <span class="c1"># Verify template exists
+</span>        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scene_templates</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scene_templates</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown template: </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s">. Available: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Get the template
+</span>        <span class="n">template</span> <span class="o">=</span> <span class="n">scene_templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span> <span class="o">=</span> <span class="n">template</span>
+        
+        <span class="c1"># Initialize default parameters if none provided
+</span>        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Fill in missing parameters with defaults
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_fill_default_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        
+        <span class="c1"># Create output directory with timestamp if not provided
+</span>        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"environment_</span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Generate the initial environment
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Initializing </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s"> environment with parameters:"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">create_scene_from_template</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">last_generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span>
+    
+    <span class="k">def</span> <span class="nf">update_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Update an existing environment with new parameters.
+        
+        Args:
+            parameters (dict): New or updated parameters
+            output_dir (str): Directory to save updated environment
+            
+        Returns:
+            dict: Information about the updated environment
+        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"No environment initialized. Call initialize_environment first."</span><span class="p">)</span>
+        
+        <span class="c1"># Update parameters
+</span>        <span class="n">updated_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">updated_parameters</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span> <span class="o">=</span> <span class="n">updated_parameters</span>
+        
+        <span class="c1"># Create output directory with timestamp if not provided
+</span>        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">template_name</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="s">"environment"</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">" "</span><span class="p">,</span> <span class="s">"_"</span><span class="p">).</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s">_update_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Generate the updated environment
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Updating environment with new parameters:"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">create_scene_from_template</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">current_template</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">updated_parameters</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">last_generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span>
+    
+    <span class="k">def</span> <span class="nf">transition_to_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">target_parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">crossfade_duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Create a transition between the current environment and a new template.
+        
+        This creates a crossfade between the current environment and a new one,
+        useful for smooth scene changes.
+        
+        Args:
+            template_name (str): Name of the template to transition to
+            target_parameters (dict): Parameters for the target environment
+            crossfade_duration (float): Duration of crossfade in seconds
+            output_dir (str): Directory to save transition files
+            
+        Returns:
+            dict: Information about the transition
+        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c1"># If no current environment, just initialize the new one
+</span>            <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">initialize_environment</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">target_parameters</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+        
+        <span class="c1"># Verify template exists
+</span>        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scene_templates</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scene_templates</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown template: </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s">. Available: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Get the target template
+</span>        <span class="n">target_template</span> <span class="o">=</span> <span class="n">scene_templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
+        
+        <span class="c1"># Initialize target parameters if none provided
+</span>        <span class="k">if</span> <span class="n">target_parameters</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">target_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Fill in missing parameters with defaults
+</span>        <span class="n">target_parameters_filled</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Start with current parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_fill_default_parameters</span><span class="p">(</span><span class="n">target_parameters_filled</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span>
+        <span class="n">target_parameters_filled</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">target_parameters</span><span class="p">)</span>  <span class="c1"># Override with provided parameters
+</span>        
+        <span class="c1"># Create output directory with timestamp if not provided
+</span>        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"transition_</span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">current_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'source'</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'_'</span><span class="p">)</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">target_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'target'</span><span class="p">).</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'_'</span><span class="p">)</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Generate the target environment
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating target environment (</span><span class="si">{</span><span class="n">target_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">)</span><span class="si">}</span><span class="s">) for transition..."</span><span class="p">)</span>
+        <span class="n">target_composer</span> <span class="o">=</span> <span class="n">AudioSceneComposer</span><span class="p">()</span>  <span class="c1"># Create a new composer for the target environment
+</span>        
+        <span class="c1"># Generate the target scene
+</span>        <span class="n">target_output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"target_environment"</span><span class="p">)</span>
+        <span class="n">target_scene_info</span> <span class="o">=</span> <span class="n">target_composer</span><span class="p">.</span><span class="n">create_scene_from_template</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">target_template</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">target_parameters_filled</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">target_output_dir</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Create the transition (crossfade)
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Creating </span><span class="si">{</span><span class="n">crossfade_duration</span><span class="si">}</span><span class="s">s crossfade transition..."</span><span class="p">)</span>
+        
+        <span class="c1"># Load source and target audio
+</span>        <span class="n">source_audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">])</span>
+        <span class="n">target_audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">target_scene_info</span><span class="p">[</span><span class="s">'output_file'</span><span class="p">])</span>
+        
+        <span class="c1"># Make sure both are mono for simplicity
+</span>        <span class="k">if</span> <span class="n">source_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">source_audio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">source_audio</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">target_audio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">target_audio</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate crossfade points
+</span>        <span class="n">crossfade_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">crossfade_duration</span> <span class="o">*</span> <span class="n">sr</span><span class="p">)</span>
+        <span class="n">total_length</span> <span class="o">=</span> <span class="n">source_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">target_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">crossfade_samples</span>
+        
+        <span class="c1"># Create output buffer
+</span>        <span class="n">transition_audio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_length</span><span class="p">)</span>
+        
+        <span class="c1"># Copy source audio to the beginning
+</span>        <span class="n">transition_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">source_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">source_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># Create linear crossfade weights
+</span>        <span class="n">fade_in</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">crossfade_samples</span><span class="p">)</span>
+        <span class="n">fade_out</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">crossfade_samples</span><span class="p">)</span>
+        
+        <span class="c1"># Apply crossfade
+</span>        <span class="n">crossfade_start</span> <span class="o">=</span> <span class="n">source_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">crossfade_samples</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">crossfade_samples</span><span class="p">):</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">crossfade_start</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="n">transition_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="p">]</span> <span class="o">*</span> <span class="n">fade_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">target_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">fade_in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="c1"># Copy remaining target audio
+</span>        <span class="n">remaining_start</span> <span class="o">=</span> <span class="n">source_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">remaining_target_start</span> <span class="o">=</span> <span class="n">crossfade_samples</span>
+        <span class="n">remaining_length</span> <span class="o">=</span> <span class="n">target_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">crossfade_samples</span>
+        
+        <span class="n">transition_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">remaining_start</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">target_audio</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">remaining_target_start</span><span class="p">:]</span>
+        
+        <span class="c1"># Save the transition
+</span>        <span class="n">transition_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"environment_transition"</span><span class="p">)</span>
+        <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">transition_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+            <span class="n">transition_audio</span><span class="p">,</span>
+            <span class="n">sr</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Transition created and saved to </span><span class="si">{</span><span class="n">transition_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Save transition info
+</span>        <span class="n">transition_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'source_template'</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">),</span>
+            <span class="s">'target_template'</span><span class="p">:</span> <span class="n">target_template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">),</span>
+            <span class="s">'source_parameters'</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span><span class="p">,</span>
+            <span class="s">'target_parameters'</span><span class="p">:</span> <span class="n">target_parameters_filled</span><span class="p">,</span>
+            <span class="s">'crossfade_duration'</span><span class="p">:</span> <span class="n">crossfade_duration</span><span class="p">,</span>
+            <span class="s">'output_file'</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">transition_path</span><span class="si">}</span><span class="s">.wav"</span>
+        <span class="p">}</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"transition_info.json"</span><span class="p">),</span> <span class="s">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">transition_info</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Update current state
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span> <span class="o">=</span> <span class="n">target_template</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_parameters</span> <span class="o">=</span> <span class="n">target_parameters_filled</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">current_scene_info</span> <span class="o">=</span> <span class="n">target_scene_info</span>
+        
+        <span class="k">return</span> <span class="n">transition_info</span>
+    
+    <span class="k">def</span> <span class="nf">_fill_default_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">template_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Fill in default parameter values for missing parameters.
+        
+        This first checks what parameters are needed by the template,
+        then fills in defaults for any missing ones.
+        """</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">current_template</span>
+        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="n">scene_templates</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Identify needed parameters from template prompts
+</span>        <span class="n">needed_params</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="n">template</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"elements"</span><span class="p">,</span> <span class="p">{})</span>
+        
+        <span class="k">for</span> <span class="n">element_config</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">element_config</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"prompt"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+            
+            <span class="c1"># Find all parameters in the template (between { and })
+</span>            <span class="kn">import</span> <span class="nn">re</span>
+            <span class="n">params_in_template</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s">'\{([^}]+)\}'</span><span class="p">,</span> <span class="n">prompt_template</span><span class="p">)</span>
+            <span class="n">needed_params</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">params_in_template</span><span class="p">)</span>
+        
+        <span class="c1"># Fill in defaults for missing parameters
+</span>        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">needed_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+                <span class="c1"># If we have options for this parameter, use the first one as default
+</span>                <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">parameter_options</span><span class="p">:</span>
+                    <span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">parameter_options</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Otherwise use a placeholder
+</span>                    <span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="s">"default"</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Create the dynamic environment system
+</span>    <span class="n">env</span> <span class="o">=</span> <span class="n">DynamicAudioEnvironment</span><span class="p">()</span>
+    
+    <span class="c1"># Initialize a forest environment
+</span>    <span class="n">env</span><span class="p">.</span><span class="n">initialize_environment</span><span class="p">(</span>
+        <span class="n">template_name</span><span class="o">=</span><span class="s">"forest"</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"weather"</span><span class="p">:</span> <span class="s">"clear"</span><span class="p">,</span>
+            <span class="s">"wildlife_type"</span><span class="p">:</span> <span class="s">"birds"</span><span class="p">,</span>
+            <span class="s">"mood"</span><span class="p">:</span> <span class="s">"peaceful"</span><span class="p">,</span>
+            <span class="s">"instrument"</span><span class="p">:</span> <span class="s">"piano"</span>
+        <span class="p">},</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"forest_morning"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Update to a rainy afternoon
+</span>    <span class="n">env</span><span class="p">.</span><span class="n">update_environment</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"weather"</span><span class="p">:</span> <span class="s">"light_rain"</span><span class="p">,</span>
+            <span class="s">"time_of_day"</span><span class="p">:</span> <span class="s">"afternoon"</span><span class="p">,</span>
+            <span class="s">"mood"</span><span class="p">:</span> <span class="s">"melancholic"</span>
+        <span class="p">},</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"forest_rainy_afternoon"</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Transition to a city environment in the evening
+</span>    <span class="n">env</span><span class="p">.</span><span class="n">transition_to_template</span><span class="p">(</span>
+        <span class="n">template_name</span><span class="o">=</span><span class="s">"city_street"</span><span class="p">,</span>
+        <span class="n">target_parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"time_of_day"</span><span class="p">:</span> <span class="s">"evening"</span><span class="p">,</span>
+            <span class="s">"traffic_intensity"</span><span class="p">:</span> <span class="s">"moderate"</span><span class="p">,</span>
+            <span class="s">"crowd_density"</span><span class="p">:</span> <span class="s">"busy"</span><span class="p">,</span>
+            <span class="s">"mood"</span><span class="p">:</span> <span class="s">"mysterious"</span>
+        <span class="p">},</span>
+        <span class="n">crossfade_duration</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s">"forest_to_city_transition"</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This dynamic environment system provides powerful capabilities:</p>
+
+<ol>
+  <li><strong>Parameter-Driven Generation</strong>: Create environments by specifying high-level parameters</li>
+  <li><strong>Dynamic Updates</strong>: Modify environments by changing parameter values</li>
+  <li><strong>Smooth Transitions</strong>: Create crossfades between different environment types</li>
+  <li><strong>Consistent State</strong>: Maintain environmental context across generations</li>
+</ol>
+
+<h2 id="spatial-audio-scene-creation">Spatial Audio Scene Creation</h2>
+
+<p>For immersive applications like VR and games, spatial audio significantly increases realism. Let’s implement basic spatial audio capabilities:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># spatial_audio_scene.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audio_scene_composer</span> <span class="kn">import</span> <span class="n">AudioSceneComposer</span>
+
+<span class="k">class</span> <span class="nc">SpatialAudioScene</span><span class="p">:</span>
+    <span class="s">"""
+    Create immersive 3D audio scenes with spatial positioning of elements.
+    
+    This class extends the AudioSceneComposer to add spatial positioning
+    capabilities, allowing elements to be placed in 3D space and simulating
+    distance-based attenuation and basic directional audio.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Initialize the spatial audio scene creator."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">composer</span> <span class="o">=</span> <span class="n">AudioSceneComposer</span><span class="p">()</span>
+        
+        <span class="c1"># Track spatial properties of elements
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># {element_id: [x, y, z]}
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Default listener at center
+</span>    
+    <span class="k">def</span> <span class="nf">add_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="s">"""
+        Add an audio element with spatial position.
+        
+        Args:
+            element_id (str): Identifier for this element
+            prompt (str): Description of the sound to generate
+            model_type (str): Type of model to use ("music" or "audio")
+            position (list): [x, y, z] position in 3D space
+            duration (float): Duration in seconds
+            temperature (float): Generation temperature
+            
+        Returns:
+            torch.Tensor: Generated audio tensor
+        """</span>
+        <span class="c1"># Generate the audio using the composer
+</span>        <span class="n">audio</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">generate_scene_element</span><span class="p">(</span>
+            <span class="n">element_id</span><span class="o">=</span><span class="n">element_id</span><span class="p">,</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Store the position
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span>
+        
+        <span class="k">return</span> <span class="n">audio</span>
+    
+    <span class="k">def</span> <span class="nf">set_listener_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="s">"""Set the listener's position in 3D space."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span> <span class="o">=</span> <span class="n">position</span>
+    
+    <span class="k">def</span> <span class="nf">render_spatial_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Render the scene with spatial audio processing.
+        
+        This applies basic distance-based attenuation and stereo panning
+        to create a simple spatial audio experience.
+        
+        Args:
+            output_path (str): Path to save the spatially-rendered scene
+            
+        Returns:
+            torch.Tensor: Stereo (2-channel) audio tensor with spatial processing
+        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"No elements in scene. Add elements first."</span><span class="p">)</span>
+        
+        <span class="c1"># Get all element IDs
+</span>        <span class="n">element_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+        
+        <span class="c1"># Find the longest element
+</span>        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">][</span><span class="s">"audio"</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">)</span>
+        
+        <span class="c1"># Create stereo output buffer
+</span>        <span class="n">stereo_scene</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span>
+        
+        <span class="c1"># Process each element with spatial properties
+</span>        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Warning: No position for element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">', using default center position"</span><span class="p">)</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+            
+            <span class="c1"># Get original mono audio
+</span>            <span class="n">mono_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">][</span><span class="s">"audio"</span><span class="p">]</span>
+            
+            <span class="c1"># Calculate distance from listener
+</span>            <span class="n">dx</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dz</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            
+            <span class="c1"># Distance attenuation (inverse square law, clamped for safety)
+</span>            <span class="n">min_distance</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># Prevent division by zero
+</span>            <span class="n">max_distance</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># Maximum effective distance
+</span>            <span class="n">distance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_distance</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">))</span>
+            
+            <span class="c1"># Calculate gain using inverse square law with min gain
+</span>            <span class="n">min_gain</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># Minimum gain (-40dB)
+</span>            <span class="n">gain</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">distance</span> <span class="o">*</span> <span class="n">distance</span><span class="p">))</span>
+            <span class="n">gain</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_gain</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span>
+            
+            <span class="c1"># Calculate stereo panning based on azimuth angle
+</span>            <span class="c1"># This is a simplified model - proper HRTF would be more realistic
+</span>            <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>  <span class="c1"># Azimuth angle in radians
+</span>            
+            <span class="c1"># Convert azimuth to pan value (-1 to 1, where -1 is full left, 1 is full right)
+</span>            <span class="n">pan</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span>
+            
+            <span class="c1"># Apply distance gain and panning
+</span>            <span class="n">left_gain</span> <span class="o">=</span> <span class="n">gain</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pan</span><span class="p">))</span>
+            <span class="n">right_gain</span> <span class="o">=</span> <span class="n">gain</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pan</span><span class="p">))</span>
+            
+            <span class="c1"># Ensure we don't exceed the buffer length
+</span>            <span class="n">audio_length</span> <span class="o">=</span> <span class="n">mono_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="c1"># Add to stereo output
+</span>            <span class="n">stereo_scene</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">left_gain</span>
+            <span class="n">stereo_scene</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">right_gain</span>
+        
+        <span class="c1"># Normalize if needed to prevent clipping
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">stereo_scene</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">stereo_scene</span> <span class="o">=</span> <span class="n">stereo_scene</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">stereo_scene</span><span class="p">))</span>
+        
+        <span class="c1"># Save the scene if output path is provided
+</span>        <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+            <span class="c1"># Create directory if needed
+</span>            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Save the audio
+</span>            <span class="kn">import</span> <span class="nn">torchaudio</span>
+            <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+                <span class="n">stereo_scene</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">sample_rate</span>
+            <span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Spatial scene saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">stereo_scene</span>
+    
+    <span class="k">def</span> <span class="nf">create_ambisonic_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Create a first-order Ambisonic (B-format) representation of the scene.
+        
+        Ambisonics is a full-sphere surround sound format that can be decoded
+        to various speaker layouts or binauralized for headphones.
+        
+        Args:
+            order (int): Ambisonic order (1 = first-order B-format)
+            output_path (str): Path to save the Ambisonic scene
+            
+        Returns:
+            torch.Tensor: Ambisonic audio tensor (4 channels for first-order)
+        """</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Currently only first-order Ambisonics (order=1) is supported"</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"No elements in scene. Add elements first."</span><span class="p">)</span>
+        
+        <span class="c1"># Get all element IDs
+</span>        <span class="n">element_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+        
+        <span class="c1"># Find the longest element
+</span>        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">][</span><span class="s">"audio"</span><span class="p">].</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">)</span>
+        
+        <span class="c1"># Create B-format output buffer (4 channels: W, X, Y, Z)
+</span>        <span class="n">b_format</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span>
+        
+        <span class="c1"># Process each element with Ambisonic encoding
+</span>        <span class="k">for</span> <span class="n">element_id</span> <span class="ow">in</span> <span class="n">element_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Warning: No position for element '</span><span class="si">{</span><span class="n">element_id</span><span class="si">}</span><span class="s">', using default center position"</span><span class="p">)</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">element_positions</span><span class="p">[</span><span class="n">element_id</span><span class="p">]</span>
+            
+            <span class="c1"># Get original mono audio
+</span>            <span class="n">mono_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">scene_elements</span><span class="p">[</span><span class="n">element_id</span><span class="p">][</span><span class="s">"audio"</span><span class="p">]</span>
+            
+            <span class="c1"># Calculate direction vector relative to listener
+</span>            <span class="n">dx</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dz</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">listener_position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            
+            <span class="c1"># Calculate distance
+</span>            <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            
+            <span class="c1"># Distance attenuation (inverse square law, clamped for safety)
+</span>            <span class="n">min_distance</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># Prevent division by zero
+</span>            <span class="n">max_distance</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># Maximum effective distance
+</span>            <span class="n">distance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_distance</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">))</span>
+            
+            <span class="c1"># Calculate gain using inverse square law with min gain
+</span>            <span class="n">min_gain</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># Minimum gain (-40dB)
+</span>            <span class="n">gain</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">distance</span> <span class="o">*</span> <span class="n">distance</span><span class="p">))</span>
+            <span class="n">gain</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_gain</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span>
+            
+            <span class="c1"># Normalize direction vector
+</span>            <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dx</span> <span class="o">/=</span> <span class="n">distance</span>
+                <span class="n">dy</span> <span class="o">/=</span> <span class="n">distance</span>
+                <span class="n">dz</span> <span class="o">/=</span> <span class="n">distance</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            
+            <span class="c1"># First-order Ambisonic encoding
+</span>            <span class="c1"># W = omni-directional component
+</span>            <span class="c1"># X = front-back component
+</span>            <span class="c1"># Y = left-right component
+</span>            <span class="c1"># Z = up-down component
+</span>            
+            <span class="c1"># Apply encoding and distance gain
+</span>            <span class="n">audio_length</span> <span class="o">=</span> <span class="n">mono_audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="c1"># W = mono signal (omni-directional, scaled by 0.707)
+</span>            <span class="n">b_format</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">gain</span> <span class="o">*</span> <span class="mf">0.707</span>
+            
+            <span class="c1"># X = front-back (X direction)
+</span>            <span class="n">b_format</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">dx</span>
+            
+            <span class="c1"># Y = left-right (Y direction)
+</span>            <span class="n">b_format</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">dy</span>
+            
+            <span class="c1"># Z = up-down (Z direction)
+</span>            <span class="n">b_format</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="n">audio_length</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mono_audio</span> <span class="o">*</span> <span class="n">gain</span> <span class="o">*</span> <span class="n">dz</span>
+        
+        <span class="c1"># Save the Ambisonic scene if output path is provided
+</span>        <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+            <span class="c1"># Create directory if needed
+</span>            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Save the audio
+</span>            <span class="kn">import</span> <span class="nn">torchaudio</span>
+            <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+                <span class="n">b_format</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">composer</span><span class="p">.</span><span class="n">sample_rate</span>
+            <span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Ambisonic scene saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">b_format</span>
+</code></pre></div></div>
+
+<p>This spatial audio implementation offers several key capabilities:</p>
+
+<ol>
+  <li><strong>3D Positioning</strong>: Place audio elements anywhere in 3D space</li>
+  <li><strong>Distance Attenuation</strong>: Simulate distance-based volume falloff</li>
+  <li><strong>Stereo Panning</strong>: Create directional audio for headphone listening</li>
+  <li><strong>Ambisonic Support</strong>: Generate first-order Ambisonic audio for VR/3D applications</li>
+</ol>
+
+<h2 id="hands-on-challenge-interactive-weather-system">Hands-on Challenge: Interactive Weather System</h2>
+
+<p>Now it’s time to apply everything you’ve learned to create an interactive weather system for a game or VR experience:</p>
+
+<ol>
+  <li>Create a base environment (forest, ocean, city, etc.) with the audio scene composer</li>
+  <li>Implement at least 3 different weather conditions (clear, rain, storm, snow, etc.)</li>
+  <li>Design a transition system that can smoothly blend between different weather states</li>
+  <li>Make your system parameter-driven, allowing control over intensity, time of day, and mood</li>
+  <li>Export your environments in a format suitable for integration into a game or VR project</li>
+</ol>
+
+<p><strong>Bonus Challenge</strong>: Create an interactive demo that allows users to control weather parameters in real-time, hearing the audio environment change dynamically.</p>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Complete audio scenes require multiple layered elements for realism and immersion</li>
+  <li>Scene templates provide structured frameworks for different environment types</li>
+  <li>Dynamic parameters allow environments to respond to changing conditions</li>
+  <li>Proper mixing and balancing are essential for natural-sounding scenes</li>
+  <li>Spatial audio capabilities significantly increase immersion for 3D applications</li>
+  <li>Transitions between different audio states require careful blending techniques</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve mastered audio scene composition, you’re ready to explore more advanced production workflows:</p>
+
+<ul>
+  <li><strong>Chapter 13: Sound Design Workflows</strong> - Develop efficient pipelines for audio production</li>
+  <li><strong>Chapter 14: Integration with Unity and Unreal</strong> - Implement AI audio in game engines</li>
+  <li><strong>Chapter 15: Interactive Audio Systems</strong> - Create responsive audio that reacts to user input</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://www.amazon.com/Art-Mixing-Visual-Recording-Engineering/dp/1285424867">The Art of Mixing: A Visual Guide to Recording</a></li>
+  <li><a href="https://www.taylorfrancis.com/books/mono/10.4324/9781315707525/game-audio-implementation-richard-stevens-dave-raybould">Game Audio Implementation</a></li>
+  <li><a href="https://www.routledge.com/Designing-Sound-for-Animation/Beauchamp/p/book/9780240824987">Designing Sound for Animation</a></li>
+  <li><a href="https://blog.audiokinetic.com/en/spatial-audio-in-unity-with-wwise/">Spatial Audio with Unity and Wwise</a></li>
+  <li><a href="https://www.cambridge.org/core/books/foundations-of-ambisonics/4E3C64F3D2C9D35B4A4ABFCC0DA6ED04">Foundations of Ambisonic Audio</a></li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part2/prompt-engineering/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Chapter 6: Prompt Engineering for Music</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/part3/introduction-to-audiogen/" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Introduction to AudioGen: AI-Powered Sound Effects Generation</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

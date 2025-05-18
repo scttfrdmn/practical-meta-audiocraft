@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sound Effect Generation Techniques</title>
+  <meta name="description" content="“We’re creating a sci-fi horror game set on an abandoned space station. I’ve tried generating sound effects with AI, but they sound generic and lack the emot...">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part3/sound-effect-techniques/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty intermediate">Intermediate</span>
+      <span class="estimated-time">60</span>
+    </div>
+    <h1>Sound Effect Generation Techniques</h1>
+  </div>
+  
+  
+  
+  <blockquote>
+  <p><em>“We’re creating a sci-fi horror game set on an abandoned space station. I’ve tried generating sound effects with AI, but they sound generic and lack the emotional impact our game needs. How can I create truly unsettling mechanical sounds, eerie ambiences, and distinctive alien noises that feel unique to our game world?”</em></p>
+
+  <p>— Maya Patel, indie game sound designer</p>
+</blockquote>
+
+<h1 id="chapter-11-sound-effect-generation-techniques">Chapter 11: Sound Effect Generation Techniques</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>Basic sound generation with AudioGen is powerful, but creating truly distinctive, emotionally-resonant sound effects requires more sophisticated techniques. Generic prompts often yield generic results. To create sound effects with character—whether it’s the unsettling atmosphere of a horror game, the distinctive ambience of a fantasy world, or the precise mechanical sounds of a specific device—you need specialized approaches for different sound categories.</p>
+
+<p>In this chapter, we’ll explore advanced techniques for generating high-quality, specialized sound effects across different categories, and develop methods to infuse them with emotional and contextual qualities.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you will be able to:</p>
+
+<ul>
+  <li>Apply specialized techniques for generating different categories of sound effects</li>
+  <li>Create emotionally evocative ambient soundscapes with distinct character</li>
+  <li>Generate realistic mechanical and interface sounds with precise characteristics</li>
+  <li>Develop natural environment sounds with dynamic qualities</li>
+  <li>Craft abstract and designed sounds for specific contexts</li>
+  <li>Transform basic generated sounds into specialized effects with post-processing</li>
+  <li>Use constraint-based generation to achieve specific sonic goals</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>Understanding of AudioGen basics (Chapter 10)</li>
+  <li>Experience generating basic sound effects</li>
+  <li>Python environment with AudioCraft installed</li>
+  <li>Basic understanding of audio concepts</li>
+</ul>
+
+<h2 id="key-concepts-specialized-sound-categories">Key Concepts: Specialized Sound Categories</h2>
+
+<p>Different sound categories benefit from specialized generation approaches. Let’s explore key techniques for major sound categories.</p>
+
+<h3 id="ambient-and-environmental-soundscapes">Ambient and Environmental Soundscapes</h3>
+
+<p>Ambient soundscapes create atmosphere and establish location. They’re among the most widely used sound assets in games, films, and interactive experiences.</p>
+
+<h4 id="the-three-layer-ambient-technique">The “Three-Layer” Ambient Technique</h4>
+
+<p>Effective ambient soundscapes typically consist of three distinct layers:</p>
+
+<ol>
+  <li><strong>Background Layer</strong>: Continuous, relatively uniform sounds that establish the base environment</li>
+  <li><strong>Mid-ground Layer</strong>: Semi-regular sounds that add texture and movement</li>
+  <li><strong>Foreground Layer</strong>: Distinctive, occasional sounds that create interest and variation</li>
+</ol>
+
+<p>Let’s implement this technique with AudioGen:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ambient_layer_generator.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">AmbientLayerGenerator</span><span class="p">:</span>
+    <span class="s">"""
+    Generate multi-layered ambient soundscapes using the three-layer technique.
+    
+    This class enables creation of rich ambient backgrounds by generating and
+    combining separate background, mid-ground, and foreground audio elements.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""Initialize the generator with a specific model."""</span>
+        <span class="c1"># Determine device automatically if not specified
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        
+        <span class="c1"># Load the model
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading AudioGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Sample rate from model
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+    
+    <span class="k">def</span> <span class="nf">generate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+        <span class="s">"""
+        Generate a single ambient layer.
+        
+        Args:
+            prompt (str): Description of the sound to generate
+            duration (float): Duration in seconds
+            temperature (float): Temperature for generation
+            
+        Returns:
+            torch.Tensor: Generated audio tensor
+        """</span>
+        <span class="c1"># Set generation parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Generate the layer
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">create_layered_ambient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"layered_ambiences"</span><span class="p">):</span>
+        <span class="s">"""
+        Create a complete ambient soundscape using the three-layer technique.
+        
+        Args:
+            environment (str): Type of environment to generate
+            duration (float): Base duration for the ambient
+            output_dir (str): Directory to save outputs
+            
+        Returns:
+            str: Path to the generated soundscape file
+        """</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"layers"</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Creating layered ambient for: </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Define layer prompts based on environment
+</span>        <span class="n">layer_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_layer_prompts</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">layer_prompts</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown environment: </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        
+        <span class="c1"># Background - continuous sound, lower temperature for consistency
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"Generating background layer..."</span><span class="p">)</span>
+        <span class="n">background</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate_layer</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">layer_prompts</span><span class="p">[</span><span class="s">"background"</span><span class="p">],</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Mid-ground - textural elements, medium temperature
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"Generating mid-ground layer..."</span><span class="p">)</span>
+        <span class="n">midground</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate_layer</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">layer_prompts</span><span class="p">[</span><span class="s">"midground"</span><span class="p">],</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Foreground - distinctive elements, higher temperature for variety
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"Generating foreground layer..."</span><span class="p">)</span>
+        <span class="n">foreground</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">generate_layer</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">layer_prompts</span><span class="p">[</span><span class="s">"foreground"</span><span class="p">],</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">1.1</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save individual layers
+</span>        <span class="n">layer_paths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">audio</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s">"background"</span><span class="p">,</span> <span class="n">background</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">"midground"</span><span class="p">,</span> <span class="n">midground</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">"foreground"</span><span class="p">,</span> <span class="n">foreground</span><span class="p">)</span>
+        <span class="p">]:</span>
+            <span class="n">layer_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"layers"</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">audio_write</span><span class="p">(</span>
+                <span class="n">layer_path</span><span class="p">,</span>
+                <span class="n">audio</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+            <span class="p">)</span>
+            <span class="n">layer_paths</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">layer_path</span><span class="si">}</span><span class="s">.wav"</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Saved </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s"> layer to </span><span class="si">{</span><span class="n">layer_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        
+        <span class="c1"># Mix the layers with appropriate volume levels
+</span>        <span class="c1"># Background: moderate volume as the base
+</span>        <span class="c1"># Mid-ground: slightly lower to sit in the mix
+</span>        <span class="c1"># Foreground: higher to be noticeable but not overpowering
+</span>        <span class="n">background_vol</span> <span class="o">=</span> <span class="mf">0.6</span>
+        <span class="n">midground_vol</span> <span class="o">=</span> <span class="mf">0.4</span>
+        <span class="n">foreground_vol</span> <span class="o">=</span> <span class="mf">0.7</span>
+        
+        <span class="c1"># Ensure all tensors are the same length
+</span>        <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">background</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">midground</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">foreground</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        
+        <span class="c1"># Create padded versions at the right length
+</span>        <span class="n">background_padded</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        <span class="n">background_padded</span><span class="p">[:</span><span class="n">background</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">background</span> <span class="o">*</span> <span class="n">background_vol</span>
+        
+        <span class="n">midground_padded</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        <span class="n">midground_padded</span><span class="p">[:</span><span class="n">midground</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">midground</span> <span class="o">*</span> <span class="n">midground_vol</span>
+        
+        <span class="n">foreground_padded</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_length</span><span class="p">)</span>
+        <span class="n">foreground_padded</span><span class="p">[:</span><span class="n">foreground</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">foreground</span> <span class="o">*</span> <span class="n">foreground_vol</span>
+        
+        <span class="c1"># Mix the layers
+</span>        <span class="n">mixed</span> <span class="o">=</span> <span class="n">background_padded</span> <span class="o">+</span> <span class="n">midground_padded</span> <span class="o">+</span> <span class="n">foreground_padded</span>
+        
+        <span class="c1"># Normalize to prevent clipping
+</span>        <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">mixed</span> <span class="o">=</span> <span class="n">mixed</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">mixed</span><span class="p">))</span>
+        
+        <span class="c1"># Save the final mixed ambient
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">_layered_ambient"</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">mixed</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Create a detailed description file
+</span>        <span class="n">desc_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">_description.txt"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">desc_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"LAYERED AMBIENT: </span><span class="si">{</span><span class="n">environment</span><span class="p">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"="</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span> <span class="o">+</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Layer prompts:</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">layer</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">layer_prompts</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">layer</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s">:</span><span class="se">\n</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"Files:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">layer</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer_paths</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- mixed: </span><span class="si">{</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="si">}</span><span class="s">.wav</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Mixing levels:</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- Background: </span><span class="si">{</span><span class="n">background_vol</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- Mid-ground: </span><span class="si">{</span><span class="n">midground_vol</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s">"- Foreground: </span><span class="si">{</span><span class="n">foreground_vol</span><span class="si">}</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Layered ambient saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+    
+    <span class="k">def</span> <span class="nf">_get_layer_prompts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">):</span>
+        <span class="s">"""
+        Get specialized layer prompts for a specific environment.
+        
+        This method contains carefully crafted prompts for each layer of
+        different environment types.
+        """</span>
+        <span class="n">environments</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"forest"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous ambient forest background sound with light wind through leaves and distant bird calls"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Forest mid-ground sounds with occasional branch creaks, leaf rustling, and bird wing flaps"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive forest foreground sounds with specific bird calls, squirrel movements, and occasional distant animal calls"</span>
+            <span class="p">},</span>
+            <span class="s">"ocean"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous ocean waves rolling onto shore with steady rhythm and constant water movement"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Medium distance ocean sounds with splashing water, small waves breaking, and distant boat engines"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive ocean foreground sounds with seagull calls, water splashing on rocks, and occasional distant foghorn"</span>
+            <span class="p">},</span>
+            <span class="s">"city"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous city background ambience with distant traffic hum, air conditioning units, and building sounds"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"City mid-ground sounds with passing cars, groups of pedestrians talking, and shop doors opening and closing"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive city foreground sounds with car horns, specific conversations as people pass by, and street vendor calls"</span>
+            <span class="p">},</span>
+            <span class="s">"cafe"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous cafe background ambience with customer murmur, distant kitchen sounds, and soft music"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Cafe mid-ground sounds with coffee machine operations, chair movements, and cup and plate handling"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive cafe foreground sounds with specific customer orders, door bells as people enter, and occasional laughter"</span>
+            <span class="p">},</span>
+            <span class="s">"spaceship"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous spaceship engine room background with low humming, electrical systems, and air circulation"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Spaceship mid-ground sounds with computer beeps, distant mechanical movements, and occasional steam release"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive spaceship foreground sounds with specific alert signals, mechanical door operations, and crew announcements"</span>
+            <span class="p">},</span>
+            <span class="s">"horror_house"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous horror house background with unsettling low frequency rumble, creaking structure, and distant whispers"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Horror house mid-ground sounds with unexplained scratching, footsteps on upper floors, and wooden furniture creaking"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive horror house foreground with sudden door slams, ghostly moans, and glass objects suddenly breaking"</span>
+            <span class="p">},</span>
+            <span class="s">"underwater"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous underwater background with water pressure, bubbling, and muffled distant sounds"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Underwater mid-ground sounds with fish swimming past, small currents, and sand shifting on the bottom"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive underwater foreground with air bubbles rising to surface, dolphin calls, and occasional metal objects falling into water"</span>
+            <span class="p">},</span>
+            <span class="s">"jungle"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"background"</span><span class="p">:</span> <span class="s">"Continuous jungle background with humid atmosphere, distant insect chorus, and light rain on large leaves"</span><span class="p">,</span>
+                <span class="s">"midground"</span><span class="p">:</span> <span class="s">"Jungle mid-ground sounds with monkey movements through trees, large birds taking flight, and small animals in underbrush"</span><span class="p">,</span>
+                <span class="s">"foreground"</span><span class="p">:</span> <span class="s">"Distinctive jungle foreground with specific exotic bird calls, monkey howls, and large animals moving through dense vegetation"</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">environments</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">AmbientLayerGenerator</span><span class="p">()</span>
+    
+    <span class="c1"># Generate a horror house ambient with the three-layer technique
+</span>    <span class="n">generator</span><span class="p">.</span><span class="n">create_layered_ambient</span><span class="p">(</span><span class="s">"horror_house"</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This implementation demonstrates the three-layer technique, which provides several key advantages:</p>
+
+<ol>
+  <li><strong>More control</strong>: Each layer can be generated with different parameters</li>
+  <li><strong>Better structure</strong>: The layering creates a more natural sound depth</li>
+  <li><strong>Greater detail</strong>: Different sonic elements can be placed in appropriate layers</li>
+</ol>
+
+<h4 id="emotional-ambient-generation">Emotional Ambient Generation</h4>
+
+<p>To create emotionally evocative ambiences, we need to infuse our prompts with specific emotional qualities. Here’s a technique using emotional modifiers:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># emotional_ambient_generator.py
+</span>
+<span class="k">def</span> <span class="nf">generate_emotional_ambient</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">emotion</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">15.0</span><span class="p">):</span>
+    <span class="s">"""
+    Generate an ambient soundscape with a specific emotional quality.
+    
+    Args:
+        environment (str): Base environment type
+        emotion (str): Emotional quality to convey
+        duration (float): Duration in seconds
+    """</span>
+    <span class="c1"># Define base environments
+</span>    <span class="n">environments</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"forest"</span><span class="p">:</span> <span class="s">"Forest with trees, birds, and natural sounds"</span><span class="p">,</span>
+        <span class="s">"ocean"</span><span class="p">:</span> <span class="s">"Ocean shore with waves and sea birds"</span><span class="p">,</span>
+        <span class="s">"city"</span><span class="p">:</span> <span class="s">"Urban city environment with traffic and people"</span><span class="p">,</span>
+        <span class="s">"industrial"</span><span class="p">:</span> <span class="s">"Industrial zone with machinery and factory sounds"</span><span class="p">,</span>
+        <span class="s">"space"</span><span class="p">:</span> <span class="s">"Outer space with cosmic and technological elements"</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Define emotional modifiers
+</span>    <span class="n">emotions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"peaceful"</span><span class="p">:</span> <span class="s">"peaceful, calming, and serene with gentle sounds creating a soothing atmosphere"</span><span class="p">,</span>
+        <span class="s">"tense"</span><span class="p">:</span> <span class="s">"tense and suspenseful with unsettling sounds creating an anxious atmosphere"</span><span class="p">,</span>
+        <span class="s">"melancholic"</span><span class="p">:</span> <span class="s">"melancholic and lonely with sparse, echoing sounds creating a sad atmosphere"</span><span class="p">,</span>
+        <span class="s">"joyful"</span><span class="p">:</span> <span class="s">"joyful and bright with uplifting sounds creating a happy atmosphere"</span><span class="p">,</span>
+        <span class="s">"mysterious"</span><span class="p">:</span> <span class="s">"mysterious and intriguing with unusual sounds creating a curious atmosphere"</span><span class="p">,</span>
+        <span class="s">"eerie"</span><span class="p">:</span> <span class="s">"eerie and supernatural with strange sounds creating an uncanny atmosphere"</span><span class="p">,</span>
+        <span class="s">"majestic"</span><span class="p">:</span> <span class="s">"majestic and awe-inspiring with powerful sounds creating a grand atmosphere"</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Verify inputs
+</span>    <span class="k">if</span> <span class="n">environment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">environments</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown environment: </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">emotion</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">emotions</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown emotion: </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="c1"># Construct prompt by combining environment and emotion
+</span>    <span class="n">base_environment</span> <span class="o">=</span> <span class="n">environments</span><span class="p">[</span><span class="n">environment</span><span class="p">]</span>
+    <span class="n">emotional_modifier</span> <span class="o">=</span> <span class="n">emotions</span><span class="p">[</span><span class="n">emotion</span><span class="p">]</span>
+    
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">base_environment</span><span class="si">}</span><span class="s">, </span><span class="si">{</span><span class="n">emotional_modifier</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Rest of generation code (similar to previous examples)
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>By combining environment descriptions with emotional modifiers, you can create ambiences that convey specific moods or feelings, making them more effective for storytelling, games, and films.</p>
+
+<h3 id="mechanical-and-interface-sounds">Mechanical and Interface Sounds</h3>
+
+<p>Mechanical and interface sounds require precise characteristics to sound authentic. For these, a constraint-based approach works well.</p>
+
+<h4 id="the-physical-properties-technique">The “Physical Properties” Technique</h4>
+
+<p>When generating mechanical sounds, describing the physical properties of the objects and mechanisms produces better results:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_mechanical_sound</span><span class="p">(</span><span class="n">object_type</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="s">"moderate"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"mechanical_sounds"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate mechanical sounds using physical property descriptions.
+    
+    Args:
+        object_type (str): Type of object/mechanism (gear, door, engine)
+        material (str): Material composition (metal, wood, plastic)
+        action (str): Action being performed (rotating, sliding, impacting)
+        scale (str): Size scale of the object (tiny, small, medium, large, massive)
+        force (str): Force applied to the action (gentle, moderate, forceful, violent)
+    """</span>
+    <span class="c1"># Create physical description based on parameters
+</span>    <span class="n">physical_description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s">-sized </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">object_type</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s"> with </span><span class="si">{</span><span class="n">force</span><span class="si">}</span><span class="s"> force"</span>
+    
+    <span class="c1"># Add specific details based on the combination
+</span>    <span class="k">if</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s">"gear"</span> <span class="ow">and</span> <span class="n">action</span> <span class="o">==</span> <span class="s">"rotating"</span><span class="p">:</span>
+        <span class="n">additional_details</span> <span class="o">=</span> <span class="sa">f</span><span class="s">", teeth meshing with other gears, with mechanical resistance and </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> resonance"</span>
+    <span class="k">elif</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s">"door"</span> <span class="ow">and</span> <span class="n">action</span> <span class="o">==</span> <span class="s">"sliding"</span><span class="p">:</span>
+        <span class="n">additional_details</span> <span class="o">=</span> <span class="sa">f</span><span class="s">", moving along a track with friction and </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> vibration"</span>
+    <span class="k">elif</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s">"engine"</span> <span class="ow">and</span> <span class="n">action</span> <span class="o">==</span> <span class="s">"running"</span><span class="p">:</span>
+        <span class="n">additional_details</span> <span class="o">=</span> <span class="sa">f</span><span class="s">", with internal components moving rapidly, creating complex mechanical rhythm and </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> vibrations"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">additional_details</span> <span class="o">=</span> <span class="sa">f</span><span class="s">", creating characteristic </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> sounds"</span>
+    
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">physical_description</span> <span class="o">+</span> <span class="n">additional_details</span>
+    
+    <span class="c1"># Generate sound using the constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This approach breaks down mechanical sounds into their physical components, producing more realistic and specific results.</p>
+
+<h4 id="ui-and-interface-sound-framework">UI and Interface Sound Framework</h4>
+
+<p>For UI and interface sounds, focus on function, feedback type, and duration:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_interface_sound</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">feedback_type</span><span class="p">,</span> <span class="n">duration_ms</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">character</span><span class="o">=</span><span class="s">"modern"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"interface_sounds"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate interface sounds using a function-based framework.
+    
+    Args:
+        action (str): UI action (confirm, deny, alert, notification, transition)
+        feedback_type (str): Type of feedback (success, failure, warning, neutral)
+        duration_ms (int): Duration in milliseconds
+        character (str): Aesthetic character (modern, retro, sci-fi, organic)
+    """</span>
+    <span class="c1"># Convert milliseconds to seconds for AudioGen
+</span>    <span class="n">duration_sec</span> <span class="o">=</span> <span class="n">duration_ms</span> <span class="o">/</span> <span class="mi">1000</span>
+    
+    <span class="c1"># Build prompt based on parameters
+</span>    <span class="n">action_descriptions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"confirm"</span><span class="p">:</span> <span class="s">"user confirmation"</span><span class="p">,</span>
+        <span class="s">"deny"</span><span class="p">:</span> <span class="s">"user cancellation or denial"</span><span class="p">,</span>
+        <span class="s">"alert"</span><span class="p">:</span> <span class="s">"important system alert"</span><span class="p">,</span>
+        <span class="s">"notification"</span><span class="p">:</span> <span class="s">"informational notification"</span><span class="p">,</span>
+        <span class="s">"transition"</span><span class="p">:</span> <span class="s">"interface transition or navigation"</span>
+    <span class="p">}</span>
+    
+    <span class="n">feedback_descriptions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"success"</span><span class="p">:</span> <span class="s">"positive result"</span><span class="p">,</span>
+        <span class="s">"failure"</span><span class="p">:</span> <span class="s">"negative result"</span><span class="p">,</span>
+        <span class="s">"warning"</span><span class="p">:</span> <span class="s">"cautionary signal"</span><span class="p">,</span>
+        <span class="s">"neutral"</span><span class="p">:</span> <span class="s">"neutral status update"</span>
+    <span class="p">}</span>
+    
+    <span class="n">character_descriptions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"modern"</span><span class="p">:</span> <span class="s">"clean and minimal with digital clarity"</span><span class="p">,</span>
+        <span class="s">"retro"</span><span class="p">:</span> <span class="s">"8-bit style with low-fidelity electronic character"</span><span class="p">,</span>
+        <span class="s">"sci-fi"</span><span class="p">:</span> <span class="s">"futuristic and advanced with complex processing"</span><span class="p">,</span>
+        <span class="s">"organic"</span><span class="p">:</span> <span class="s">"natural and warm with subtle imperfections"</span>
+    <span class="p">}</span>
+    
+    <span class="n">action_desc</span> <span class="o">=</span> <span class="n">action_descriptions</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+    <span class="n">feedback_desc</span> <span class="o">=</span> <span class="n">feedback_descriptions</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">feedback_type</span><span class="p">,</span> <span class="n">feedback_type</span><span class="p">)</span>
+    <span class="n">character_desc</span> <span class="o">=</span> <span class="n">character_descriptions</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">character</span><span class="p">)</span>
+    
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Short </span><span class="si">{</span><span class="n">duration_ms</span><span class="si">}</span><span class="s">ms interface sound for </span><span class="si">{</span><span class="n">action_desc</span><span class="si">}</span><span class="s"> indicating a </span><span class="si">{</span><span class="n">feedback_desc</span><span class="si">}</span><span class="s">, </span><span class="si">{</span><span class="n">character_desc</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Generate sound using constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This framework allows systematic creation of coherent UI sound sets that share aesthetic qualities while providing distinct functional feedback.</p>
+
+<h3 id="natural-and-organic-sounds">Natural and Organic Sounds</h3>
+
+<p>For natural sounds, capturing the dynamic quality of real-world audio is essential.</p>
+
+<h4 id="compound-animal-sound-generation">Compound Animal Sound Generation</h4>
+
+<p>When creating animal sounds, describing both the animal and its state produces better results:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_animal_sound</span><span class="p">(</span><span class="n">animal</span><span class="p">,</span> <span class="n">vocalization_type</span><span class="p">,</span> <span class="n">emotional_state</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s">"natural habitat"</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"animal_sounds"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate realistic animal sounds using compound descriptions.
+    
+    Args:
+        animal (str): Animal species
+        vocalization_type (str): Type of sound (call, warning, territorial, social)
+        emotional_state (str): Emotional state (calm, agitated, aggressive, playful)
+        environment (str): Acoustic environment
+    """</span>
+    <span class="c1"># Build comprehensive prompt
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">animal</span><span class="si">}</span><span class="s"> making a </span><span class="si">{</span><span class="n">vocalization_type</span><span class="si">}</span><span class="s"> sound while </span><span class="si">{</span><span class="n">emotional_state</span><span class="si">}</span><span class="s">, in its </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Add species-specific details if available
+</span>    <span class="n">animal_specifics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"wolf"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"call"</span><span class="p">:</span> <span class="s">"long howl with harmonic overtones"</span><span class="p">,</span>
+            <span class="s">"warning"</span><span class="p">:</span> <span class="s">"low growl with snarling undertones"</span><span class="p">,</span>
+            <span class="s">"territorial"</span><span class="p">:</span> <span class="s">"series of powerful howls with pauses"</span><span class="p">,</span>
+            <span class="s">"social"</span><span class="p">:</span> <span class="s">"short yelps and friendly whines"</span>
+        <span class="p">},</span>
+        <span class="s">"bird"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"call"</span><span class="p">:</span> <span class="s">"melodic singing with varied pitch"</span><span class="p">,</span>
+            <span class="s">"warning"</span><span class="p">:</span> <span class="s">"sharp alarm calls in rapid succession"</span><span class="p">,</span>
+            <span class="s">"territorial"</span><span class="p">:</span> <span class="s">"repetitive song with distinctive pattern"</span><span class="p">,</span>
+            <span class="s">"social"</span><span class="p">:</span> <span class="s">"gentle chirps and trills in conversation"</span>
+        <span class="p">}</span>
+        <span class="c1"># Add more animals as needed
+</span>    <span class="p">}</span>
+    
+    <span class="c1"># Add specific details if available for this animal
+</span>    <span class="k">if</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">animal_specifics</span> <span class="ow">and</span> <span class="n">vocalization_type</span> <span class="ow">in</span> <span class="n">animal_specifics</span><span class="p">[</span><span class="n">animal</span><span class="p">]:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", specifically a </span><span class="si">{</span><span class="n">animal_specifics</span><span class="p">[</span><span class="n">animal</span><span class="p">][</span><span class="n">vocalization_type</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Generate sound using the constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This approach recognizes that animal sounds vary greatly depending on context, emotional state, and communication purpose.</p>
+
+<h4 id="natural-element-dynamics-framework">Natural Element Dynamics Framework</h4>
+
+<p>Natural elements (water, wind, fire) benefit from describing their dynamic behavior:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_natural_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="s">"moderate"</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"natural_elements"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate dynamic natural element sounds.
+    
+    Args:
+        element (str): Natural element (water, wind, fire, earth)
+        intensity (str): Intensity level (gentle, moderate, strong, extreme)
+        variation (str): Amount of variation over time (steady, moderate, dynamic, chaotic)
+        environment (str): Surrounding environment affecting the sound
+    """</span>
+    <span class="c1"># Define element-specific characteristics
+</span>    <span class="n">element_actions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"water"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"quietly flowing and trickling"</span><span class="p">,</span>
+            <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily flowing and splashing"</span><span class="p">,</span>
+            <span class="s">"strong"</span><span class="p">:</span> <span class="s">"rapidly rushing and churning"</span><span class="p">,</span>
+            <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"violently crashing and roaring"</span>
+        <span class="p">},</span>
+        <span class="s">"wind"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"softly blowing and lightly whistling"</span><span class="p">,</span>
+            <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily blowing and rustling"</span><span class="p">,</span>
+            <span class="s">"strong"</span><span class="p">:</span> <span class="s">"forcefully gusting and howling"</span><span class="p">,</span>
+            <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"violently howling and creating pressure variations"</span>
+        <span class="p">},</span>
+        <span class="s">"fire"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"quietly crackling and softly hissing"</span><span class="p">,</span>
+            <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily burning and popping"</span><span class="p">,</span>
+            <span class="s">"strong"</span><span class="p">:</span> <span class="s">"intensely roaring and actively crackling"</span><span class="p">,</span>
+            <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"furiously blazing and explosively consuming material"</span>
+        <span class="p">},</span>
+        <span class="s">"earth"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"subtly shifting and lightly grinding"</span><span class="p">,</span>
+            <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"notably rumbling and crumbling"</span><span class="p">,</span>
+            <span class="s">"strong"</span><span class="p">:</span> <span class="s">"heavily rumbling and breaking apart"</span><span class="p">,</span>
+            <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"violently shaking and collapsing"</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Get the appropriate action description
+</span>    <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">element_actions</span> <span class="ow">and</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="n">element_actions</span><span class="p">[</span><span class="n">element</span><span class="p">]:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">element_actions</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">intensity</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">intensity</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Build prompt with variation and environment
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s"> with </span><span class="si">{</span><span class="n">variation</span><span class="si">}</span><span class="s"> variation over time"</span>
+    
+    <span class="c1"># Add environment if specified
+</span>    <span class="k">if</span> <span class="n">environment</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", in a </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s"> environment affecting the acoustic properties"</span>
+    
+    <span class="c1"># Generate sound using the constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This framework captures the dynamic nature of natural elements, producing more realistic and varied results.</p>
+
+<h3 id="abstract-and-designed-sounds">Abstract and Designed Sounds</h3>
+
+<p>Abstract sounds require a different approach focusing on perceptual qualities and references.</p>
+
+<h4 id="emotional-abstract-sound-design">Emotional Abstract Sound Design</h4>
+
+<p>For abstract emotional sounds, describing perceptual qualities works better than physical properties:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_abstract_emotional_sound</span><span class="p">(</span><span class="n">emotion</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">texture</span><span class="p">,</span> <span class="n">motion</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"abstract_sounds"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate abstract emotional sound design elements.
+    
+    Args:
+        emotion (str): Target emotion (fear, anticipation, relief, tension, etc.)
+        intensity (str): Emotional intensity (subtle, moderate, intense, overwhelming)
+        texture (str): Sound texture (smooth, rough, granular, liquid, airy, etc.)
+        motion (str): Movement quality (rising, falling, swelling, pulsing, etc.)
+        reference (str): Optional real-world sound reference
+    """</span>
+    <span class="c1"># Build prompt from components
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Abstract sound design expressing </span><span class="si">{</span><span class="n">intensity</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s">"</span>
+    <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with </span><span class="si">{</span><span class="n">texture</span><span class="si">}</span><span class="s"> texture and </span><span class="si">{</span><span class="n">motion</span><span class="si">}</span><span class="s"> motion"</span>
+    
+    <span class="c1"># Add reference if provided
+</span>    <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", reminiscent of </span><span class="si">{</span><span class="n">reference</span><span class="si">}</span><span class="s"> but more abstract and emotional"</span>
+    
+    <span class="c1"># Add specific emotional sound design techniques
+</span>    <span class="n">emotion_techniques</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"fear"</span><span class="p">:</span> <span class="s">"with unsettling dissonance and unpredictable elements"</span><span class="p">,</span>
+        <span class="s">"anticipation"</span><span class="p">:</span> <span class="s">"with building tension and forward momentum"</span><span class="p">,</span>
+        <span class="s">"relief"</span><span class="p">:</span> <span class="s">"with resolving harmonics and releasing energy"</span><span class="p">,</span>
+        <span class="s">"tension"</span><span class="p">:</span> <span class="s">"with sustained friction and resistance elements"</span><span class="p">,</span>
+        <span class="s">"awe"</span><span class="p">:</span> <span class="s">"with expansive spectral content and cosmic qualities"</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="n">emotion_techniques</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">emotion_techniques</span><span class="p">[</span><span class="n">emotion</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Generate sound using the constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This approach targets the perceptual and emotional response rather than focusing on physical sound sources.</p>
+
+<h4 id="sci-fi-and-fantasy-sound-design">Sci-Fi and Fantasy Sound Design</h4>
+
+<p>Sci-fi and fantasy sounds benefit from combining real-world references with imaginative elements:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_scifi_fantasy_sound</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">technology_level</span><span class="o">=</span><span class="s">"advanced"</span><span class="p">,</span> <span class="n">organic_factor</span><span class="o">=</span><span class="s">"none"</span><span class="p">,</span> <span class="n">energy_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s">"scifi_fantasy_sounds"</span><span class="p">):</span>
+    <span class="s">"""
+    Generate sci-fi and fantasy sound design elements.
+    
+    Args:
+        category (str): Sound category (weapon, creature, magic, technology, portal)
+        technology_level (str): Tech sophistication (primitive, mechanical, electronic, advanced, alien)
+        organic_factor (str): Biological component (none, subtle, moderate, dominant)
+        energy_type (str): Energy characteristic (electric, plasma, mystical, psychic, gravitational)
+    """</span>
+    <span class="c1"># Define base descriptions by category
+</span>    <span class="n">category_base</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"weapon"</span><span class="p">:</span> <span class="s">"weapon being activated and fired"</span><span class="p">,</span>
+        <span class="s">"creature"</span><span class="p">:</span> <span class="s">"otherworldly creature vocalizing and moving"</span><span class="p">,</span>
+        <span class="s">"magic"</span><span class="p">:</span> <span class="s">"magical spell being cast and taking effect"</span><span class="p">,</span>
+        <span class="s">"technology"</span><span class="p">:</span> <span class="s">"technological device activating and operating"</span><span class="p">,</span>
+        <span class="s">"portal"</span><span class="p">:</span> <span class="s">"dimensional portal opening and fluctuating"</span>
+    <span class="p">}</span>
+    
+    <span class="n">base</span> <span class="o">=</span> <span class="n">category_base</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">technology_level</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Add organic factor if not "none"
+</span>    <span class="k">if</span> <span class="n">organic_factor</span> <span class="o">!=</span> <span class="s">"none"</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">organic_factor</span><span class="si">}</span><span class="s"> organic/biological components"</span>
+    
+    <span class="c1"># Add energy type if specified
+</span>    <span class="k">if</span> <span class="n">energy_type</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", powered by </span><span class="si">{</span><span class="n">energy_type</span><span class="si">}</span><span class="s"> energy"</span>
+    
+    <span class="c1"># Add specific sci-fi/fantasy sound design elements
+</span>    <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", featuring appropriate frequency shifts, spatial characteristics, and spectrographic detail"</span>
+    
+    <span class="c1"># Add real-world references for better results
+</span>    <span class="n">references</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"weapon"</span><span class="p">:</span> <span class="s">"combining elements of electricity, mechanical mechanisms, and energy discharge"</span><span class="p">,</span>
+        <span class="s">"creature"</span><span class="p">:</span> <span class="s">"combining elements of animal sounds, fluid movement, and otherworldly resonances"</span><span class="p">,</span>
+        <span class="s">"magic"</span><span class="p">:</span> <span class="s">"combining elements of crystalline sounds, energy movement, and acoustic phenomena"</span><span class="p">,</span>
+        <span class="s">"technology"</span><span class="p">:</span> <span class="s">"combining elements of motors, electronic signals, and power systems"</span><span class="p">,</span>
+        <span class="s">"portal"</span><span class="p">:</span> <span class="s">"combining elements of air pressure, energy fluctuation, and spatial distortion"</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">references</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">references</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    
+    <span class="c1"># Generate sound using the constructed prompt
+</span>    <span class="c1"># ...
+</span>    
+    <span class="k">return</span> <span class="n">prompt</span>
+</code></pre></div></div>
+
+<p>This technique builds imaginary sounds from familiar components, creating results that feel both novel and believable.</p>
+
+<h2 id="advanced-sound-effect-design-system">Advanced Sound Effect Design System</h2>
+
+<p>Now let’s combine these specialized techniques into a comprehensive sound effect design system:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># sound_effect_design_system.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+
+<span class="k">class</span> <span class="nc">SoundEffectDesignSystem</span><span class="p">:</span>
+    <span class="s">"""
+    Comprehensive system for designing specific sound effects using
+    specialized techniques for different sound categories.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""Initialize the sound design system."""</span>
+        <span class="c1"># Determine device automatically if not specified
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
+        
+        <span class="c1"># Load the model
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading AudioGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Store sample rate
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+        
+        <span class="c1"># Create base output directory
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">base_output_dir</span> <span class="o">=</span> <span class="s">"designed_sound_effects"</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">base_output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize technique handlers
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_init_techniques</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_init_techniques</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Initialize specialized technique handlers."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">techniques</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"ambient"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_ambient_technique</span><span class="p">,</span>
+            <span class="s">"mechanical"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_mechanical_technique</span><span class="p">,</span>
+            <span class="s">"interface"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_interface_technique</span><span class="p">,</span>
+            <span class="s">"animal"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_animal_technique</span><span class="p">,</span>
+            <span class="s">"nature"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_nature_technique</span><span class="p">,</span>
+            <span class="s">"abstract"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_abstract_technique</span><span class="p">,</span>
+            <span class="s">"scifi_fantasy"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_scifi_fantasy_technique</span>
+        <span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">generate_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">technique</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Generate a sound effect using a specialized technique.
+        
+        Args:
+            technique (str): Technique name from available techniques
+            params (dict): Parameters specific to the chosen technique
+            duration (float): Duration in seconds
+            temperature (float): Generation temperature
+            output_name (str): Optional custom output name
+            
+        Returns:
+            dict: Information about the generated sound effect
+        """</span>
+        <span class="c1"># Verify technique exists
+</span>        <span class="k">if</span> <span class="n">technique</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">techniques</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">techniques</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown technique: </span><span class="si">{</span><span class="n">technique</span><span class="si">}</span><span class="s">. Available: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Create timestamp for unique identification
+</span>        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y%m%d_%H%M%S"</span><span class="p">)</span>
+        
+        <span class="c1"># Create technique-specific output directory
+</span>        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">base_output_dir</span><span class="p">,</span> <span class="n">technique</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Generate prompt using the specialized technique
+</span>        <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">techniques</span><span class="p">[</span><span class="n">technique</span><span class="p">](</span><span class="n">params</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating </span><span class="si">{</span><span class="n">technique</span><span class="si">}</span><span class="s"> sound effect: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using prompt: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Generate the sound
+</span>        <span class="n">wav</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        <span class="n">audio_tensor</span> <span class="o">=</span> <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+        
+        <span class="c1"># Create output name if not provided
+</span>        <span class="k">if</span> <span class="n">output_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c1"># Create a safe name from description
+</span>            <span class="n">safe_desc</span> <span class="o">=</span> <span class="s">""</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="p">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s">"_"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">description</span><span class="p">[:</span><span class="mi">30</span><span class="p">])</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">technique</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">safe_desc</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Save the audio
+</span>        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
+        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">audio_tensor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save metadata
+</span>        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"technique"</span><span class="p">:</span> <span class="n">technique</span><span class="p">,</span>
+            <span class="s">"parameters"</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+            <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+            <span class="s">"description"</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s">"duration"</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+            <span class="s">"output_file"</span><span class="p">:</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span>
+        <span class="p">}</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.json"</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Sound effect saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Metadata saved to </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.json"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">metadata</span>
+    
+    <span class="c1"># Specialized technique handlers
+</span>    
+    <span class="k">def</span> <span class="nf">_ambient_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle ambient soundscape generation.
+        
+        Expected params:
+            environment (str): Base environment
+            emotion (str, optional): Emotional quality
+            time_of_day (str, optional): Time of day
+            weather (str, optional): Weather conditions
+        """</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"environment"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">emotion</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"emotion"</span><span class="p">)</span>
+        <span class="n">time_of_day</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"time_of_day"</span><span class="p">)</span>
+        <span class="n">weather</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"weather"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s"> ambient"</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s"> ambient sounds"</span>
+        
+        <span class="c1"># Add time of day if specified
+</span>        <span class="k">if</span> <span class="n">time_of_day</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" during </span><span class="si">{</span><span class="n">time_of_day</span><span class="si">}</span><span class="s">"</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" during </span><span class="si">{</span><span class="n">time_of_day</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add weather if specified
+</span>        <span class="k">if</span> <span class="n">weather</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">weather</span><span class="si">}</span><span class="s"> weather"</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">weather</span><span class="si">}</span><span class="s"> weather conditions, including characteristic sounds"</span>
+        
+        <span class="c1"># Add emotional quality if specified
+</span>        <span class="k">if</span> <span class="n">emotion</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s"> emotional quality"</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", creating a </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s"> atmosphere with appropriate sonic elements"</span>
+        
+        <span class="c1"># Add ambient-specific enhancement
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", featuring background, mid-ground, and foreground sound elements with appropriate spatial positioning"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_mechanical_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle mechanical sound generation.
+        
+        Expected params:
+            object_type (str): Type of mechanical object
+            material (str): Primary material
+            action (str): Action being performed
+            scale (str, optional): Size scale
+            condition (str, optional): Mechanical condition
+        """</span>
+        <span class="n">object_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"object_type"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">material</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"material"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"action"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"scale"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">)</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"condition"</span><span class="p">,</span> <span class="s">"normal"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">object_type</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">if</span> <span class="n">condition</span> <span class="o">!=</span> <span class="s">"normal"</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" in </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s"> condition"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s">-sized </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">object_type</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add condition-specific details
+</span>        <span class="n">condition_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"new"</span><span class="p">:</span> <span class="s">"in new condition with smooth operation and minimal noise"</span><span class="p">,</span>
+            <span class="s">"normal"</span><span class="p">:</span> <span class="s">"in normal working condition with typical mechanical sounds"</span><span class="p">,</span>
+            <span class="s">"worn"</span><span class="p">:</span> <span class="s">"in worn condition with some grinding and additional friction sounds"</span><span class="p">,</span>
+            <span class="s">"damaged"</span><span class="p">:</span> <span class="s">"in damaged condition with irregular operation and concerning mechanical sounds"</span><span class="p">,</span>
+            <span class="s">"failing"</span><span class="p">:</span> <span class="s">"in failing condition with severe mechanical problems and worrying sounds"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">condition_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" </span><span class="si">{</span><span class="n">condition_details</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add action-specific details
+</span>        <span class="k">if</span> <span class="s">"rotating"</span> <span class="ow">in</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with rotational mechanical movements creating cyclical sound patterns"</span>
+        <span class="k">elif</span> <span class="s">"sliding"</span> <span class="ow">in</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with sliding friction between surfaces creating characteristic sounds"</span>
+        <span class="k">elif</span> <span class="s">"impact"</span> <span class="ow">in</span> <span class="n">action</span> <span class="ow">or</span> <span class="s">"hitting"</span> <span class="ow">in</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with impact resonance and material-specific vibration"</span>
+        <span class="k">elif</span> <span class="s">"starting"</span> <span class="ow">in</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with initial resistance followed by regular operation"</span>
+        
+        <span class="c1"># Add material-specific resonance
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", with realistic </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s"> resonance characteristics"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_interface_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle interface sound generation.
+        
+        Expected params:
+            action (str): UI action 
+            feedback_type (str): Type of feedback
+            style (str): Aesthetic style
+            context (str, optional): Usage context
+        """</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"action"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">feedback_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"feedback_type"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"style"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"context"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">style</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s"> interface sound for </span><span class="si">{</span><span class="n">feedback_type</span><span class="si">}</span><span class="s"> feedback"</span>
+        <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" in </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s"> context"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Interface sound for </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s"> action providing </span><span class="si">{</span><span class="n">feedback_type</span><span class="si">}</span><span class="s"> feedback"</span>
+        
+        <span class="c1"># Add style-specific details
+</span>        <span class="n">style_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"modern"</span><span class="p">:</span> <span class="s">"with clean, minimal digital sound design using simple waveforms"</span><span class="p">,</span>
+            <span class="s">"retro"</span><span class="p">:</span> <span class="s">"with 8-bit or 16-bit character reminiscent of vintage computers and games"</span><span class="p">,</span>
+            <span class="s">"sci-fi"</span><span class="p">:</span> <span class="s">"with futuristic, high-tech sound design suggesting advanced technology"</span><span class="p">,</span>
+            <span class="s">"organic"</span><span class="p">:</span> <span class="s">"with natural, warm qualities incorporating subtle organic textures"</span><span class="p">,</span>
+            <span class="s">"professional"</span><span class="p">:</span> <span class="s">"with subtle, understated sound design appropriate for serious applications"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">style_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">style_details</span><span class="p">[</span><span class="n">style</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", in </span><span class="si">{</span><span class="n">style</span><span class="si">}</span><span class="s"> aesthetic style"</span>
+        
+        <span class="c1"># Add context if specified
+</span>        <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", designed for </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s"> usage context"</span>
+        
+        <span class="c1"># Add interface-specific enhancement
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", with appropriate duration, attack/decay characteristics, and frequency content for user interface purposes"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_animal_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle animal sound generation.
+        
+        Expected params:
+            animal (str): Animal species
+            vocalization (str): Type of vocalization
+            state (str): Emotional/physical state
+            environment (str, optional): Acoustic environment
+        """</span>
+        <span class="n">animal</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"animal"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">vocalization</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"vocalization"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"state"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"environment"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">animal</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">vocalization</span><span class="si">}</span><span class="s"> while </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">if</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" in </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">animal</span><span class="si">}</span><span class="s"> making a </span><span class="si">{</span><span class="n">vocalization</span><span class="si">}</span><span class="s"> sound while </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add environment if specified
+</span>        <span class="k">if</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", in </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s"> affecting the acoustic properties"</span>
+        
+        <span class="c1"># Add animal-specific details if available
+</span>        <span class="n">animal_specifics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"wolf"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"howl"</span><span class="p">:</span> <span class="s">"with characteristic rising pitch, harmonic overtones, and sustained projection"</span><span class="p">,</span>
+                <span class="s">"growl"</span><span class="p">:</span> <span class="s">"with low frequency rumble, threatening intensity, and aggressive character"</span><span class="p">,</span>
+                <span class="s">"bark"</span><span class="p">:</span> <span class="s">"with sharp attack, moderate sustain, and characteristic canine timbre"</span>
+            <span class="p">},</span>
+            <span class="s">"bird"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"song"</span><span class="p">:</span> <span class="s">"with melodic structure, varied pitch modulation, and species-specific patterns"</span><span class="p">,</span>
+                <span class="s">"call"</span><span class="p">:</span> <span class="s">"with repeated short vocalizations, distinct tone, and communication purpose"</span><span class="p">,</span>
+                <span class="s">"alarm"</span><span class="p">:</span> <span class="s">"with sharp, attention-getting quality designed to alert other birds to danger"</span>
+            <span class="p">},</span>
+            <span class="s">"cat"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"meow"</span><span class="p">:</span> <span class="s">"with characteristic feline timbre, rising-falling pitch contour, and moderate duration"</span><span class="p">,</span>
+                <span class="s">"purr"</span><span class="p">:</span> <span class="s">"with low-frequency rhythmic quality, sustained duration, and relaxed character"</span><span class="p">,</span>
+                <span class="s">"hiss"</span><span class="p">:</span> <span class="s">"with air-expulsion noise, threatening character, and distinctive feline quality"</span>
+            <span class="p">}</span>
+            <span class="c1"># Add more as needed
+</span>        <span class="p">}</span>
+        
+        <span class="c1"># Add specific details if available
+</span>        <span class="k">if</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">animal_specifics</span> <span class="ow">and</span> <span class="n">vocalization</span> <span class="ow">in</span> <span class="n">animal_specifics</span><span class="p">[</span><span class="n">animal</span><span class="p">]:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">animal_specifics</span><span class="p">[</span><span class="n">animal</span><span class="p">][</span><span class="n">vocalization</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add general animal sound enhancement
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", with biologically accurate vocalization characteristics and natural acoustic properties"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_nature_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle natural element sound generation.
+        
+        Expected params:
+            element (str): Natural element
+            intensity (str): Intensity level
+            environment (str, optional): Surrounding environment
+            variation (str, optional): Amount of variation
+        """</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"element"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">intensity</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"intensity"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"environment"</span><span class="p">)</span>
+        <span class="n">variation</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"variation"</span><span class="p">,</span> <span class="s">"moderate"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">intensity</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">if</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" in </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">if</span> <span class="n">variation</span> <span class="o">!=</span> <span class="s">"moderate"</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">variation</span><span class="si">}</span><span class="s"> variation"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">intensity</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s"> sounds"</span>
+        
+        <span class="c1"># Add element-specific details
+</span>        <span class="n">element_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"water"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"quietly flowing, trickling, and gently moving with subtle liquid sounds"</span><span class="p">,</span>
+                <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily flowing with consistent water movement and characteristic splashing"</span><span class="p">,</span>
+                <span class="s">"intense"</span><span class="p">:</span> <span class="s">"rapidly rushing with powerful liquid movement and dynamic water sounds"</span><span class="p">,</span>
+                <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"violently churning and crashing with overwhelming force and dramatic liquid sounds"</span>
+            <span class="p">},</span>
+            <span class="s">"wind"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"lightly blowing with subtle air movement and soft whistling through objects"</span><span class="p">,</span>
+                <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily blowing with noticeable pressure and consistent air movement sounds"</span><span class="p">,</span>
+                <span class="s">"intense"</span><span class="p">:</span> <span class="s">"strongly gusting with powerful air currents and pronounced whistling/howling"</span><span class="p">,</span>
+                <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"violently blasting with destructive force, creating intense air pressure sounds"</span>
+            <span class="p">},</span>
+            <span class="s">"fire"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">"gentle"</span><span class="p">:</span> <span class="s">"quietly burning with subtle crackling, light consumption sounds, and soft heat movement"</span><span class="p">,</span>
+                <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"steadily burning with consistent flame sounds, regular crackling, and active consumption"</span><span class="p">,</span>
+                <span class="s">"intense"</span><span class="p">:</span> <span class="s">"vigorously burning with energetic flame movement, pronounced crackling, and active consumption"</span><span class="p">,</span>
+                <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"fiercely blazing with roaring flames, explosive sounds, and overwhelming fire intensity"</span>
+            <span class="p">}</span>
+            <span class="c1"># Add more as needed
+</span>        <span class="p">}</span>
+        
+        <span class="c1"># Add specific details if available
+</span>        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">element_details</span> <span class="ow">and</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="n">element_details</span><span class="p">[</span><span class="n">element</span><span class="p">]:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">element_details</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">intensity</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add environment if specified
+</span>        <span class="k">if</span> <span class="n">environment</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", in </span><span class="si">{</span><span class="n">environment</span><span class="si">}</span><span class="s"> environment affecting the acoustic properties"</span>
+        
+        <span class="c1"># Add variation
+</span>        <span class="n">variation_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"minimal"</span><span class="p">:</span> <span class="s">"with highly consistent and uniform sound character throughout duration"</span><span class="p">,</span>
+            <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"with natural variation and evolution of sound character over time"</span><span class="p">,</span>
+            <span class="s">"significant"</span><span class="p">:</span> <span class="s">"with notable changes in intensity and character throughout duration"</span><span class="p">,</span>
+            <span class="s">"extreme"</span><span class="p">:</span> <span class="s">"with dramatic shifts in sound characteristics and intensity over time"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">variation</span> <span class="ow">in</span> <span class="n">variation_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">variation_details</span><span class="p">[</span><span class="n">variation</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add nature-specific enhancement
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", with physically accurate sound characteristics and natural acoustic behavior"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_abstract_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle abstract sound generation.
+        
+        Expected params:
+            emotion (str): Target emotion
+            texture (str): Sound texture
+            motion (str): Movement quality
+            reference (str, optional): Real-world reference
+        """</span>
+        <span class="n">emotion</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"emotion"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">texture</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"texture"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">motion</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"motion"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"reference"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Abstract </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s"> sound with </span><span class="si">{</span><span class="n">texture</span><span class="si">}</span><span class="s"> texture and </span><span class="si">{</span><span class="n">motion</span><span class="si">}</span><span class="s"> motion"</span>
+        <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" referencing </span><span class="si">{</span><span class="n">reference</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"Abstract sound design expressing </span><span class="si">{</span><span class="n">emotion</span><span class="si">}</span><span class="s"> emotion with </span><span class="si">{</span><span class="n">texture</span><span class="si">}</span><span class="s"> texture and </span><span class="si">{</span><span class="n">motion</span><span class="si">}</span><span class="s"> motion"</span>
+        
+        <span class="c1"># Add reference if provided
+</span>        <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", reminiscent of </span><span class="si">{</span><span class="n">reference</span><span class="si">}</span><span class="s"> but more abstract and processed"</span>
+        
+        <span class="c1"># Add emotion-specific enhancements
+</span>        <span class="n">emotion_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"fear"</span><span class="p">:</span> <span class="s">"with unsettling dissonance, unpredictable elements, and tension-building qualities"</span><span class="p">,</span>
+            <span class="s">"joy"</span><span class="p">:</span> <span class="s">"with bright harmonics, uplifting energy, and pleasing frequency relationships"</span><span class="p">,</span>
+            <span class="s">"sadness"</span><span class="p">:</span> <span class="s">"with minor tonality, slow evolution, and emotionally heavy characteristics"</span><span class="p">,</span>
+            <span class="s">"tension"</span><span class="p">:</span> <span class="s">"with suspended resolution, friction elements, and anticipatory qualities"</span><span class="p">,</span>
+            <span class="s">"wonder"</span><span class="p">:</span> <span class="s">"with expansive spatial characteristics, complex harmonics, and evolving texture"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">emotion</span> <span class="ow">in</span> <span class="n">emotion_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">emotion_details</span><span class="p">[</span><span class="n">emotion</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add abstract-specific sound design guidance
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", using sound design techniques like spectral processing, granular synthesis, and textural layering"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+    
+    <span class="k">def</span> <span class="nf">_scifi_fantasy_technique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="s">"""
+        Handle sci-fi and fantasy sound generation.
+        
+        Expected params:
+            category (str): Sound category
+            tech_level (str): Technology sophistication
+            organic (str, optional): Organic component
+            energy (str, optional): Energy characteristic
+        """</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"category"</span><span class="p">,</span> <span class="s">""</span><span class="p">)</span>
+        <span class="n">tech_level</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"tech_level"</span><span class="p">,</span> <span class="s">"advanced"</span><span class="p">)</span>
+        <span class="n">organic</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"organic"</span><span class="p">,</span> <span class="s">"none"</span><span class="p">)</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">params</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"energy"</span><span class="p">)</span>
+        
+        <span class="c1"># Build basic description
+</span>        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">tech_level</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">if</span> <span class="n">organic</span> <span class="o">!=</span> <span class="s">"none"</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" with </span><span class="si">{</span><span class="n">organic</span><span class="si">}</span><span class="s"> organic elements"</span>
+        <span class="k">if</span> <span class="n">energy</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">" using </span><span class="si">{</span><span class="n">energy</span><span class="si">}</span><span class="s"> energy"</span>
+        
+        <span class="c1"># Build detailed prompt
+</span>        <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">tech_level</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add category-specific details
+</span>        <span class="n">category_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"weapon"</span><span class="p">:</span> <span class="s">"weapon being activated, charged, and fired with appropriate mechanical and energy components"</span><span class="p">,</span>
+            <span class="s">"portal"</span><span class="p">:</span> <span class="s">"dimensional portal opening, fluctuating, and creating space-time distortion effects"</span><span class="p">,</span>
+            <span class="s">"spacecraft"</span><span class="p">:</span> <span class="s">"spacecraft system powering up, operating, and creating propulsion effects"</span><span class="p">,</span>
+            <span class="s">"creature"</span><span class="p">:</span> <span class="s">"alien or fantasy creature vocalizing, moving, and interacting with its environment"</span><span class="p">,</span>
+            <span class="s">"magic"</span><span class="p">:</span> <span class="s">"magical spell being cast, taking effect, and creating supernatural phenomena"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">category_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", specifically a </span><span class="si">{</span><span class="n">category_details</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add technology level details
+</span>        <span class="n">tech_details</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"primitive"</span><span class="p">:</span> <span class="s">"using basic mechanical principles and simple materials with low-tech characteristics"</span><span class="p">,</span>
+            <span class="s">"mechanical"</span><span class="p">:</span> <span class="s">"using non-electronic machinery with mechanical moving parts and physical interactions"</span><span class="p">,</span>
+            <span class="s">"electronic"</span><span class="p">:</span> <span class="s">"using electronic components with circuit-based sounds and electrical characteristics"</span><span class="p">,</span>
+            <span class="s">"advanced"</span><span class="p">:</span> <span class="s">"using highly sophisticated technology with complex digital and energy-based elements"</span><span class="p">,</span>
+            <span class="s">"alien"</span><span class="p">:</span> <span class="s">"using incomprehensible non-human technology with exotic and unusual sound properties"</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">tech_level</span> <span class="ow">in</span> <span class="n">tech_details</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">tech_details</span><span class="p">[</span><span class="n">tech_level</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add organic elements if specified
+</span>        <span class="k">if</span> <span class="n">organic</span> <span class="o">!=</span> <span class="s">"none"</span><span class="p">:</span>
+            <span class="n">organic_details</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">"subtle"</span><span class="p">:</span> <span class="s">"with subtle biological/organic elements adding minor living qualities"</span><span class="p">,</span>
+                <span class="s">"moderate"</span><span class="p">:</span> <span class="s">"with notable biological/organic components integrated with technology/magic"</span><span class="p">,</span>
+                <span class="s">"dominant"</span><span class="p">:</span> <span class="s">"with predominantly biological/organic character combined with technology/magic"</span>
+            <span class="p">}</span>
+            
+            <span class="k">if</span> <span class="n">organic</span> <span class="ow">in</span> <span class="n">organic_details</span><span class="p">:</span>
+                <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">organic_details</span><span class="p">[</span><span class="n">organic</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add energy type if specified
+</span>        <span class="k">if</span> <span class="n">energy</span><span class="p">:</span>
+            <span class="n">energy_details</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">"electric"</span><span class="p">:</span> <span class="s">"with electrical discharge characteristics, arcing sounds, and high-frequency components"</span><span class="p">,</span>
+                <span class="s">"plasma"</span><span class="p">:</span> <span class="s">"with fluid energy characteristics, ionized gas sounds, and heat dissipation"</span><span class="p">,</span>
+                <span class="s">"mystical"</span><span class="p">:</span> <span class="s">"with ethereal qualities, harmonic resonances, and supernatural characteristics"</span><span class="p">,</span>
+                <span class="s">"quantum"</span><span class="p">:</span> <span class="s">"with probability-based fluctuations, particle/wave duality, and physics-defying properties"</span>
+            <span class="p">}</span>
+            
+            <span class="k">if</span> <span class="n">energy</span> <span class="ow">in</span> <span class="n">energy_details</span><span class="p">:</span>
+                <span class="n">prompt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">", </span><span class="si">{</span><span class="n">energy_details</span><span class="p">[</span><span class="n">energy</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="c1"># Add sci-fi/fantasy-specific guidance
+</span>        <span class="n">prompt</span> <span class="o">+=</span> <span class="s">", incorporating appropriate frequency relationships, spatial characteristics, and spectrographic detail for fictional sound design"</span>
+        
+        <span class="k">return</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">description</span>
+
+<span class="c1"># Example usage
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Create the sound design system
+</span>    <span class="n">sds</span> <span class="o">=</span> <span class="n">SoundEffectDesignSystem</span><span class="p">()</span>
+    
+    <span class="c1"># Generate different types of sound effects using specialized techniques
+</span>    
+    <span class="c1"># 1. Ambient environment
+</span>    <span class="n">sds</span><span class="p">.</span><span class="n">generate_effect</span><span class="p">(</span>
+        <span class="n">technique</span><span class="o">=</span><span class="s">"ambient"</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"environment"</span><span class="p">:</span> <span class="s">"abandoned space station"</span><span class="p">,</span>
+            <span class="s">"emotion"</span><span class="p">:</span> <span class="s">"eerie"</span><span class="p">,</span>
+            <span class="s">"time_of_day"</span><span class="p">:</span> <span class="s">"night cycle"</span>
+        <span class="p">},</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># 2. Mechanical sound
+</span>    <span class="n">sds</span><span class="p">.</span><span class="n">generate_effect</span><span class="p">(</span>
+        <span class="n">technique</span><span class="o">=</span><span class="s">"mechanical"</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"object_type"</span><span class="p">:</span> <span class="s">"hydraulic door"</span><span class="p">,</span>
+            <span class="s">"material"</span><span class="p">:</span> <span class="s">"metal"</span><span class="p">,</span>
+            <span class="s">"action"</span><span class="p">:</span> <span class="s">"opening and closing"</span><span class="p">,</span>
+            <span class="s">"condition"</span><span class="p">:</span> <span class="s">"worn"</span>
+        <span class="p">},</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.8</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># 3. Interface sound
+</span>    <span class="n">sds</span><span class="p">.</span><span class="n">generate_effect</span><span class="p">(</span>
+        <span class="n">technique</span><span class="o">=</span><span class="s">"interface"</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"action"</span><span class="p">:</span> <span class="s">"alert"</span><span class="p">,</span>
+            <span class="s">"feedback_type"</span><span class="p">:</span> <span class="s">"warning"</span><span class="p">,</span>
+            <span class="s">"style"</span><span class="p">:</span> <span class="s">"sci-fi"</span><span class="p">,</span>
+            <span class="s">"context"</span><span class="p">:</span> <span class="s">"spacecraft systems"</span>
+        <span class="p">},</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># 4. Sci-fi element
+</span>    <span class="n">sds</span><span class="p">.</span><span class="n">generate_effect</span><span class="p">(</span>
+        <span class="n">technique</span><span class="o">=</span><span class="s">"scifi_fantasy"</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">"category"</span><span class="p">:</span> <span class="s">"portal"</span><span class="p">,</span>
+            <span class="s">"tech_level"</span><span class="p">:</span> <span class="s">"alien"</span><span class="p">,</span>
+            <span class="s">"organic"</span><span class="p">:</span> <span class="s">"moderate"</span><span class="p">,</span>
+            <span class="s">"energy"</span><span class="p">:</span> <span class="s">"quantum"</span>
+        <span class="p">},</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<p>This comprehensive system demonstrates how specialized techniques for different sound categories can produce much more effective results than generic approaches. By applying the right technique to each sound type, you can create sound effects that are not only more realistic but also more emotionally impactful and contextually appropriate.</p>
+
+<h2 id="post-processing-for-enhanced-sound-effects">Post-Processing for Enhanced Sound Effects</h2>
+
+<p>While AudioGen produces impressive raw sound effects, post-processing can significantly enhance their quality and specificity. Here’s a simple post-processing framework:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># sound_effect_post_processor.py
+</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">torchaudio.functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="k">class</span> <span class="nc">SoundEffectProcessor</span><span class="p">:</span>
+    <span class="s">"""Enhance generated sound effects with audio processing techniques."""</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">apply_eq</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">bands</span><span class="p">):</span>
+        <span class="s">"""
+        Apply multi-band equalization.
+        
+        Args:
+            waveform (torch.Tensor): Audio waveform
+            sample_rate (int): Sample rate
+            bands (dict): Frequency bands to adjust, mapping center_freq: gain_db
+            
+        Returns:
+            torch.Tensor: Processed waveform
+        """</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">clone</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">center_freq</span><span class="p">,</span> <span class="n">gain_db</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Create bandpass filter for this frequency
+</span>            <span class="n">Q</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Filter quality factor
+</span>            <span class="n">processed</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">equalizer_biquad</span><span class="p">(</span>
+                <span class="n">waveform</span><span class="o">=</span><span class="n">processed</span><span class="p">,</span>
+                <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+                <span class="n">center_freq</span><span class="o">=</span><span class="n">center_freq</span><span class="p">,</span>
+                <span class="n">gain</span><span class="o">=</span><span class="n">gain_db</span><span class="p">,</span>
+                <span class="n">Q</span><span class="o">=</span><span class="n">Q</span>
+            <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">processed</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">apply_reverb</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">room_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">wet_level</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">dry_level</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+        <span class="s">"""
+        Apply reverb effect using convolution with a synthesized impulse response.
+        
+        This is a simplified reverb approximation. For more realistic results,
+        consider using a convolution reverb with real impulse responses.
+        """</span>
+        <span class="c1"># Create a simple impulse response based on parameters
+</span>        <span class="c1"># (In practice, you'd usually load real impulse responses)
+</span>        <span class="n">ir_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">*</span> <span class="n">room_size</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># Longer room = longer reverb
+</span>        <span class="n">ir</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ir_length</span><span class="p">)</span>
+        
+        <span class="c1"># Create initial impulse
+</span>        <span class="n">ir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        
+        <span class="c1"># Create exponential decay
+</span>        <span class="n">decay_factor</span> <span class="o">=</span> <span class="n">damping</span> <span class="o">*</span> <span class="mf">0.98</span>  <span class="c1"># Convert to decay multiplier
+</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ir_length</span><span class="p">):</span>
+            <span class="n">ir</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">decay_factor</span><span class="p">)</span>
+        
+        <span class="c1"># Add some early reflections (simplified)
+</span>        <span class="n">early_times</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">early_times</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">ir_length</span><span class="p">:</span>
+                <span class="n">ir</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.5</span>
+        
+        <span class="c1"># Normalize IR
+</span>        <span class="n">ir</span> <span class="o">=</span> <span class="n">ir</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">ir</span><span class="p">))</span>
+        
+        <span class="c1"># Apply convolution
+</span>        <span class="c1"># Ensure inputs are correctly shaped
+</span>        <span class="n">ir</span> <span class="o">=</span> <span class="n">ir</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [1, length]
+</span>        <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [1, length]
+</span>        
+        <span class="c1"># Use torchaudio's convolution
+</span>        <span class="n">wet_signal</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">ir</span><span class="p">)</span>
+        
+        <span class="c1"># Mix dry and wet signals
+</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">dry_level</span> <span class="o">*</span> <span class="n">waveform</span> <span class="o">+</span> <span class="n">wet_level</span> <span class="o">*</span> <span class="n">wet_signal</span>
+        
+        <span class="c1"># Return the correct shape
+</span>        <span class="k">if</span> <span class="n">waveform</span><span class="p">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">output</span><span class="p">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">compress_dynamic_range</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">threshold_db</span><span class="o">=-</span><span class="mi">20</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">attack_ms</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">release_ms</span><span class="o">=</span><span class="mf">50.0</span><span class="p">):</span>
+        <span class="s">"""
+        Apply dynamic range compression.
+        
+        Args:
+            waveform (torch.Tensor): Audio waveform
+            threshold_db (float): Threshold in dB
+            ratio (float): Compression ratio
+            attack_ms (float): Attack time in milliseconds
+            release_ms (float): Release time in milliseconds
+            
+        Returns:
+            torch.Tensor: Processed waveform
+        """</span>
+        <span class="c1"># Convert to numpy for processing
+</span>        <span class="n">audio_np</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span>
+        
+        <span class="c1"># Simple envelope follower (absolute value + smoothing)
+</span>        <span class="n">abs_audio</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">audio_np</span><span class="p">)</span>
+        
+        <span class="c1"># Convert parameters to samples
+</span>        <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">32000</span>  <span class="c1"># AudioGen sample rate
+</span>        <span class="n">attack_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attack_ms</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">release_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">release_ms</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+        
+        <span class="c1"># Apply envelope following
+</span>        <span class="n">envelope</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">abs_audio</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">abs_audio</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">abs_audio</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="c1"># Attack phase (faster)
+</span>                <span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">abs_audio</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">abs_audio</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">attack_samples</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Release phase (slower)
+</span>                <span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">abs_audio</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">envelope</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">abs_audio</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">release_samples</span><span class="p">)</span>
+        
+        <span class="c1"># Convert threshold to linear scale
+</span>        <span class="n">threshold_linear</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="n">threshold_db</span> <span class="o">/</span> <span class="mf">20.0</span><span class="p">)</span>
+        
+        <span class="c1"># Compute gain reduction
+</span>        <span class="n">gain_reduction</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">envelope</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">envelope</span> <span class="o">&gt;</span> <span class="n">threshold_linear</span>
+        <span class="n">gain_reduction</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold_linear</span> <span class="o">+</span> <span class="p">(</span><span class="n">envelope</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">threshold_linear</span><span class="p">)</span> <span class="o">/</span> <span class="n">ratio</span>
+        <span class="n">gain_reduction</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">/=</span> <span class="n">envelope</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        
+        <span class="c1"># Apply gain reduction
+</span>        <span class="n">compressed</span> <span class="o">=</span> <span class="n">audio_np</span> <span class="o">*</span> <span class="n">gain_reduction</span>
+        
+        <span class="c1"># Normalize output to prevent clipping
+</span>        <span class="k">if</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">compressed</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">compressed</span> <span class="o">=</span> <span class="n">compressed</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nb">abs</span><span class="p">(</span><span class="n">compressed</span><span class="p">))</span>
+        
+        <span class="c1"># Convert back to torch tensor
+</span>        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">compressed</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">enhance_mechanical</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+        <span class="s">"""Apply processing optimized for mechanical sounds."""</span>
+        <span class="c1"># 1. Emphasize mechanical resonances with EQ
+</span>        <span class="n">eq_bands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">200</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>    <span class="c1"># Add body
+</span>            <span class="mi">1200</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>   <span class="c1"># Enhance mechanical detail
+</span>            <span class="mi">4000</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>   <span class="c1"># Add clarity
+</span>            <span class="mi">8000</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.0</span>   <span class="c1"># Reduce harshness
+</span>        <span class="p">}</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_eq</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">eq_bands</span><span class="p">)</span>
+        
+        <span class="c1"># 2. Add subtle compression for consistent mechanical presence
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">compress_dynamic_range</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">threshold_db</span><span class="o">=-</span><span class="mi">25</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">attack_ms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">release_ms</span><span class="o">=</span><span class="mi">100</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 3. Add light reverb for mechanical space
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_reverb</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">room_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">wet_level</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">dry_level</span><span class="o">=</span><span class="mf">0.8</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">processed</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">enhance_creature</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+        <span class="s">"""Apply processing optimized for creature sounds."""</span>
+        <span class="c1"># 1. Emphasize organic resonances with EQ
+</span>        <span class="n">eq_bands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">150</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="c1"># Add body/weight
+</span>            <span class="mi">500</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>    <span class="c1"># Enhance presence
+</span>            <span class="mi">2000</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>   <span class="c1"># Add articulation
+</span>            <span class="mi">5000</span><span class="p">:</span> <span class="mf">2.0</span>    <span class="c1"># Add detail
+</span>        <span class="p">}</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_eq</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">eq_bands</span><span class="p">)</span>
+        
+        <span class="c1"># 2. Add more assertive compression for biological character
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">compress_dynamic_range</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">threshold_db</span><span class="o">=-</span><span class="mi">20</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">attack_ms</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">release_ms</span><span class="o">=</span><span class="mi">150</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 3. Add natural space
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_reverb</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">room_size</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">wet_level</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">dry_level</span><span class="o">=</span><span class="mf">0.75</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">processed</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">enhance_ui</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+        <span class="s">"""Apply processing optimized for UI sounds."""</span>
+        <span class="c1"># 1. Crisp, clear EQ for interface sounds
+</span>        <span class="n">eq_bands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">300</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span>   <span class="c1"># Reduce muddiness
+</span>            <span class="mi">1500</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>   <span class="c1"># Enhance presence
+</span>            <span class="mi">5000</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>   <span class="c1"># Add sharpness
+</span>            <span class="mi">10000</span><span class="p">:</span> <span class="mf">3.0</span>   <span class="c1"># Add brilliance
+</span>        <span class="p">}</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_eq</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">eq_bands</span><span class="p">)</span>
+        
+        <span class="c1"># 2. Tighter compression for consistent UI volume
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">compress_dynamic_range</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">threshold_db</span><span class="o">=-</span><span class="mi">15</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">attack_ms</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">release_ms</span><span class="o">=</span><span class="mi">50</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 3. Very subtle reverb for presence without muddiness
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_reverb</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">room_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">wet_level</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dry_level</span><span class="o">=</span><span class="mf">0.9</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">processed</span>
+    
+    <span class="o">@</span><span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">enhance_ambient</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+        <span class="s">"""Apply processing optimized for ambient sounds."""</span>
+        <span class="c1"># 1. Spatial-enhancing EQ
+</span>        <span class="n">eq_bands</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">100</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>    <span class="c1"># Add depth
+</span>            <span class="mi">500</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>   <span class="c1"># Reduce congestion
+</span>            <span class="mi">2000</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>   <span class="c1"># Enhance detail
+</span>            <span class="mi">8000</span><span class="p">:</span> <span class="mf">3.0</span>    <span class="c1"># Add air/space
+</span>        <span class="p">}</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_eq</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">eq_bands</span><span class="p">)</span>
+        
+        <span class="c1"># 2. Gentle compression to maintain dynamics but control peaks
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">compress_dynamic_range</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">threshold_db</span><span class="o">=-</span><span class="mi">25</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">attack_ms</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">release_ms</span><span class="o">=</span><span class="mi">200</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 3. More pronounced reverb for spaciousness
+</span>        <span class="n">processed</span> <span class="o">=</span> <span class="n">SoundEffectProcessor</span><span class="p">.</span><span class="n">apply_reverb</span><span class="p">(</span>
+            <span class="n">processed</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">room_size</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">wet_level</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">dry_level</span><span class="o">=</span><span class="mf">0.6</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">processed</span>
+</code></pre></div></div>
+
+<p>While this is a simplified implementation, it demonstrates how different types of post-processing can enhance different sound categories:</p>
+
+<ol>
+  <li><strong>Mechanical sounds</strong>: Benefit from resonance enhancement and spatial characteristics</li>
+  <li><strong>Creature sounds</strong>: Need organic qualities and dynamic processing</li>
+  <li><strong>UI sounds</strong>: Require precision, clarity, and consistency</li>
+  <li><strong>Ambient sounds</strong>: Benefit from spatial enhancement and layered processing</li>
+</ol>
+
+<h2 id="hands-on-challenge-creature-sound-design">Hands-on Challenge: Creature Sound Design</h2>
+
+<p>Now it’s time to apply everything you’ve learned to create a distinctive creature vocalization for a sci-fi/fantasy project:</p>
+
+<ol>
+  <li>Define the creature’s characteristics:
+    <ul>
+      <li>Physical traits (size, biology, habitat)</li>
+      <li>Emotional state (aggressive, curious, distressed)</li>
+      <li>Purpose of vocalization (warning, communication, hunting)</li>
+    </ul>
+  </li>
+  <li>
+    <p>Use the specialized animal sound technique to generate a base vocalization</p>
+  </li>
+  <li>
+    <p>Apply post-processing to enhance the sound’s distinctive qualities</p>
+  </li>
+  <li>
+    <p>Generate 3-5 variations to create a “vocabulary” for your creature</p>
+  </li>
+  <li>Document your approach, parameters, and results</li>
+</ol>
+
+<p><strong>Bonus Challenge</strong>: Create a complete “sound design document” for your creature, including:</p>
+<ul>
+  <li>Illustrations or descriptions of the creature</li>
+  <li>Technical details of your generation approach</li>
+  <li>Sound samples for different vocalizations and states</li>
+  <li>Implementation notes for game or film usage</li>
+</ul>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Different sound categories require specialized generation techniques</li>
+  <li>Breaking down sounds into their key characteristics improves prompt quality</li>
+  <li>Multi-layered approaches create more dynamic and realistic soundscapes</li>
+  <li>Post-processing can significantly enhance the quality and specificity of generated sounds</li>
+  <li>Systematic techniques produce more consistent and controllable results than generic prompts</li>
+  <li>Physical, perceptual, and contextual descriptions all have their place in different sound types</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve mastered specialized sound effect generation techniques, you’re ready to explore more complex audio environments:</p>
+
+<ul>
+  <li><strong>Chapter 12: Audio Scene Composition</strong> - Create complete audio scenes with multiple elements</li>
+  <li><strong>Chapter 13: Sound Design Workflows</strong> - Develop efficient workflows for audio production</li>
+  <li><strong>Chapter 14: Integration with Unity and Unreal</strong> - Implement AI audio in game engines</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://designingsound.org/2010/02/22/the-guide-to-sound-effects/">Sound Design Fundamentals</a></li>
+  <li><a href="https://arxiv.org/abs/1608.04363">Environmental Sound Classification</a></li>
+  <li><a href="https://filmsound.org/articles/">Film Sound Theory</a></li>
+  <li><a href="https://www.gamasutra.com/blogs/PeterJ/20150127/231713/A_guide_on_implementing_an_ambient_sound_system_in_Unity.php">Game Audio Implementation</a></li>
+  <li><a href="https://bookshop.org/books/the-sonic-boom-how-sound-transforms-the-way-we-think-feel-and-buy/9780544570160">The Sonic Boom: How Sound Transforms the Way We Think</a></li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part3/introduction-to-audiogen/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Introduction to AudioGen: AI-Powered Sound Effects Generation</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/part5/complete-audio-pipeline/" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Chapter 18: Building a Complete Audio Pipeline</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AudioCraft Tutorial Overview</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/TUTORIAL_OVERVIEW/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">AudioCraft Tutorial Overview</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="audiocraft-tutorial-overview">AudioCraft Tutorial Overview</h1>
+
+<p>This document provides a comprehensive overview of the complete AudioCraft tutorial series. Use it to navigate the tutorials based on your learning needs and experience level.</p>
+
+<h2 id="learning-path">Learning Path</h2>
+
+<p>The tutorials are organized into a progressive learning path from beginner to advanced:</p>
+
+<ol>
+  <li><strong>Getting Started</strong> - Essential setup and basic concepts</li>
+  <li><strong>Core Models</strong> - Detailed usage of MusicGen and AudioGen</li>
+  <li><strong>Advanced Techniques</strong> - More sophisticated generation methods</li>
+  <li><strong>Deployment &amp; Integration</strong> - Production-ready implementation</li>
+  <li><strong>Troubleshooting &amp; Reference</strong> - Problem-solving and additional resources</li>
+</ol>
+
+<h2 id="beginner-path-recommended-for-new-users">Beginner Path (Recommended for New Users)</h2>
+
+<p>If you’re new to AudioCraft, follow this sequence:</p>
+
+<ol>
+  <li><a href="/practical-meta-audiocraft/tutorials/getting-started/">Getting Started Guide</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/getting-started/basic-usage/">Basic Usage Tutorial</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_basics/">MusicGen Basics</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/troubleshooting/">Troubleshooting Guide</a> (as needed)</li>
+</ol>
+
+<h2 id="complete-tutorial-map">Complete Tutorial Map</h2>
+
+<h3 id="getting-started">Getting Started</h3>
+<ul>
+  <li><a href="/practical-meta-audiocraft/tutorials/getting-started/">Installation &amp; Setup</a>
+    <ul>
+      <li><a href="/practical-meta-audiocraft/tutorials/getting-started/mac-m-series/">Mac Installation Guide</a></li>
+      <li><a href="/practical-meta-audiocraft/tutorials/getting-started/windows-linux-cuda/">Windows/Linux with CUDA</a></li>
+      <li><a href="/practical-meta-audiocraft/tutorials/getting-started/cpu-installation/">CPU-Only Installation</a></li>
+    </ul>
+  </li>
+  <li><a href="/practical-meta-audiocraft/tutorials/getting-started/basic-usage/">Basic Usage</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/getting-started/architecture/">AudioCraft Architecture</a></li>
+</ul>
+
+<h3 id="musicgen-tutorials">MusicGen Tutorials</h3>
+<ul>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_basics/">MusicGen Basics</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_web_interface/">Web Interface Development</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_advanced/">Advanced MusicGen Techniques</a></li>
+  <li>Example Scripts:
+    <ul>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/examples/musicgen_basic.py">Basic Generation</a></li>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/examples/musicgen_genre_explorer.py">Genre Explorer</a></li>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/examples/musicgen_melody_conditioning.py">Melody Conditioning</a></li>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/examples/musicgen_web_app.py">Web Application</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="audiogen-tutorials">AudioGen Tutorials</h3>
+<ul>
+  <li>AudioGen Basics (Coming soon)</li>
+  <li>Sound Design Techniques (Coming soon)</li>
+  <li>Environmental Audio Generation (Coming soon)</li>
+</ul>
+
+<h3 id="deployment--integration">Deployment &amp; Integration</h3>
+<ul>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/">Deployment Overview</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/rest_api/">REST API Development</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/docker_containerization/">Docker Containerization</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/gradio_interface/">Gradio Web Interfaces</a></li>
+</ul>
+
+<h3 id="reference-materials">Reference Materials</h3>
+<ul>
+  <li><a href="/practical-meta-audiocraft/tutorials/troubleshooting/">Troubleshooting &amp; FAQs</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/glossary/">AudioCraft Glossary</a></li>
+</ul>
+
+<h2 id="topics-by-skill-level">Topics by Skill Level</h2>
+
+<h3 id="beginner">Beginner</h3>
+<ul>
+  <li>Installation and basic setup</li>
+  <li>Understanding the AudioCraft architecture</li>
+  <li>Simple music generation with MusicGen</li>
+  <li>Basic sound effect generation with AudioGen</li>
+</ul>
+
+<h3 id="intermediate">Intermediate</h3>
+<ul>
+  <li>Parameter optimization for better outputs</li>
+  <li>Style and genre exploration</li>
+  <li>Building web interfaces with Gradio</li>
+  <li>Batch processing for multiple generations</li>
+</ul>
+
+<h3 id="advanced">Advanced</h3>
+<ul>
+  <li>Melody conditioning techniques</li>
+  <li>Extended generation for longer compositions</li>
+  <li>REST API development for applications</li>
+  <li>Production deployment with Docker</li>
+  <li>Performance optimization strategies</li>
+</ul>
+
+<h2 id="use-case-guides">Use Case Guides</h2>
+
+<h3 id="music-production">Music Production</h3>
+<ol>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_basics/">MusicGen Basics</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_advanced/">Advanced MusicGen Techniques</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/musicgen/examples/musicgen_melody_conditioning.py">Melody Conditioning</a></li>
+</ol>
+
+<h3 id="sound-design">Sound Design</h3>
+<ol>
+  <li>AudioGen Basics (Coming soon)</li>
+  <li>Sound Effect Library Creation (Coming soon)</li>
+  <li>Audio Post-Processing Techniques (Coming soon)</li>
+</ol>
+
+<h3 id="application-development">Application Development</h3>
+<ol>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/rest_api/">REST API Development</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/gradio_interface/">Gradio Web Interfaces</a></li>
+  <li><a href="/practical-meta-audiocraft/tutorials/deployment/docker_containerization/">Docker Containerization</a></li>
+</ol>
+
+<h2 id="hardware-configurations">Hardware Configurations</h2>
+
+<h3 id="high-performance-setup-recommended">High-Performance Setup (Recommended)</h3>
+<ul>
+  <li>NVIDIA GPU with 8GB+ VRAM</li>
+  <li>CUDA Toolkit 11.8+</li>
+  <li>16GB+ RAM</li>
+  <li>Use medium/large models</li>
+</ul>
+
+<h3 id="mid-range-setup">Mid-Range Setup</h3>
+<ul>
+  <li>Apple Silicon Mac (M1/M2/M3)</li>
+  <li>16GB+ RAM</li>
+  <li>Use small/medium models</li>
+</ul>
+
+<h3 id="minimum-setup">Minimum Setup</h3>
+<ul>
+  <li>Modern CPU (no GPU)</li>
+  <li>8GB RAM</li>
+  <li>Use small model only</li>
+  <li>Expect longer generation times</li>
+</ul>
+
+<h2 id="project-ideas">Project Ideas</h2>
+
+<p>Here are some project ideas to apply what you’ve learned:</p>
+
+<ol>
+  <li><strong>AI Music Composer App</strong>
+    <ul>
+      <li>Create a web application for generating music</li>
+      <li>Allow users to customize parameters and download results</li>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_web_interface/">Start with the Web Interface Tutorial</a></li>
+    </ul>
+  </li>
+  <li><strong>Sound Effect Library Generator</strong>
+    <ul>
+      <li>Build a tool that generates sound effects for games or media</li>
+      <li>Organize effects by category and allow batch generation</li>
+      <li>Start with AudioGen Basics (Coming soon)</li>
+    </ul>
+  </li>
+  <li><strong>Interactive Audio Installation</strong>
+    <ul>
+      <li>Create an art installation that generates audio in response to input</li>
+      <li>Use melody conditioning to maintain musical coherence</li>
+      <li><a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_advanced/">Use the Advanced MusicGen Techniques</a></li>
+    </ul>
+  </li>
+  <li><strong>Podcast Background Music Service</strong>
+    <ul>
+      <li>Build an API that creates custom background music for podcasts</li>
+      <li>Allow description-based generation tied to podcast content</li>
+      <li><a href="/practical-meta-audiocraft/tutorials/deployment/rest_api/">Start with the REST API Tutorial</a></li>
+    </ul>
+  </li>
+  <li><strong>Game Audio Engine Integration</strong>
+    <ul>
+      <li>Integrate AudioCraft into a game engine for dynamic sound generation</li>
+      <li>Create responsive audio based on game events</li>
+      <li>Start with Deployment Tutorials</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="upcoming-tutorials">Upcoming Tutorials</h2>
+
+<p>We’re actively developing new tutorials including:</p>
+
+<ul>
+  <li>AudioGen comprehensive guide</li>
+  <li>Advanced TTS integration</li>
+  <li>Multi-modal generation (audio + image)</li>
+  <li>Fine-tuning guides for custom audio generation</li>
+  <li>Mobile deployment strategies</li>
+</ul>
+
+<h2 id="community-and-support">Community and Support</h2>
+
+<ul>
+  <li>For issues with AudioCraft itself, visit the <a href="https://github.com/facebookresearch/audiocraft">official GitHub repository</a></li>
+  <li>For questions about these tutorials, please <a href="https://github.com/yourusername/audiocraft-tutorial/issues">open an issue</a> on this repository</li>
+</ul>
+
+<h2 id="contribution-guidelines">Contribution Guidelines</h2>
+
+<p>We welcome contributions to these tutorials. Please see the <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> file for details on how to contribute.</p>
+
+<hr />
+
+<p><em>This tutorial series is a community-driven project and is not officially affiliated with Meta. AudioCraft is developed by Meta AI Research and is available under its respective license.</em></p>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

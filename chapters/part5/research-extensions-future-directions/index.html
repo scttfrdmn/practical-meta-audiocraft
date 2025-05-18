@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 21: Research Extensions and Future Directions</title>
+  <meta name="description" content="“We’ve been using AudioCraft in our production workflow for a while now, but we’re wondering what’s coming next. How can we push the boundaries of what’s pos...">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/chapters/part5/research-extensions-future-directions/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-metadata">
+      <span class="difficulty advanced">Advanced</span>
+      <span class="estimated-time">3 hours</span>
+    </div>
+    <h1>Chapter 21: Research Extensions and Future Directions</h1>
+  </div>
+  
+  
+  
+  <blockquote>
+  <p>“We’ve been using AudioCraft in our production workflow for a while now, but we’re wondering what’s coming next. How can we push the boundaries of what’s possible, contribute to advancing the field, and prepare for upcoming developments?” — <em>Sophia Takahashi, Technical Audio Director, Immersive Media Studio</em></p>
+</blockquote>
+
+<h1 id="chapter-21-research-extensions-and-future-directions">Chapter 21: Research Extensions and Future Directions</h1>
+
+<h2 id="the-challenge">The Challenge</h2>
+
+<p>As AI audio generation rapidly evolves, practitioners face the challenge of staying current with emerging techniques, contributing to the field’s advancement, and anticipating future developments. The foundational understanding you’ve built through earlier chapters provides a solid platform, but the frontier of audio AI is continuously expanding with new research, techniques, and applications.</p>
+
+<p>For professionals integrating AI audio into production workflows, there’s a constant tension between leveraging established methods and exploring cutting-edge capabilities. How do you evaluate which experimental approaches are worth investing time in? How can you contribute to advancing the state of the art? And how should you adapt your workflows to prepare for emerging capabilities?</p>
+
+<p>In this chapter, we’ll explore research extensions to AudioCraft, examine the cutting edge of AI audio generation, and look ahead to anticipated developments in the field. We’ll provide practical guidance on incorporating experimental techniques into your projects, contributing to the research community, and preparing for future advancements.</p>
+
+<h2 id="learning-objectives">Learning Objectives</h2>
+
+<p>By the end of this chapter, you’ll be able to:</p>
+
+<ul>
+  <li>Implement experimental extensions to AudioCraft’s core capabilities</li>
+  <li>Evaluate emerging research in AI audio generation</li>
+  <li>Develop strategies for contributing to open-source audio AI projects</li>
+  <li>Future-proof your audio workflows for upcoming technological developments</li>
+  <li>Build a custom research extension to explore new audio generation capabilities</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before proceeding, ensure you have:</p>
+<ul>
+  <li>Completed the previous chapters, especially Chapter 18 on building a complete audio pipeline</li>
+  <li>Familiarity with PyTorch and neural network concepts</li>
+  <li>Basic understanding of research papers and machine learning terminology</li>
+  <li>Experience with Python development and package customization</li>
+</ul>
+
+<h2 id="key-concepts">Key Concepts</h2>
+
+<h3 id="extending-model-capabilities">Extending Model Capabilities</h3>
+
+<p>While AudioCraft provides powerful out-of-the-box functionality, its capabilities can be extended through various techniques. Understanding how to extend the base models allows you to customize generation for specific use cases or experiment with novel approaches.</p>
+
+<p>Model extension techniques fall into several categories:</p>
+
+<ol>
+  <li><strong>Fine-tuning</strong>: Adapting pre-trained models to specific domains or styles</li>
+  <li><strong>Model composition</strong>: Combining multiple models in novel ways</li>
+  <li><strong>Pipeline customization</strong>: Modifying the generation process</li>
+  <li><strong>Parameter exploration</strong>: Discovering new parameter spaces and configurations</li>
+</ol>
+
+<p>These approaches vary in complexity and resource requirements. Fine-tuning generally requires significant computational resources and training data, while parameter exploration can be accomplished with minimal resources. Model composition and pipeline customization fall somewhere in between.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Conceptual example of model composition
+</span><span class="k">class</span> <span class="nc">HybridAudioGenerator</span><span class="p">:</span>
+    <span class="s">"""
+    Combines MusicGen and AudioGen in a novel architecture
+    to create hybrid audio experiences.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span> <span class="n">audio_model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">):</span>
+        <span class="c1"># Load base models
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">music_model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">audio_model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Ensure both models use the same device
+</span>        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">generate_hybrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_prompt</span><span class="p">,</span> <span class="n">sfx_prompt</span><span class="p">,</span> <span class="n">blend_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="s">"""
+        Generate hybrid audio by blending music and sound effect generation.
+        
+        Args:
+            music_prompt: Text prompt for music generation
+            sfx_prompt: Text prompt for sound effect generation
+            blend_factor: How much to weight music vs. sfx (0-1)
+            
+        Returns:
+            Blended audio tensor
+        """</span>
+        <span class="c1"># Generate both audio types
+</span>        <span class="n">music</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">music_model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">music_prompt</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sfx</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">sfx_prompt</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># Ensure same length for blending
+</span>        <span class="n">min_length</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">music</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sfx</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">music</span> <span class="o">=</span> <span class="n">music</span><span class="p">[:</span><span class="n">min_length</span><span class="p">]</span>
+        <span class="n">sfx</span> <span class="o">=</span> <span class="n">sfx</span><span class="p">[:</span><span class="n">min_length</span><span class="p">]</span>
+        
+        <span class="c1"># Blend using weighted average
+</span>        <span class="n">blended</span> <span class="o">=</span> <span class="n">music</span> <span class="o">*</span> <span class="n">blend_factor</span> <span class="o">+</span> <span class="n">sfx</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">blend_factor</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">blended</span>
+</code></pre></div></div>
+
+<h3 id="research-driven-development">Research-Driven Development</h3>
+
+<p>Research-driven development is a disciplined approach to experimenting with cutting-edge techniques while maintaining reliable production workflows. The key principles include:</p>
+
+<ol>
+  <li><strong>Hypothesis-driven experimentation</strong>: Clearly articulate what you’re testing and why</li>
+  <li><strong>Controlled testing environments</strong>: Isolate experimental components</li>
+  <li><strong>Rigorous evaluation</strong>: Establish objective metrics for success</li>
+  <li><strong>Incremental integration</strong>: Gradually introduce proven techniques into production</li>
+</ol>
+
+<p>This approach allows you to explore the frontier of audio AI while minimizing disruption to established workflows. It also creates a framework for contributing meaningful insights back to the research community.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Example research experiment framework
+</span><span class="k">class</span> <span class="nc">ExperimentFramework</span><span class="p">:</span>
+    <span class="s">"""Framework for conducting controlled audio generation experiments."""</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_model</span><span class="p">,</span> <span class="n">experiment_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span> <span class="o">=</span> <span class="n">base_model</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">experiment_name</span> <span class="o">=</span> <span class="n">experiment_name</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">results_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"experiments/</span><span class="si">{</span><span class="n">experiment_name</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Define evaluation metrics
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"novelty"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_evaluate_novelty</span><span class="p">,</span>
+            <span class="s">"coherence"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_evaluate_coherence</span><span class="p">,</span>
+            <span class="s">"prompt_alignment"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_evaluate_prompt_alignment</span><span class="p">,</span>
+            <span class="s">"technical_quality"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_evaluate_technical_quality</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Initialize experiment log
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">experiment_log</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"name"</span><span class="p">:</span> <span class="n">experiment_name</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s">"parameters"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s">"results"</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">run_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">prompts</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="s">"""
+        Run experiment with specified parameters across test prompts.
+        
+        Args:
+            parameters: Dictionary of generation parameters to test
+            prompts: List of text prompts to use
+            n_samples: Number of samples to generate for each configuration
+            
+        Returns:
+            Experiment results
+        """</span>
+        <span class="c1"># Log parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">experiment_log</span><span class="p">[</span><span class="s">"parameters"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span>
+        
+        <span class="c1"># Generate samples
+</span>        <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">prompts</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+                <span class="c1"># Set experimental parameters
+</span>                <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span><span class="o">**</span><span class="n">parameters</span><span class="p">)</span>
+                
+                <span class="c1"># Generate sample
+</span>                <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="c1"># Save sample
+</span>                <span class="n">sample_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">results_dir</span><span class="si">}</span><span class="s">/sample_</span><span class="si">{</span><span class="n">prompt</span><span class="p">[:</span><span class="mi">20</span><span class="p">]</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">.wav"</span>
+                <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">sample_path</span><span class="p">,</span> <span class="n">sample</span><span class="p">.</span><span class="n">cpu</span><span class="p">().</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+                
+                <span class="c1"># Store sample info
+</span>                <span class="n">samples</span><span class="p">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                    <span class="s">"path"</span><span class="p">:</span> <span class="n">sample_path</span><span class="p">,</span>
+                    <span class="s">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                    <span class="s">"index"</span><span class="p">:</span> <span class="n">i</span>
+                <span class="p">})</span>
+        
+        <span class="c1"># Evaluate samples
+</span>        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">metrics</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric_fn</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        
+        <span class="c1"># Log results
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">experiment_log</span><span class="p">[</span><span class="s">"results"</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span>
+        
+        <span class="c1"># Save experiment log
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">results_dir</span><span class="si">}</span><span class="s">/experiment_log.json"</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">experiment_log</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="c1"># Evaluation metric methods would be implemented here
+</span></code></pre></div></div>
+
+<h2 id="solution-walkthrough">Solution Walkthrough</h2>
+
+<h3 id="1-implementing-a-custom-training-extension">1. Implementing a Custom Training Extension</h3>
+
+<p>Let’s explore how to create a custom training extension for AudioCraft that allows fine-tuning on domain-specific data:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_read</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="k">class</span> <span class="nc">AudioTextPairDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="s">"""Dataset for fine-tuning with paired audio and text."""</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">max_duration</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">32000</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize the dataset.
+        
+        Args:
+            data_dir: Directory containing audio files and metadata
+            max_duration: Maximum audio duration in seconds
+            sample_rate: Target sample rate
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">data_dir</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">max_duration</span> <span class="o">=</span> <span class="n">max_duration</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Load metadata file
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s">"metadata.csv"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># Skip header line
+</span>            <span class="nb">next</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="n">strip</span><span class="p">().</span><span class="n">split</span><span class="p">(</span><span class="s">","</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">audio_file</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s">"audio_file"</span><span class="p">:</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">audio_file</span><span class="p">),</span>
+                        <span class="s">"description"</span><span class="p">:</span> <span class="n">description</span>
+                    <span class="p">})</span>
+    
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">metadata</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        
+        <span class="c1"># Load audio
+</span>        <span class="n">audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">audio_read</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s">"audio_file"</span><span class="p">])</span>
+        
+        <span class="c1"># Convert to mono if stereo
+</span>        <span class="k">if</span> <span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">audio</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Resample if needed
+</span>        <span class="k">if</span> <span class="n">sr</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">:</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">resample</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Trim or pad to max_samples
+</span>        <span class="k">if</span> <span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_samples</span><span class="p">:</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">audio</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="p">.</span><span class="n">max_samples</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_samples</span><span class="p">:</span>
+            <span class="n">padding</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">max_samples</span> <span class="o">-</span> <span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">audio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">([</span><span class="n">audio</span><span class="p">,</span> <span class="n">padding</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s">"audio"</span><span class="p">:</span> <span class="n">audio</span><span class="p">,</span>
+            <span class="s">"text"</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="s">"description"</span><span class="p">]</span>
+        <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">CustomMusicGenTrainer</span><span class="p">:</span>
+    <span class="s">"""
+    Custom trainer for fine-tuning MusicGen on domain-specific data.
+    
+    This trainer implements a simplified fine-tuning approach that adapts
+    the text encoder component while keeping most of the model frozen.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="bp">None</span>
+    <span class="p">):</span>
+        <span class="s">"""
+        Initialize the trainer.
+        
+        Args:
+            model_size: Size of base MusicGen model
+            learning_rate: Learning rate for fine-tuning
+            batch_size: Batch size for training
+            device: Device to use for training
+        """</span>
+        <span class="c1"># Determine device
+</span>        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using device: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Load base model
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Configure for training
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># Set LM to training mode
+</span>        
+        <span class="c1"># Freeze most of the model, only fine-tune text encoder and select layers
+</span>        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">named_parameters</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s">"text_encoder"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s">"adapter"</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">param</span><span class="p">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">param</span><span class="p">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="bp">False</span>
+        
+        <span class="c1"># Count trainable parameters
+</span>        <span class="n">trainable_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">)</span>
+        <span class="n">total_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Trainable parameters: </span><span class="si">{</span><span class="n">trainable_params</span><span class="p">:,</span><span class="si">}</span><span class="s"> (</span><span class="si">{</span><span class="n">trainable_params</span><span class="o">/</span><span class="n">total_params</span><span class="p">:.</span><span class="mi">2</span><span class="o">%</span><span class="si">}</span><span class="s"> of total)"</span><span class="p">)</span>
+        
+        <span class="c1"># Setup optimizer
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">AdamW</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">],</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+    
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s">"checkpoints"</span><span class="p">):</span>
+        <span class="s">"""
+        Train the model on the provided dataset.
+        
+        Args:
+            dataset: AudioTextPairDataset instance
+            num_epochs: Number of training epochs
+            save_dir: Directory to save checkpoints
+        """</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Create data loader
+</span>        <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Training loop
+</span>        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">batch_count</span> <span class="o">=</span> <span class="mi">0</span>
+            
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+                <span class="c1"># Move data to device
+</span>                <span class="n">audio</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s">"audio"</span><span class="p">].</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s">"text"</span><span class="p">]</span>
+                
+                <span class="c1"># Zero gradients
+</span>                <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+                
+                <span class="c1"># Forward pass
+</span>                <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">amp</span><span class="p">.</span><span class="n">autocast</span><span class="p">():</span>
+                    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">compute_loss</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+                
+                <span class="c1"># Backward pass and optimize
+</span>                <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+                
+                <span class="c1"># Update statistics
+</span>                <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="p">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">batch_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># Epoch complete
+</span>            <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="n">batch_count</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Average loss: </span><span class="si">{</span><span class="n">avg_loss</span><span class="p">:.</span><span class="mi">4</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="c1"># Save checkpoint
+</span>            <span class="k">if</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">==</span> <span class="n">num_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">checkpoint_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"musicgen_finetuned_epoch</span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">.pt"</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"  Checkpoint saved to </span><span class="si">{</span><span class="n">checkpoint_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="s">"""Save a model checkpoint."""</span>
+        <span class="n">torch</span><span class="p">.</span><span class="n">save</span><span class="p">({</span>
+            <span class="s">"model_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="s">"optimizer_state_dict"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="p">},</span> <span class="n">path</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="s">"""Load a model checkpoint."""</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">"model_state_dict"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">"optimizer_state_dict"</span><span class="p">])</span>
+
+<span class="c1"># Example usage:
+# dataset = AudioTextPairDataset("custom_audio_data")
+# trainer = CustomMusicGenTrainer()
+# trainer.train(dataset, num_epochs=10)
+</span></code></pre></div></div>
+
+<h3 id="2-implementing-cross-modal-conditioning">2. Implementing Cross-Modal Conditioning</h3>
+
+<p>Let’s explore an experimental technique that extends AudioCraft with image conditioning for audio generation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">CLIPModel</span><span class="p">,</span> <span class="n">CLIPProcessor</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">AudioGen</span>
+
+<span class="k">class</span> <span class="nc">ImageConditionedAudioGenerator</span><span class="p">:</span>
+    <span class="s">"""
+    Experimental audio generator that uses images as conditioning input.
+    
+    This implementation uses a CLIP model to extract image features,
+    which are then used to condition AudioGen for sound generation.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_model_size</span><span class="o">=</span><span class="s">"medium"</span><span class="p">):</span>
+        <span class="s">"""
+        Initialize the image-conditioned audio generator.
+        
+        Args:
+            audio_model_size: Size of AudioGen model to use
+        """</span>
+        <span class="c1"># Determine device
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Using device: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Load models
+</span>        <span class="k">print</span><span class="p">(</span><span class="s">"Loading models..."</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">audio_model_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">clip_model</span> <span class="o">=</span> <span class="n">CLIPModel</span><span class="p">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s">"openai/clip-vit-base-patch32"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">clip_processor</span> <span class="o">=</span> <span class="n">CLIPProcessor</span><span class="p">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s">"openai/clip-vit-base-patch32"</span><span class="p">)</span>
+        
+        <span class="c1"># Move models to device
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">clip_model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Set up image preprocessing
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">image_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">.</span><span class="n">Compose</span><span class="p">([</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">transforms</span><span class="p">.</span><span class="n">Normalize</span><span class="p">(</span>
+                <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.48145466</span><span class="p">,</span> <span class="mf">0.4578275</span><span class="p">,</span> <span class="mf">0.40821073</span><span class="p">],</span>
+                <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.26862954</span><span class="p">,</span> <span class="mf">0.26130258</span><span class="p">,</span> <span class="mf">0.27577711</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">])</span>
+    
+    <span class="k">def</span> <span class="nf">generate_from_image</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">image_path</span><span class="p">,</span>
+        <span class="n">text_prompt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">image_weight</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">guidance_scale</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">num_inference_steps</span><span class="o">=</span><span class="mi">50</span>
+    <span class="p">):</span>
+        <span class="s">"""
+        Generate audio from an image, with optional text guidance.
+        
+        Args:
+            image_path: Path to input image
+            text_prompt: Optional text prompt to guide generation
+            duration: Duration of generated audio in seconds
+            image_weight: How much to weight the image features (0-1)
+            guidance_scale: Classifier-free guidance scale
+            num_inference_steps: Number of denoising steps
+            
+        Returns:
+            Generated audio tensor
+        """</span>
+        <span class="c1"># Load and process image
+</span>        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">).</span><span class="n">convert</span><span class="p">(</span><span class="s">"RGB"</span><span class="p">)</span>
+        
+        <span class="c1"># Extract image features using CLIP
+</span>        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">clip_processor</span><span class="p">(</span>
+                <span class="n">images</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
+                <span class="n">return_tensors</span><span class="o">=</span><span class="s">"pt"</span>
+            <span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">image_features</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">clip_model</span><span class="p">.</span><span class="n">get_image_features</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)</span>
+            
+            <span class="c1"># Normalize features
+</span>            <span class="n">image_features</span> <span class="o">=</span> <span class="n">image_features</span> <span class="o">/</span> <span class="n">image_features</span><span class="p">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Process text prompt if provided
+</span>        <span class="k">if</span> <span class="n">text_prompt</span><span class="p">:</span>
+            <span class="c1"># Extract text features using CLIP
+</span>            <span class="n">text_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">clip_processor</span><span class="p">(</span>
+                <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="n">text_prompt</span><span class="p">],</span>
+                <span class="n">return_tensors</span><span class="o">=</span><span class="s">"pt"</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="bp">True</span>
+            <span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">text_features</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">clip_model</span><span class="p">.</span><span class="n">get_text_features</span><span class="p">(</span><span class="o">**</span><span class="n">text_inputs</span><span class="p">)</span>
+                
+                <span class="c1"># Normalize features
+</span>                <span class="n">text_features</span> <span class="o">=</span> <span class="n">text_features</span> <span class="o">/</span> <span class="n">text_features</span><span class="p">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Combine image and text features
+</span>            <span class="n">combined_features</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">image_features</span> <span class="o">*</span> <span class="n">image_weight</span> <span class="o">+</span> 
+                <span class="n">text_features</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">image_weight</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">combined_features</span> <span class="o">=</span> <span class="n">image_features</span>
+        
+        <span class="c1"># Set generation parameters
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">guidance_scale</span><span class="o">=</span><span class="n">guidance_scale</span><span class="p">,</span>
+            <span class="n">num_inference_steps</span><span class="o">=</span><span class="n">num_inference_steps</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Inject features into the model's conditioning mechanism
+</span>        <span class="c1"># This is a simplified example of how conditioning might work
+</span>        <span class="c1"># In a real implementation, you would need to adapt the model architecture
+</span>        
+        <span class="c1"># For this example, we'll provide a conceptual implementation
+</span>        <span class="c1"># assuming the model has been modified to accept CLIP features
+</span>        
+        <span class="c1"># Generate audio
+</span>        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># In a real implementation, you would pass the CLIP features to the model
+</span>            <span class="c1"># Here we're just using the standard generate method as a placeholder
+</span>            <span class="n">audio</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">audio_model</span><span class="p">.</span><span class="n">generate_with_clip_features</span><span class="p">(</span>
+                <span class="n">combined_features</span>
+            <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">audio</span>
+
+<span class="c1"># Example usage:
+# generator = ImageConditionedAudioGenerator()
+# audio = generator.generate_from_image(
+#     "forest_scene.jpg",
+#     text_prompt="Forest ambience with birds",
+#     duration=10.0
+# )
+</span></code></pre></div></div>
+
+<h3 id="3-building-a-research-bridge-to-the-community">3. Building a Research Bridge to the Community</h3>
+
+<p>Let’s create a research bridge that enables easy experimentation and contribution back to the AudioCraft community:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span><span class="p">,</span> <span class="n">AudioGen</span>
+<span class="kn">import</span> <span class="nn">wandb</span>
+
+<span class="k">class</span> <span class="nc">AudioCraftResearchBridge</span><span class="p">:</span>
+    <span class="s">"""
+    Research bridge for experimenting with and contributing to AudioCraft.
+    
+    This framework facilitates:
+    1. Structured experimentation with careful tracking
+    2. Evaluation and comparison of results
+    3. Preparing assets for community sharing
+    4. Integration with experiment tracking tools
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">research_id</span><span class="p">,</span>
+        <span class="n">models</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">track_with_wandb</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">wandb_project</span><span class="o">=</span><span class="s">"audiocraft-research"</span>
+    <span class="p">):</span>
+        <span class="s">"""
+        Initialize the research bridge.
+        
+        Args:
+            research_id: Unique identifier for this research project
+            models: Dictionary of pre-loaded models, or None to load on demand
+            track_with_wandb: Whether to track experiments with Weights &amp; Biases
+            wandb_project: W&amp;B project name
+        """</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">research_id</span> <span class="o">=</span> <span class="n">research_id</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"research/</span><span class="si">{</span><span class="n">research_id</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Set up model tracking
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">models</span> <span class="o">=</span> <span class="n">models</span> <span class="ow">or</span> <span class="p">{}</span>
+        
+        <span class="c1"># Set up experiment tracking
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">track_with_wandb</span> <span class="o">=</span> <span class="n">track_with_wandb</span>
+        <span class="k">if</span> <span class="n">track_with_wandb</span><span class="p">:</span>
+            <span class="n">wandb</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">wandb_project</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">research_id</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize research log
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">research_log</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"id"</span><span class="p">:</span> <span class="n">research_id</span><span class="p">,</span>
+            <span class="s">"started"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s">"experiments"</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s">"findings"</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Save initial log
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_save_research_log</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_save_research_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Save the current research log to disk."""</span>
+        <span class="n">log_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="s">"research_log.json"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_log</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">):</span>
+        <span class="s">"""
+        Get a model, loading it if necessary.
+        
+        Args:
+            model_type: "music" or "audio"
+            model_size: Size of the model
+            
+        Returns:
+            The requested model
+        """</span>
+        <span class="n">model_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">"</span>
+        
+        <span class="k">if</span> <span class="n">model_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> model (</span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s">)..."</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"music"</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s">"audio"</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown model type: </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+            
+            <span class="c1"># Move to GPU if available
+</span>            <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
+            <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_key</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">run_experiment</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">experiment_id</span><span class="p">,</span>
+        <span class="n">model_type</span><span class="p">,</span>
+        <span class="n">model_size</span><span class="p">,</span>
+        <span class="n">prompt_sets</span><span class="p">,</span>
+        <span class="n">parameter_sets</span><span class="p">,</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="bp">None</span>
+    <span class="p">):</span>
+        <span class="s">"""
+        Run a structured experiment with multiple prompts and parameter sets.
+        
+        Args:
+            experiment_id: Unique identifier for this experiment
+            model_type: "music" or "audio"
+            model_size: Size of model to use
+            prompt_sets: Dictionary of prompt sets, each containing multiple prompts
+            parameter_sets: Dictionary of parameter sets to test
+            n_samples: Number of samples per configuration
+            description: Optional description of the experiment
+            
+        Returns:
+            Dictionary with experiment results
+        """</span>
+        <span class="n">experiment_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Setup experiment
+</span>        <span class="n">experiment</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"id"</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
+            <span class="s">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+            <span class="s">"model_size"</span><span class="p">:</span> <span class="n">model_size</span><span class="p">,</span>
+            <span class="s">"description"</span><span class="p">:</span> <span class="n">description</span> <span class="ow">or</span> <span class="sa">f</span><span class="s">"Experiment with </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s"> model"</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s">"prompt_sets"</span><span class="p">:</span> <span class="n">prompt_sets</span><span class="p">,</span>
+            <span class="s">"parameter_sets"</span><span class="p">:</span> <span class="n">parameter_sets</span><span class="p">,</span>
+            <span class="s">"samples"</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s">"results"</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Get model
+</span>        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">model_size</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize metrics
+</span>        <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Track with W&amp;B if enabled
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">track_with_wandb</span><span class="p">:</span>
+            <span class="n">wandb</span><span class="p">.</span><span class="n">log</span><span class="p">({</span>
+                <span class="s">"experiment_id"</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
+                <span class="s">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+                <span class="s">"model_size"</span><span class="p">:</span> <span class="n">model_size</span>
+            <span class="p">})</span>
+        
+        <span class="c1"># Run generation for each configuration
+</span>        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">parameter_sets</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Configure model
+</span>            <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">prompt_set_name</span><span class="p">,</span> <span class="n">prompts</span> <span class="ow">in</span> <span class="n">prompt_sets</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">prompt_idx</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">prompts</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">sample_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+                        <span class="c1"># Generate sample
+</span>                        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating: </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s">, </span><span class="si">{</span><span class="n">prompt_set_name</span><span class="si">}</span><span class="s">, prompt </span><span class="si">{</span><span class="n">prompt_idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">prompts</span><span class="p">)</span><span class="si">}</span><span class="s">, sample </span><span class="si">{</span><span class="n">sample_idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">n_samples</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+                        
+                        <span class="c1"># Generate
+</span>                        <span class="n">audio</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+                        
+                        <span class="c1"># Create unique sample ID
+</span>                        <span class="n">sample_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">prompt_set_name</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">prompt_idx</span><span class="si">}</span><span class="s">_</span><span class="si">{</span><span class="n">sample_idx</span><span class="si">}</span><span class="s">"</span>
+                        
+                        <span class="c1"># Save audio
+</span>                        <span class="n">audio_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">sample_id</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+                        <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="n">audio</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span>
+                        
+                        <span class="c1"># Save sample info
+</span>                        <span class="n">sample_info</span> <span class="o">=</span> <span class="p">{</span>
+                            <span class="s">"id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span>
+                            <span class="s">"parameter_set"</span><span class="p">:</span> <span class="n">param_name</span><span class="p">,</span>
+                            <span class="s">"prompt_set"</span><span class="p">:</span> <span class="n">prompt_set_name</span><span class="p">,</span>
+                            <span class="s">"prompt_index"</span><span class="p">:</span> <span class="n">prompt_idx</span><span class="p">,</span>
+                            <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+                            <span class="s">"sample_index"</span><span class="p">:</span> <span class="n">sample_idx</span><span class="p">,</span>
+                            <span class="s">"path"</span><span class="p">:</span> <span class="n">audio_path</span><span class="p">,</span>
+                            <span class="s">"duration"</span><span class="p">:</span> <span class="n">audio</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span>
+                        <span class="p">}</span>
+                        
+                        <span class="n">experiment</span><span class="p">[</span><span class="s">"samples"</span><span class="p">].</span><span class="n">append</span><span class="p">(</span><span class="n">sample_info</span><span class="p">)</span>
+                        
+                        <span class="c1"># Track with W&amp;B if enabled
+</span>                        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">track_with_wandb</span><span class="p">:</span>
+                            <span class="n">wandb</span><span class="p">.</span><span class="n">log</span><span class="p">({</span>
+                                <span class="s">"sample_id"</span><span class="p">:</span> <span class="n">sample_id</span><span class="p">,</span>
+                                <span class="s">"audio"</span><span class="p">:</span> <span class="n">wandb</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span>
+                                    <span class="n">audio_path</span><span class="p">,</span>
+                                    <span class="n">sample_rate</span><span class="o">=</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span>
+                                    <span class="n">caption</span><span class="o">=</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">prompt_set_name</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">"</span>
+                                <span class="p">)</span>
+                            <span class="p">})</span>
+        
+        <span class="c1"># Add experiment to research log
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">research_log</span><span class="p">[</span><span class="s">"experiments"</span><span class="p">].</span><span class="n">append</span><span class="p">({</span>
+            <span class="s">"id"</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s">"timestamp"</span><span class="p">],</span>
+            <span class="s">"description"</span><span class="p">:</span> <span class="n">experiment</span><span class="p">[</span><span class="s">"description"</span><span class="p">]</span>
+        <span class="p">})</span>
+        
+        <span class="c1"># Save experiment details
+</span>        <span class="n">experiment_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="s">"experiment.json"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">experiment_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Update research log
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_save_research_log</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">experiment</span>
+    
+    <span class="k">def</span> <span class="nf">analyze_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Analyze results from a previous experiment.
+        
+        Args:
+            experiment_id: ID of experiment to analyze
+            metrics: Dictionary of metric functions to apply
+            
+        Returns:
+            Analysis results
+        """</span>
+        <span class="c1"># Load experiment data
+</span>        <span class="n">experiment_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">)</span>
+        <span class="n">experiment_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="s">"experiment.json"</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">experiment_path</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">experiment</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        
+        <span class="c1"># Initialize analysis
+</span>        <span class="n">analysis</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"experiment_id"</span><span class="p">:</span> <span class="n">experiment_id</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s">"metrics"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s">"visualizations"</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Apply metrics if provided
+</span>        <span class="k">if</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_fn</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">analysis</span><span class="p">[</span><span class="s">"metrics"</span><span class="p">][</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric_fn</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+        
+        <span class="c1"># Generate visualizations
+</span>        <span class="n">visualizations_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="s">"visualizations"</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">visualizations_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Example: Generate duration comparison
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">_visualize_duration_by_params</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="n">visualizations_dir</span><span class="p">)</span>
+        <span class="n">analysis</span><span class="p">[</span><span class="s">"visualizations"</span><span class="p">][</span><span class="s">"duration_by_params"</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">visualizations_dir</span><span class="p">,</span> <span class="s">"duration_by_params.png"</span><span class="p">)</span>
+        
+        <span class="c1"># Save analysis
+</span>        <span class="n">analysis_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">,</span> <span class="s">"analysis.json"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">analysis_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># Track with W&amp;B if enabled
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">track_with_wandb</span><span class="p">:</span>
+            <span class="n">wandb</span><span class="p">.</span><span class="n">log</span><span class="p">({</span>
+                <span class="s">"analysis_timestamp"</span><span class="p">:</span> <span class="n">analysis</span><span class="p">[</span><span class="s">"timestamp"</span><span class="p">],</span>
+                <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s">"metric_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">analysis</span><span class="p">[</span><span class="s">"metrics"</span><span class="p">].</span><span class="n">items</span><span class="p">()},</span>
+                <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">wandb</span><span class="p">.</span><span class="n">Image</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">analysis</span><span class="p">[</span><span class="s">"visualizations"</span><span class="p">].</span><span class="n">items</span><span class="p">()}</span>
+            <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">analysis</span>
+    
+    <span class="k">def</span> <span class="nf">_visualize_duration_by_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="s">"""
+        Create a visualization of sample durations by parameter set.
+        
+        Args:
+            experiment: Experiment data
+            output_dir: Directory to save visualization
+        """</span>
+        <span class="n">param_sets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">experiment</span><span class="p">[</span><span class="s">"parameter_sets"</span><span class="p">].</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">durations</span> <span class="o">=</span> <span class="p">{</span><span class="n">param</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">param_sets</span><span class="p">}</span>
+        
+        <span class="c1"># Collect durations by parameter set
+</span>        <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s">"samples"</span><span class="p">]:</span>
+            <span class="n">param_set</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s">"parameter_set"</span><span class="p">]</span>
+            <span class="n">durations</span><span class="p">[</span><span class="n">param_set</span><span class="p">].</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s">"duration"</span><span class="p">])</span>
+        
+        <span class="c1"># Create plot
+</span>        <span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">boxplot</span><span class="p">([</span><span class="n">durations</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">param_sets</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">param_sets</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">"Audio Duration by Parameter Set"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Duration (seconds)"</span><span class="p">)</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">"--"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+        
+        <span class="c1"># Save plot
+</span>        <span class="n">plt</span><span class="p">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s">"duration_by_params.png"</span><span class="p">))</span>
+        <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">record_finding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">related_experiment</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Record a research finding.
+        
+        Args:
+            title: Title of the finding
+            description: Detailed description
+            related_experiment: Optional related experiment ID
+        """</span>
+        <span class="n">finding</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"title"</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="s">"description"</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">datetime</span><span class="p">.</span><span class="n">now</span><span class="p">().</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s">"related_experiment"</span><span class="p">:</span> <span class="n">related_experiment</span>
+        <span class="p">}</span>
+        
+        <span class="bp">self</span><span class="p">.</span><span class="n">research_log</span><span class="p">[</span><span class="s">"findings"</span><span class="p">].</span><span class="n">append</span><span class="p">(</span><span class="n">finding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_save_research_log</span><span class="p">()</span>
+        
+        <span class="c1"># Track with W&amp;B if enabled
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">track_with_wandb</span><span class="p">:</span>
+            <span class="n">wandb</span><span class="p">.</span><span class="n">log</span><span class="p">({</span>
+                <span class="s">"finding_title"</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+                <span class="s">"finding_description"</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+                <span class="s">"related_experiment"</span><span class="p">:</span> <span class="n">related_experiment</span> <span class="ow">or</span> <span class="s">"none"</span>
+            <span class="p">})</span>
+        
+        <span class="k">return</span> <span class="n">finding</span>
+    
+    <span class="k">def</span> <span class="nf">export_research_package</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_samples</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="s">"""
+        Export a research package for sharing with the community.
+        
+        Args:
+            include_samples: Whether to include audio samples
+            
+        Returns:
+            Path to the exported package
+        """</span>
+        <span class="c1"># Create package directory
+</span>        <span class="n">package_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="s">"export"</span><span class="p">)</span>
+        <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">package_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        
+        <span class="c1"># Copy research log
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="s">"research_log.json"</span><span class="p">),</span> <span class="s">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">research_log</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        
+        <span class="c1"># Create README
+</span>        <span class="n">readme_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"# AudioCraft Research: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">research_id</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+        
+        <span class="c1"># Add findings
+</span>        <span class="n">readme_content</span> <span class="o">+=</span> <span class="s">"## Key Findings</span><span class="se">\n\n</span><span class="s">"</span>
+        <span class="k">for</span> <span class="n">finding</span> <span class="ow">in</span> <span class="n">research_log</span><span class="p">[</span><span class="s">"findings"</span><span class="p">]:</span>
+            <span class="n">readme_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"### </span><span class="si">{</span><span class="n">finding</span><span class="p">[</span><span class="s">'title'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+            <span class="n">readme_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">finding</span><span class="p">[</span><span class="s">'description'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+            <span class="k">if</span> <span class="n">finding</span><span class="p">[</span><span class="s">"related_experiment"</span><span class="p">]:</span>
+                <span class="n">readme_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"Based on experiment: </span><span class="si">{</span><span class="n">finding</span><span class="p">[</span><span class="s">'related_experiment'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+        
+        <span class="c1"># Add experiments
+</span>        <span class="n">readme_content</span> <span class="o">+=</span> <span class="s">"## Experiments</span><span class="se">\n\n</span><span class="s">"</span>
+        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">research_log</span><span class="p">[</span><span class="s">"experiments"</span><span class="p">]:</span>
+            <span class="n">readme_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"### </span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s">'id'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+            <span class="n">readme_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s">'description'</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s">"</span>
+        
+        <span class="c1"># Write README
+</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_dir</span><span class="p">,</span> <span class="s">"README.md"</span><span class="p">),</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">readme_content</span><span class="p">)</span>
+        
+        <span class="c1"># Copy experiments
+</span>        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">research_log</span><span class="p">[</span><span class="s">"experiments"</span><span class="p">]:</span>
+            <span class="n">experiment_id</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s">"id"</span><span class="p">]</span>
+            <span class="n">src_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">)</span>
+            <span class="n">dst_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_dir</span><span class="p">,</span> <span class="s">"experiments"</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">)</span>
+            <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            
+            <span class="c1"># Copy experiment details
+</span>            <span class="n">shutil</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span>
+                <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="s">"experiment.json"</span><span class="p">),</span>
+                <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="s">"experiment.json"</span><span class="p">)</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Copy analysis if exists
+</span>            <span class="n">analysis_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="s">"analysis.json"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">analysis_path</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span>
+                    <span class="n">analysis_path</span><span class="p">,</span>
+                    <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="s">"analysis.json"</span><span class="p">)</span>
+                <span class="p">)</span>
+            
+            <span class="c1"># Copy visualizations if they exist
+</span>            <span class="n">viz_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="s">"visualizations"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">viz_dir</span><span class="p">):</span>
+                <span class="n">dst_viz_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="s">"visualizations"</span><span class="p">)</span>
+                <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dst_viz_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                
+                <span class="k">for</span> <span class="n">viz_file</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">viz_dir</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span>
+                        <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">viz_dir</span><span class="p">,</span> <span class="n">viz_file</span><span class="p">),</span>
+                        <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_viz_dir</span><span class="p">,</span> <span class="n">viz_file</span><span class="p">)</span>
+                    <span class="p">)</span>
+            
+            <span class="c1"># Copy samples if requested
+</span>            <span class="k">if</span> <span class="n">include_samples</span><span class="p">:</span>
+                <span class="n">samples_dir</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">dst_dir</span><span class="p">,</span> <span class="s">"samples"</span><span class="p">)</span>
+                <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">samples_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                
+                <span class="c1"># Load experiment to get sample paths
+</span>                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="s">"experiment.json"</span><span class="p">),</span> <span class="s">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">exp_data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                
+                <span class="c1"># Copy each sample
+</span>                <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">exp_data</span><span class="p">[</span><span class="s">"samples"</span><span class="p">]:</span>
+                    <span class="n">sample_path</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s">"path"</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_path</span><span class="p">):</span>
+                        <span class="n">sample_filename</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+                        <span class="n">shutil</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span>
+                            <span class="n">sample_path</span><span class="p">,</span>
+                            <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">samples_dir</span><span class="p">,</span> <span class="n">sample_filename</span><span class="p">)</span>
+                        <span class="p">)</span>
+        
+        <span class="c1"># Create ZIP archive
+</span>        <span class="n">zip_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">research_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">research_id</span><span class="si">}</span><span class="s">_research_package.zip"</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="p">.</span><span class="n">make_archive</span><span class="p">(</span>
+            <span class="n">zip_path</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">".zip"</span><span class="p">,</span> <span class="s">""</span><span class="p">),</span>
+            <span class="s">'zip'</span><span class="p">,</span>
+            <span class="n">package_dir</span>
+        <span class="p">)</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Research package exported to </span><span class="si">{</span><span class="n">zip_path</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">zip_path</span>
+
+<span class="c1"># Example usage:
+# bridge = AudioCraftResearchBridge("emotion-driven-generation")
+# 
+# experiment = bridge.run_experiment(
+#     "emotion-variation",
+#     "music",
+#     "small",
+#     prompt_sets={
+#         "basic_emotions": [
+#             "Happy upbeat music with a cheerful melody",
+#             "Sad emotional music with piano",
+#             "Tense suspenseful music with building anxiety",
+#             "Peaceful calm music for meditation"
+#         ]
+#     },
+#     parameter_sets={
+#         "baseline": {"duration": 10.0, "temperature": 1.0, "cfg_coef": 3.0},
+#         "high_temp": {"duration": 10.0, "temperature": 1.5, "cfg_coef": 3.0},
+#         "low_temp": {"duration": 10.0, "temperature": 0.5, "cfg_coef": 3.0},
+#         "high_guidance": {"duration": 10.0, "temperature": 1.0, "cfg_coef": 7.0}
+#     }
+# )
+# 
+# bridge.record_finding(
+#     "Temperature Effect on Emotional Expression",
+#     "Higher temperature (1.5) produces more varied emotional expression but can reduce coherence. Lower temperature (0.5) creates more consistent emotional tone but may sound mechanical.",
+#     "emotion-variation"
+# )
+</span></code></pre></div></div>
+
+<h2 id="complete-implementation">Complete Implementation</h2>
+
+<p>The complete implementation of our research extensions involves integrating the various components we’ve explored and creating a cohesive framework for experimentation. While this chapter has introduced key techniques, a full implementation would typically include:</p>
+
+<ol>
+  <li>A modular architecture that enables swapping different components</li>
+  <li>Comprehensive evaluation and benchmark systems</li>
+  <li>Integration with experiment tracking tools</li>
+  <li>Documentation and examples for community sharing</li>
+</ol>
+
+<p>Let’s create a conceptual outline of how these might fit together:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Conceptual outline for a complete research framework
+</span>
+<span class="c1"># 1. Core Extensions
+</span><span class="k">class</span> <span class="nc">AudioCraftExtensions</span><span class="p">:</span>
+    <span class="s">"""
+    Core extensions to AudioCraft models and capabilities.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Register available extensions
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">available_extensions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"image_conditioning"</span><span class="p">:</span> <span class="n">ImageConditionedAudioGenerator</span><span class="p">,</span>
+            <span class="s">"fine_tuning"</span><span class="p">:</span> <span class="n">CustomMusicGenTrainer</span><span class="p">,</span>
+            <span class="s">"hybrid_generation"</span><span class="p">:</span> <span class="n">HybridAudioGenerator</span><span class="p">,</span>
+            <span class="c1"># Add other extensions here
+</span>        <span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">get_extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extension_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="s">"""Get an extension by name with parameters."""</span>
+        <span class="k">if</span> <span class="n">extension_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">available_extensions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s">"Unknown extension: </span><span class="si">{</span><span class="n">extension_name</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">available_extensions</span><span class="p">[</span><span class="n">extension_name</span><span class="p">](</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="c1"># 2. Experiment System
+</span><span class="k">class</span> <span class="nc">ExperimentSystem</span><span class="p">:</span>
+    <span class="s">"""
+    System for running and tracking experiments.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_backend</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">tracker</span><span class="o">=</span><span class="s">"wandb"</span><span class="p">):</span>
+        <span class="c1"># Initialize storage and tracking
+</span>        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">define_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="s">"""Define an experiment from a configuration."""</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">run_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">):</span>
+        <span class="s">"""Run a defined experiment."""</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">analyze_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_id</span><span class="p">):</span>
+        <span class="s">"""Analyze experiment results."""</span>
+        <span class="k">pass</span>
+
+<span class="c1"># 3. Community Bridge
+</span><span class="k">class</span> <span class="nc">CommunityBridge</span><span class="p">:</span>
+    <span class="s">"""
+    Bridge for sharing results with the research community.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">github_repo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">huggingface_model</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c1"># Initialize repository connections
+</span>        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">package_findings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">research_id</span><span class="p">):</span>
+        <span class="s">"""Package research findings for sharing."""</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">publish_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="s">"""Publish a model to Hugging Face."""</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">create_pull_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_description</span><span class="p">,</span> <span class="n">code_path</span><span class="p">):</span>
+        <span class="s">"""Prepare a pull request for the AudioCraft repository."""</span>
+        <span class="k">pass</span>
+
+<span class="c1"># 4. Main Interface
+</span><span class="k">class</span> <span class="nc">AudioCraftResearch</span><span class="p">:</span>
+    <span class="s">"""
+    Main interface for AudioCraft research.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="n">AudioCraftExtensions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">experiments</span> <span class="o">=</span> <span class="n">ExperimentSystem</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">community</span> <span class="o">=</span> <span class="n">CommunityBridge</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">start_research_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="s">"""Initialize a new research project."""</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">load_research_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+        <span class="s">"""Load an existing research project."""</span>
+        <span class="k">pass</span>
+</code></pre></div></div>
+
+<h2 id="variations-and-customizations">Variations and Customizations</h2>
+
+<p>Let’s explore some variations on our research extensions that adapt to different needs and interests.</p>
+
+<h3 id="variation-1-focused-domain-adaptation">Variation 1: Focused Domain Adaptation</h3>
+
+<p>For researchers focused on adapting AudioCraft to specific domains, a targeted approach can be more efficient:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DomainAdapter</span><span class="p">:</span>
+    <span class="s">"""
+    Specialized adapter for domain-specific audio generation.
+    
+    This approach uses limited data from a target domain to adapt
+    AudioCraft models without full fine-tuning.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_model</span><span class="p">,</span> <span class="n">adapter_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span> <span class="o">=</span> <span class="n">base_model</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">adapter_size</span> <span class="o">=</span> <span class="n">adapter_size</span>
+        
+        <span class="c1"># Create adapter layers
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">adapter_layers</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ModuleDict</span><span class="p">({</span>
+            <span class="s">"prompt_adapter"</span><span class="p">:</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(),</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">768</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="s">"conditioning_adapter"</span><span class="p">:</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(),</span>
+                <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">768</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">})</span>
+        
+        <span class="c1"># Move to same device as model
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">adapter_layers</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">base_model</span><span class="p">.</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="c1"># Freeze base model
+</span>        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">base_model</span><span class="p">.</span><span class="n">parameters</span><span class="p">():</span>
+            <span class="n">param</span><span class="p">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="bp">False</span>
+    
+    <span class="k">def</span> <span class="nf">train_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+        <span class="s">"""Train the adapter on domain-specific data."""</span>
+        <span class="c1"># Setup optimizer for adapter layers only
+</span>        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">adapter_layers</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>
+        
+        <span class="c1"># Training loop
+</span>        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+                <span class="c1"># Forward pass through adapter then model
+</span>                <span class="c1"># [Implementation details omitted for brevity]
+</span>                <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="s">"""Generate audio using the adapted model."""</span>
+        <span class="c1"># Apply adapters during generation
+</span>        <span class="c1"># [Implementation details omitted for brevity]
+</span>        <span class="k">return</span> <span class="n">adapted_audio</span>
+</code></pre></div></div>
+
+<h3 id="variation-2-interactive-research-tools">Variation 2: Interactive Research Tools</h3>
+
+<p>For researchers who want to quickly explore and visualize different approaches:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">InteractiveResearchTool</span><span class="p">:</span>
+    <span class="s">"""
+    Interactive tool for exploring AudioCraft variations.
+    
+    This tool provides a Gradio interface for experimenting with
+    different model variations and extensions.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">gradio</span> <span class="k">as</span> <span class="n">gr</span>
+        
+        <span class="c1"># Load base models
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"musicgen_small"</span><span class="p">:</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">"small"</span><span class="p">),</span>
+            <span class="s">"audiogen_medium"</span><span class="p">:</span> <span class="n">AudioGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="s">"medium"</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Load extensions
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"image_conditioning"</span><span class="p">:</span> <span class="n">ImageConditionedAudioGenerator</span><span class="p">(),</span>
+            <span class="s">"hybrid_generator"</span><span class="p">:</span> <span class="n">HybridAudioGenerator</span><span class="p">()</span>
+            <span class="c1"># Other extensions
+</span>        <span class="p">}</span>
+        
+        <span class="c1"># Create interface
+</span>        <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Blocks</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="p">.</span><span class="n">interface</span><span class="p">:</span>
+            <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"# AudioCraft Research Tool"</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Tab</span><span class="p">(</span><span class="s">"Base Models"</span><span class="p">):</span>
+                <span class="n">model_selector</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Dropdown</span><span class="p">(</span>
+                    <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">.</span><span class="n">keys</span><span class="p">()),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s">"Model"</span>
+                <span class="p">)</span>
+                <span class="n">prompt_input</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Textbox</span><span class="p">(</span>
+                    <span class="n">lines</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">placeholder</span><span class="o">=</span><span class="s">"Enter prompt..."</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s">"Prompt"</span>
+                <span class="p">)</span>
+                <span class="n">generate_button</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Generate"</span><span class="p">)</span>
+                <span class="n">audio_output</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">"Generated Audio"</span><span class="p">)</span>
+                
+                <span class="n">generate_button</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">_generate_base</span><span class="p">,</span>
+                    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">model_selector</span><span class="p">,</span> <span class="n">prompt_input</span><span class="p">],</span>
+                    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">audio_output</span><span class="p">]</span>
+                <span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Tab</span><span class="p">(</span><span class="s">"Extensions"</span><span class="p">):</span>
+                <span class="n">extension_selector</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Dropdown</span><span class="p">(</span>
+                    <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">extensions</span><span class="p">.</span><span class="n">keys</span><span class="p">()),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s">"Extension"</span>
+                <span class="p">)</span>
+                <span class="c1"># Extension-specific inputs would be defined here
+</span>                <span class="c1"># [Additional UI elements omitted for brevity]
+</span>    
+    <span class="k">def</span> <span class="nf">_generate_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+        <span class="s">"""Generate audio with base model."""</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">wav</span><span class="p">.</span><span class="n">numpy</span><span class="p">())</span>
+    
+    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Launch the interactive interface."""</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">interface</span><span class="p">.</span><span class="n">launch</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="common-pitfalls-and-troubleshooting">Common Pitfalls and Troubleshooting</h2>
+
+<h3 id="problem-overfitting-during-fine-tuning">Problem: Overfitting During Fine-Tuning</h3>
+
+<p>Fine-tuning on domain-specific data can lead to overfitting, especially with limited datasets.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Use regularization techniques like dropout and weight decay</li>
+  <li>Implement early stopping based on validation performance</li>
+  <li>Try progressive fine-tuning with gradually unfreezing layers:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">progressive_fine_tuning</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+    <span class="s">"""
+    Progressive fine-tuning that gradually unfreezes layers.
+    
+    This approach helps prevent catastrophic forgetting and
+    reduces overfitting on small datasets.
+    """</span>
+    <span class="c1"># Initially freeze all layers
+</span>    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">():</span>
+        <span class="n">param</span><span class="p">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="bp">False</span>
+    
+    <span class="c1"># Define layer groups from top (output) to bottom (input)
+</span>    <span class="n">layer_groups</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">decoder</span><span class="p">.</span><span class="n">transformer</span><span class="p">.</span><span class="n">output_projection</span><span class="p">,</span>  <span class="c1"># Output layer
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">decoder</span><span class="p">.</span><span class="n">transformer</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span>        <span class="c1"># Last transformer blocks
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">decoder</span><span class="p">.</span><span class="n">transformer</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>      <span class="c1"># Middle transformer blocks
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">lm</span><span class="p">.</span><span class="n">decoder</span><span class="p">.</span><span class="n">transformer</span><span class="p">.</span><span class="n">layers</span><span class="p">[:</span><span class="o">-</span><span class="mi">6</span><span class="p">],</span>        <span class="c1"># Early transformer blocks
+</span>        <span class="n">model</span><span class="p">.</span><span class="n">text_encoder</span>                               <span class="c1"># Text encoder
+</span>    <span class="p">]</span>
+    
+    <span class="c1"># Progress through stages, unfreezing more layers each time
+</span>    <span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">layers</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer_groups</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Stage </span><span class="si">{</span><span class="n">stage</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">layer_groups</span><span class="p">)</span><span class="si">}</span><span class="s">: Unfreezing new layers"</span><span class="p">)</span>
+        
+        <span class="c1"># Unfreeze this group
+</span>        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">.</span><span class="n">parameters</span><span class="p">():</span>
+            <span class="n">param</span><span class="p">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="bp">True</span>
+        
+        <span class="c1"># Count trainable parameters
+</span>        <span class="n">trainable_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Trainable parameters: </span><span class="si">{</span><span class="n">trainable_params</span><span class="p">:,</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="c1"># Create optimizer for this stage (lower LR for earlier layers)
+</span>        <span class="n">stage_lr</span> <span class="o">=</span> <span class="n">learning_rate</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">stage</span><span class="p">)</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="n">AdamW</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="p">.</span><span class="n">requires_grad</span><span class="p">],</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">stage_lr</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.01</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Train for this stage
+</span>        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer_groups</span><span class="p">)):</span>
+            <span class="n">train_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="problem-evaluation-challenges">Problem: Evaluation Challenges</h3>
+
+<p>Evaluating AI-generated audio can be challenging due to the subjective nature of audio quality and appropriateness.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Implement multiple evaluation metrics that capture different aspects</li>
+  <li>Combine objective and subjective evaluation approaches</li>
+  <li>Use reference-based and reference-free metrics:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">AudioEvaluator</span><span class="p">:</span>
+    <span class="s">"""
+    Multi-metric evaluator for generated audio.
+    
+    Combines objective technical metrics with perceptual quality
+    estimators and optional human evaluation integration.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">human_evaluation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1"># Initialize technical metrics
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">technical_metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"spectral_flatness"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_compute_spectral_flatness</span><span class="p">,</span>
+            <span class="s">"energy_entropy"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_compute_energy_entropy</span><span class="p">,</span>
+            <span class="s">"snr"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_compute_signal_noise_ratio</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Initialize perceptual metrics (models that estimate human perception)
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">perceptual_metrics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"clarity"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_estimate_clarity</span><span class="p">,</span>
+            <span class="s">"naturalness"</span><span class="p">:</span> <span class="bp">self</span><span class="p">.</span><span class="n">_estimate_naturalness</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Human evaluation integration if requested
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">human_evaluation</span> <span class="o">=</span> <span class="n">human_evaluation</span>
+        <span class="k">if</span> <span class="n">human_evaluation</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">human_eval_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_setup_human_eval_interface</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="s">"""
+        Evaluate audio quality with multiple metrics.
+        
+        Args:
+            audio: Audio to evaluate
+            reference: Optional reference audio
+            prompt: Original generation prompt
+            
+        Returns:
+            Dictionary of evaluation results
+        """</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">"technical"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s">"perceptual"</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Apply technical metrics
+</span>        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metric_fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">technical_metrics</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="s">"technical"</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric_fn</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+        
+        <span class="c1"># Apply perceptual metrics
+</span>        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metric_fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">perceptual_metrics</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="s">"perceptual"</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">metric_fn</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+        
+        <span class="c1"># Add human evaluation if enabled
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">human_evaluation</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s">"human"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_human_evaluation</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+        
+        <span class="c1"># Compute overall score (weighted combination)
+</span>        <span class="n">results</span><span class="p">[</span><span class="s">"overall_score"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_compute_overall_score</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">results</span>
+    
+    <span class="c1"># Individual metric implementations would be defined here
+</span></code></pre></div></div>
+
+<h3 id="problem-resource-limitations">Problem: Resource Limitations</h3>
+
+<p>Many research extensions require significant computational resources, which can be a barrier to experimentation.</p>
+
+<p><strong>Solution</strong>:</p>
+<ul>
+  <li>Implement resource-adaptive approaches</li>
+  <li>Use model distillation for more efficient variants</li>
+  <li>Explore parameter-efficient fine-tuning methods:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ResourceAdaptiveResearch</span><span class="p">:</span>
+    <span class="s">"""
+    Adapts research approaches based on available resources.
+    
+    This framework automatically scales experiments and model
+    complexity to match available computational resources.
+    """</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Assess available resources
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">available_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_get_available_gpu_memory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">available_compute</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">_benchmark_compute_capability</span><span class="p">()</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Available GPU memory: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">available_memory</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> GB"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Compute capability: </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">available_compute</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> TFLOPS"</span><span class="p">)</span>
+        
+        <span class="c1"># Determine appropriate scale for experiments
+</span>        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">available_memory</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">=</span> <span class="s">"minimal"</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">.</span><span class="n">available_memory</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">=</span> <span class="s">"moderate"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">=</span> <span class="s">"full"</span>
+        
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Operating in </span><span class="si">{</span><span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span><span class="si">}</span><span class="s"> resource mode"</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_adapter_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Get appropriate adapter configuration for available resources."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">==</span> <span class="s">"minimal"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"adapter_type"</span><span class="p">:</span> <span class="s">"LoRA"</span><span class="p">,</span>
+                <span class="s">"rank"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="s">"alpha"</span><span class="p">:</span> <span class="mi">16</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">==</span> <span class="s">"moderate"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"adapter_type"</span><span class="p">:</span> <span class="s">"LoRA"</span><span class="p">,</span>
+                <span class="s">"rank"</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+                <span class="s">"alpha"</span><span class="p">:</span> <span class="mi">32</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"adapter_type"</span><span class="p">:</span> <span class="s">"full_finetune"</span><span class="p">,</span>
+                <span class="s">"unfrozen_modules"</span><span class="p">:</span> <span class="p">[</span><span class="s">"text_encoder"</span><span class="p">,</span> <span class="s">"decoder.layers[-4:]"</span><span class="p">]</span>
+            <span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">get_experiment_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Get appropriate experiment scale for available resources."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">==</span> <span class="s">"minimal"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"batch_size"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s">"max_samples"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s">"model_size"</span><span class="p">:</span> <span class="s">"small"</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="p">.</span><span class="n">resource_tier</span> <span class="o">==</span> <span class="s">"moderate"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"batch_size"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="s">"max_samples"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                <span class="s">"model_size"</span><span class="p">:</span> <span class="s">"medium"</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s">"batch_size"</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                <span class="s">"max_samples"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s">"model_size"</span><span class="p">:</span> <span class="s">"large"</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="hands-on-challenge-exploring-emotional-music-generation">Hands-on Challenge: Exploring Emotional Music Generation</h2>
+
+<p>Now it’s your turn to experiment with what you’ve learned. Try the following challenge:</p>
+
+<h3 id="challenge-building-an-emotion-to-music-research-framework">Challenge: Building an Emotion-to-Music Research Framework</h3>
+
+<ol>
+  <li>Define a research question around how different emotions are expressed musically</li>
+  <li>Implement a structured experiment with:
+    <ul>
+      <li>Multiple emotion categories (joy, sadness, tension, etc.)</li>
+      <li>Different generation parameters (temperature, guidance scale, etc.)</li>
+      <li>Objective evaluation metrics</li>
+    </ul>
+  </li>
+  <li>Create visualizations that help analyze the relationship between:
+    <ul>
+      <li>Emotion categories and spectral characteristics</li>
+      <li>Generation parameters and perceived emotional intensity</li>
+      <li>Prompt wording and emotion recognition</li>
+    </ul>
+  </li>
+</ol>
+
+<p>Start by setting up the research framework:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchaudio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1"># Define emotions to explore
+</span><span class="n">emotions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"joy"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"happy upbeat music with a cheerful melody"</span><span class="p">,</span>
+        <span class="s">"joyful celebratory music with a festive atmosphere"</span><span class="p">,</span>
+        <span class="s">"bright exuberant music full of excitement"</span><span class="p">,</span>
+        <span class="s">"light-hearted playful music with a bouncy rhythm"</span>
+    <span class="p">],</span>
+    <span class="s">"sadness"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"sad melancholic music with a somber piano melody"</span><span class="p">,</span>
+        <span class="s">"sorrowful emotional music with string instruments"</span><span class="p">,</span>
+        <span class="s">"mournful reflective music with a slow tempo"</span><span class="p">,</span>
+        <span class="s">"wistful nostalgic music with gentle melancholy"</span>
+    <span class="p">],</span>
+    <span class="s">"anger"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"intense angry music with aggressive percussion"</span><span class="p">,</span>
+        <span class="s">"fierce powerful music with distorted elements"</span><span class="p">,</span>
+        <span class="s">"furious dramatic music with driving rhythm"</span><span class="p">,</span>
+        <span class="s">"forceful confrontational music with heavy bass"</span>
+    <span class="p">],</span>
+    <span class="s">"fear"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"tense suspenseful music with building anxiety"</span><span class="p">,</span>
+        <span class="s">"eerie unsettling music with ominous tones"</span><span class="p">,</span>
+        <span class="s">"frightening atmospheric music with sudden accents"</span><span class="p">,</span>
+        <span class="s">"nervous apprehensive music with unpredictable elements"</span>
+    <span class="p">],</span>
+    <span class="s">"serenity"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"peaceful calm music for meditation"</span><span class="p">,</span>
+        <span class="s">"serene tranquil music with flowing ambient sounds"</span><span class="p">,</span>
+        <span class="s">"gentle relaxing music with soft textures"</span><span class="p">,</span>
+        <span class="s">"quiet soothing music with minimal elements"</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Define parameter sets to test
+</span><span class="n">parameter_sets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"baseline"</span><span class="p">:</span> <span class="p">{</span><span class="s">"duration"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">},</span>
+    <span class="s">"high_temp"</span><span class="p">:</span> <span class="p">{</span><span class="s">"duration"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">},</span>
+    <span class="s">"low_temp"</span><span class="p">:</span> <span class="p">{</span><span class="s">"duration"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">},</span>
+    <span class="s">"high_guidance"</span><span class="p">:</span> <span class="p">{</span><span class="s">"duration"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">},</span>
+    <span class="s">"low_guidance"</span><span class="p">:</span> <span class="p">{</span><span class="s">"duration"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s">"temperature"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">"cfg_coef"</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Then proceed to set up your experiment, analyze results,
+# and draw conclusions about emotional music generation
+</span></code></pre></div></div>
+
+<h3 id="bonus-challenge">Bonus Challenge</h3>
+
+<p>Implement a novel conditioning mechanism that drives music generation using emotion embeddings extracted from text or images, exploring cross-modal emotional transfer.</p>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Extending AudioCraft enables exploration of novel audio generation capabilities</li>
+  <li>Research-driven development balances exploration with reliable production use</li>
+  <li>Cross-modal conditioning creates new possibilities for audio generation</li>
+  <li>Community contribution accelerates the advancement of audio AI technologies</li>
+  <li>Evaluation frameworks are essential for meaningful audio generation research</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Now that you’ve explored research extensions and future directions for AudioCraft, consider these pathways for further advancement:</p>
+
+<ul>
+  <li><strong>Model Customization</strong>: Develop specialized versions of AudioCraft models for your specific domains</li>
+  <li><strong>Cross-Modal Integration</strong>: Combine audio generation with other modalities like text, image, and video</li>
+  <li><strong>Community Contribution</strong>: Share your findings and extensions with the broader AudioCraft community</li>
+  <li><strong>Production Integration</strong>: Incorporate experimental techniques into your production workflows</li>
+</ul>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/2306.05284">AudioCraft Research Paper</a> - The foundational research behind AudioCraft</li>
+  <li><a href="https://arxiv.org/abs/2302.03917">Transformer-Based Models for Audio Generation</a> - Overview of transformer architectures for audio</li>
+  <li><a href="https://ai.meta.com/research/audio-speech-and-language/">Meta AI Audio Research</a> - Latest research from Meta in audio AI</li>
+  <li><a href="https://ai.meta.com/research/">FAIR (Facebook AI Research)</a> - Research group developing AudioCraft and related technologies</li>
+  <li><a href="https://arxiv.org/abs/2301.04856">Multimodal Deep Learning</a> - Survey of multimodal approaches applicable to audio</li>
+</ul>
+
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+<div class="chapter-navigation">
+  
+  <a href="/chapters/part5/interactive-audio-systems/" class="prev-chapter">
+    <span class="nav-label">Previous</span>
+    <span class="nav-title">Chapter 20: Interactive Audio Systems</span>
+  </a>
+  
+  
+  
+  <a href="/chapters/part5/text-to-speech-integration/" class="next-chapter">
+    <span class="nav-label">Next</span>
+    <span class="nav-title">Chapter 19: Text-to-Speech Integration</span>
+  </a>
+  
+</div>
+
+<!-- Copyright footer for all chapter pages -->
+<div class="copyright-footer">
+  <hr>
+  <p>
+    Copyright © 2025 Scott Friedman.
+    <br>
+    This work is licensed under the <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+  </p>
+</div>
+
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

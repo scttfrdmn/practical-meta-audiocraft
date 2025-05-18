@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building a MusicGen Web Interface: Interactive Music Generation</title>
+  <meta name="description" content="A hands-on guide to creating music, sound effects, and audio experiences with AI">
+  <link rel="canonical" href="https://scttfrdmn.github.io/practical-meta-audiocraft/tutorials/musicgen/musicgen_web_interface/">
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .wrapper {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    h1 { color: #1a73e8; }
+    h2 { color: #34a853; }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .site-header {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .site-title a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .site-nav {
+      float: right;
+      margin-top: 10px;
+    }
+    .site-nav .page-link {
+      margin-left: 20px;
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .menu-icon {
+      display: none;
+    }
+    .page-content {
+      padding: 20px 0;
+    }
+    .site-footer {
+      border-top: 1px solid #eee;
+      padding: 30px 0;
+      margin-top: 60px;
+    }
+    .footer-col-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+      padding-right: 20px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .highlight {
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+    }
+    th {
+      background-color: #f5f5f5;
+      text-align: left;
+    }
+    button, .button {
+      display: inline-block;
+      background-color: #1a73e8;
+      color: white !important;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0d65d9;
+    }
+    .feature {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 600px) {
+      .site-nav {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: right;
+        padding: 0;
+        z-index: 1;
+      }
+      .site-nav .page-link {
+        display: block;
+        padding: 10px;
+        margin: 0;
+      }
+      .site-nav .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 26px;
+        line-height: 0;
+        padding-top: 10px;
+        text-align: center;
+      }
+      .site-nav .trigger {
+        clear: both;
+        display: none;
+      }
+      .site-nav input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+      .footer-col-wrapper {
+        flex-direction: column;
+      }
+      .footer-col {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head><body>
+    <div class="wrapper">
+      <header class="site-header">
+        <div class="container">
+          <h1 class="site-title"><a href="/practical-meta-audiocraft/">Practical Meta AudioCraft</a></h1>
+          <nav class="site-nav">
+            <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+            <label for="nav-trigger">
+              <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484c0-0.82,0.665-1.485,1.484-1.485 h15.032C17.335,0,18,0.665,18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516 c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,6.031,18,6.696,18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516c0-0.82,0.665-1.483,1.484-1.483h15.032 C17.335,12.031,18,12.696,18,13.516z"/>
+                </svg>
+              </span>
+            </label>
+
+            <div class="trigger">
+              <a class="page-link" href="/practical-meta-audiocraft/">Home</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part1/introduction/">Getting Started</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part2/basic-music/">MusicGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/chapters/part3/introduction-to-audiogen/">AudioGen</a>
+              <a class="page-link" href="/practical-meta-audiocraft/tutorials/getting-started/">Tutorials</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page-content" aria-label="Content">
+        <div class="container">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Building a MusicGen Web Interface: Interactive Music Generation</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="building-a-musicgen-web-interface-interactive-music-generation">Building a MusicGen Web Interface: Interactive Music Generation</h1>
+
+<p>This tutorial will guide you through creating a web-based interface for MusicGen that allows users to interactively generate and compare music samples. We’ll use Gradio to create a simple but powerful UI that lets users adjust parameters and hear results in real-time.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>A web interface makes MusicGen more accessible and practical for various users, from musicians to content creators. In this tutorial, you’ll learn how to:</p>
+
+<ol>
+  <li>Create an interactive web interface with Gradio</li>
+  <li>Implement parameter controls for fine-tuning generation</li>
+  <li>Create a system for comparing and saving generated samples</li>
+  <li>Deploy your interface locally or share it temporarily</li>
+</ol>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li>AudioCraft successfully installed (see <a href="/practical-meta-audiocraft/tutorials/getting-started/">Getting Started</a>)</li>
+  <li>Basic knowledge of Python and MusicGen (see <a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_basics/">MusicGen Basics</a>)</li>
+  <li>Additional requirements: Gradio library (<code class="language-plaintext highlighter-rouge">pip install gradio</code>)</li>
+</ul>
+
+<h2 id="setting-up-the-project">Setting Up the Project</h2>
+
+<p>First, let’s create a new Python script for our web application:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># musicgen_web_app.py
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">gradio</span> <span class="k">as</span> <span class="n">gr</span>
+<span class="kn">from</span> <span class="nn">audiocraft.models</span> <span class="kn">import</span> <span class="n">MusicGen</span>
+<span class="kn">from</span> <span class="nn">audiocraft.data.audio</span> <span class="kn">import</span> <span class="n">audio_write</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="c1"># Create output directory
+</span><span class="n">OUTPUTS_DIR</span> <span class="o">=</span> <span class="s">"music_generations"</span>
+<span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Global variable to store the model
+</span><span class="n">model</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">):</span>
+    <span class="s">"""
+    Load the MusicGen model of specified size.
+    """</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using MPS (Metal) for generation"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CUDA for generation"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Using CPU for generation (this will be slow)"</span><span class="p">)</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model loaded successfully on </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s">"</span>
+
+<span class="k">def</span> <span class="nf">generate_music</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="p">,</span> 
+    <span class="n">duration</span><span class="p">,</span> 
+    <span class="n">temperature</span><span class="p">,</span> 
+    <span class="n">top_k</span><span class="p">,</span> 
+    <span class="n">top_p</span><span class="p">,</span> 
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>
+    <span class="n">autoplay</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">):</span>
+    <span class="s">"""
+    Generate music based on input parameters and return audio.
+    """</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="c1"># Load model if not already loaded or if model size changed
+</span>    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">model</span><span class="p">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">model_size</span><span class="p">:</span>
+        <span class="n">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">),</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">top_k</span><span class="p">),</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">top_p</span><span class="p">),</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Start timing
+</span>    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    
+    <span class="c1"># Generate music
+</span>    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music for: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Calculate generation time
+</span>    <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generation completed in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+    
+    <span class="c1"># Create a unique filename
+</span>    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    
+    <span class="c1"># Save the audio file
+</span>    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span> 
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span> 
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> 
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Return audio file path and generation info
+</span>    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span> 
+        <span class="sa">f</span><span class="s">"Generated in </span><span class="si">{</span><span class="n">generation_time</span><span class="p">:.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">s with </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model</span><span class="se">\n</span><span class="s">Prompt: </span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">"</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">create_interface</span><span class="p">():</span>
+    <span class="s">"""
+    Create the Gradio interface.
+    """</span>
+    <span class="c1"># Define the interface
+</span>    <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Blocks</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">"MusicGen Web Interface"</span><span class="p">)</span> <span class="k">as</span> <span class="n">interface</span><span class="p">:</span>
+        <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"# MusicGen Web Interface"</span><span class="p">)</span>
+        <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"Generate music from text descriptions using Meta's MusicGen"</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Column</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+                <span class="c1"># Input section
+</span>                <span class="n">prompt_input</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Textbox</span><span class="p">(</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s">"Music Description"</span><span class="p">,</span>
+                    <span class="n">placeholder</span><span class="o">=</span><span class="s">"Describe the music you want to generate..."</span><span class="p">,</span>
+                    <span class="n">lines</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="s">"An upbeat electronic dance track with a catchy melody and energetic rhythm"</span>
+                <span class="p">)</span>
+                
+                <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+                    <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Column</span><span class="p">():</span>
+                        <span class="n">model_dropdown</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Dropdown</span><span class="p">(</span>
+                            <span class="n">label</span><span class="o">=</span><span class="s">"Model Size"</span><span class="p">,</span>
+                            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">"small"</span><span class="p">,</span> <span class="s">"medium"</span><span class="p">,</span> <span class="s">"large"</span><span class="p">],</span>
+                            <span class="n">value</span><span class="o">=</span><span class="s">"small"</span>
+                        <span class="p">)</span>
+                        
+                        <span class="n">duration_slider</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+                            <span class="n">label</span><span class="o">=</span><span class="s">"Duration (seconds)"</span><span class="p">,</span>
+                            <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">maximum</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                            <span class="n">step</span><span class="o">=</span><span class="mi">1</span>
+                        <span class="p">)</span>
+                    
+                    <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Column</span><span class="p">():</span>
+                        <span class="n">temperature_slider</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+                            <span class="n">label</span><span class="o">=</span><span class="s">"Temperature"</span><span class="p">,</span>
+                            <span class="n">minimum</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                            <span class="n">maximum</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span>
+                        <span class="p">)</span>
+                        
+                        <span class="n">top_k_slider</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+                            <span class="n">label</span><span class="o">=</span><span class="s">"Top-K"</span><span class="p">,</span>
+                            <span class="n">minimum</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                            <span class="n">maximum</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+                            <span class="n">step</span><span class="o">=</span><span class="mi">50</span>
+                        <span class="p">)</span>
+                        
+                        <span class="n">top_p_slider</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+                            <span class="n">label</span><span class="o">=</span><span class="s">"Top-P"</span><span class="p">,</span>
+                            <span class="n">minimum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                            <span class="n">maximum</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                            <span class="n">step</span><span class="o">=</span><span class="mf">0.05</span>
+                        <span class="p">)</span>
+                
+                <span class="n">generate_btn</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Generate Music"</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s">"primary"</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Column</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+                <span class="c1"># Output section
+</span>                <span class="n">audio_output</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Generated Music"</span><span class="p">)</span>
+                <span class="n">info_output</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Textbox</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s">"Generation Info"</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                
+                <span class="c1"># History section
+</span>                <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"### Generation History"</span><span class="p">)</span>
+                
+                <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+                    <span class="n">history_audio1</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Sample 1"</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="n">history_audio2</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Sample 2"</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                
+                <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+                    <span class="n">history_audio3</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Sample 3"</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="n">history_audio4</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Sample 4"</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        
+        <span class="c1"># Presets section
+</span>        <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Accordion</span><span class="p">(</span><span class="s">"Prompt Presets"</span><span class="p">,</span> <span class="nb">open</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+            <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"Click on any preset to use it"</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+                <span class="n">preset1</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Electronic Dance"</span><span class="p">)</span>
+                <span class="n">preset2</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Piano Ballad"</span><span class="p">)</span>
+                <span class="n">preset3</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Epic Orchestral"</span><span class="p">)</span>
+                <span class="n">preset4</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Jazz Quartet"</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+                <span class="n">preset5</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Lo-fi Hip Hop"</span><span class="p">)</span>
+                <span class="n">preset6</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Rock Band"</span><span class="p">)</span>
+                <span class="n">preset7</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Ambient Soundscape"</span><span class="p">)</span>
+                <span class="n">preset8</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Folk Acoustic"</span><span class="p">)</span>
+        
+        <span class="c1"># Event handlers for generation
+</span>        <span class="n">generate_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+            <span class="n">fn</span><span class="o">=</span><span class="n">generate_music</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">prompt_input</span><span class="p">,</span>
+                <span class="n">duration_slider</span><span class="p">,</span>
+                <span class="n">temperature_slider</span><span class="p">,</span>
+                <span class="n">top_k_slider</span><span class="p">,</span>
+                <span class="n">top_p_slider</span><span class="p">,</span>
+                <span class="n">model_dropdown</span>
+            <span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">audio_output</span><span class="p">,</span> <span class="n">info_output</span><span class="p">]</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># History tracking system
+</span>        <span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">history_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">history_audio1</span><span class="p">,</span> <span class="n">history_audio2</span><span class="p">,</span> <span class="n">history_audio3</span><span class="p">,</span> <span class="n">history_audio4</span><span class="p">]</span>
+        
+        <span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">current_index</span>
+            <span class="c1"># Make this sample's history element visible
+</span>            <span class="n">history_outputs</span><span class="p">[</span><span class="n">current_index</span><span class="p">].</span><span class="n">visible</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c1"># Update index for next generation (circular)
+</span>            <span class="n">current_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">history_outputs</span><span class="p">)</span>
+            <span class="c1"># Return all updated history elements
+</span>            <span class="k">return</span> <span class="p">[</span><span class="n">audio_path</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">gr</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">history_outputs</span><span class="p">))]</span>
+        
+        <span class="n">generate_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+            <span class="n">fn</span><span class="o">=</span><span class="n">update_history</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">audio_output</span><span class="p">,</span> <span class="n">info_output</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">history_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">history_output</span> <span class="k">for</span> <span class="n">history_output</span> <span class="ow">in</span> <span class="n">history_outputs</span><span class="p">]</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Preset event handlers
+</span>        <span class="n">preset_prompts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">preset1</span><span class="p">:</span> <span class="s">"An upbeat electronic dance track with a catchy melody and energetic rhythm"</span><span class="p">,</span>
+            <span class="n">preset2</span><span class="p">:</span> <span class="s">"A soft piano ballad with emotional melody and subtle string accompaniment"</span><span class="p">,</span>
+            <span class="n">preset3</span><span class="p">:</span> <span class="s">"An epic orchestral piece with powerful brass, dramatic percussion, and sweeping strings"</span><span class="p">,</span>
+            <span class="n">preset4</span><span class="p">:</span> <span class="s">"A jazz quartet with piano, bass, drums, and saxophone playing a smooth improvisational piece"</span><span class="p">,</span>
+            <span class="n">preset5</span><span class="p">:</span> <span class="s">"A lo-fi hip hop beat with relaxed drums, atmospheric samples, and a chill mood"</span><span class="p">,</span>
+            <span class="n">preset6</span><span class="p">:</span> <span class="s">"A rock band with electric guitars, bass, and energetic drums playing a memorable chord progression"</span><span class="p">,</span>
+            <span class="n">preset7</span><span class="p">:</span> <span class="s">"An ambient soundscape with ethereal pads, subtle textures, and a peaceful atmosphere"</span><span class="p">,</span>
+            <span class="n">preset8</span><span class="p">:</span> <span class="s">"A folk acoustic song with fingerpicked guitar, warm vocals, and natural feeling"</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Connect preset buttons to update the prompt
+</span>        <span class="k">for</span> <span class="n">preset_btn</span><span class="p">,</span> <span class="n">preset_text</span> <span class="ow">in</span> <span class="n">preset_prompts</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">preset_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+                <span class="n">fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">gr</span><span class="p">.</span><span class="n">Textbox</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">preset_text</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">prompt_input</span><span class="p">]</span>
+            <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">interface</span>
+
+<span class="c1"># Launch the interface
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">interface</span> <span class="o">=</span> <span class="n">create_interface</span><span class="p">()</span>
+    <span class="n">interface</span><span class="p">.</span><span class="n">launch</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>  <span class="c1"># Set share=True to generate a public URL
+</span></code></pre></div></div>
+
+<p>Save this file as <code class="language-plaintext highlighter-rouge">musicgen_web_app.py</code> and run it with <code class="language-plaintext highlighter-rouge">python musicgen_web_app.py</code>. This will start a local web server with your MusicGen interface.</p>
+
+<h2 id="understanding-the-interface-components">Understanding the Interface Components</h2>
+
+<p>Our web application has several key components:</p>
+
+<h3 id="1-model-management">1. Model Management</h3>
+
+<p>We’ve created a global variable to store the MusicGen model and a function to load models of different sizes. This allows users to switch between models without restarting the application:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Loading MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model..."</span><span class="p">)</span>
+    
+    <span class="c1"># Determine device
+</span>    <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">backends</span><span class="p">.</span><span class="n">mps</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"mps"</span>
+    <span class="k">elif</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">():</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cuda"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="s">"cpu"</span>
+    
+    <span class="c1"># Load model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">MusicGen</span><span class="p">.</span><span class="n">get_pretrained</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"MusicGen </span><span class="si">{</span><span class="n">model_size</span><span class="si">}</span><span class="s"> model loaded successfully on </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s">"</span>
+</code></pre></div></div>
+
+<h3 id="2-music-generation-function">2. Music Generation Function</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">generate_music</code> function handles parameter processing and music generation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_music</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">top_p</span><span class="p">,</span> <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span> <span class="n">autoplay</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="c1"># Load model if needed
+</span>    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">model</span><span class="p">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">model_size</span><span class="p">:</span>
+        <span class="n">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">),</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">top_k</span><span class="p">),</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">top_p</span><span class="p">),</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate music
+</span>    <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Save and return the audio
+</span>    <span class="c1"># ...
+</span></code></pre></div></div>
+
+<h3 id="3-gradio-interface">3. Gradio Interface</h3>
+
+<p>We use Gradio’s <code class="language-plaintext highlighter-rouge">Blocks</code> API to create a flexible, multi-component interface:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Blocks</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">"MusicGen Web Interface"</span><span class="p">)</span> <span class="k">as</span> <span class="n">interface</span><span class="p">:</span>
+    <span class="c1"># Input section with text prompt and parameter sliders
+</span>    <span class="c1"># ...
+</span>    
+    <span class="c1"># Output section with audio player and generation info
+</span>    <span class="c1"># ...
+</span>    
+    <span class="c1"># History section to compare multiple generations
+</span>    <span class="c1"># ...
+</span>    
+    <span class="c1"># Preset section with common prompt templates
+</span>    <span class="c1"># ...
+</span></code></pre></div></div>
+
+<h3 id="4-history-tracking">4. History Tracking</h3>
+
+<p>The application keeps track of recent generations for easy comparison:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">update_history</span><span class="p">(</span><span class="n">audio_path</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+    <span class="k">nonlocal</span> <span class="n">current_index</span>
+    <span class="c1"># Make this sample's history element visible
+</span>    <span class="n">history_outputs</span><span class="p">[</span><span class="n">current_index</span><span class="p">].</span><span class="n">visible</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="c1"># Update index for next generation (circular)
+</span>    <span class="n">current_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">history_outputs</span><span class="p">)</span>
+    <span class="c1"># Return all updated history elements
+</span>    <span class="k">return</span> <span class="p">[</span><span class="n">audio_path</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">gr</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">history_outputs</span><span class="p">))]</span>
+</code></pre></div></div>
+
+<h2 id="enhancements-to-the-basic-interface">Enhancements to the Basic Interface</h2>
+
+<p>Now let’s enhance our application with more advanced features:</p>
+
+<h3 id="1-adding-melody-conditioning">1. Adding Melody Conditioning</h3>
+
+<p>Let’s add the ability to condition the generation on a melody by uploading a reference audio file:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add to the imports at the top
+</span><span class="kn">import</span> <span class="nn">torchaudio</span>
+
+<span class="c1"># Add this function
+</span><span class="k">def</span> <span class="nf">load_and_process_melody</span><span class="p">(</span><span class="n">melody_file</span><span class="p">):</span>
+    <span class="s">"""
+    Load and process a melody file for conditioning.
+    """</span>
+    <span class="k">if</span> <span class="n">melody_file</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="c1"># Load the audio file
+</span>    <span class="n">melody_wav</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+    
+    <span class="c1"># If stereo, convert to mono
+</span>    <span class="k">if</span> <span class="n">melody_wav</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">melody_wav</span> <span class="o">=</span> <span class="n">melody_wav</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    
+    <span class="c1"># Resample if needed (MusicGen expects 32kHz)
+</span>    <span class="k">if</span> <span class="n">sr</span> <span class="o">!=</span> <span class="mi">32000</span><span class="p">:</span>
+        <span class="n">resampler</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">transforms</span><span class="p">.</span><span class="n">Resample</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="mi">32000</span><span class="p">)</span>
+        <span class="n">melody_wav</span> <span class="o">=</span> <span class="n">resampler</span><span class="p">(</span><span class="n">melody_wav</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">melody_wav</span>
+
+<span class="c1"># Modify the generate_music function to accept a melody parameter
+</span><span class="k">def</span> <span class="nf">generate_music</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="p">,</span> 
+    <span class="n">duration</span><span class="p">,</span> 
+    <span class="n">temperature</span><span class="p">,</span> 
+    <span class="n">top_k</span><span class="p">,</span> 
+    <span class="n">top_p</span><span class="p">,</span> 
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>
+    <span class="n">melody_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">autoplay</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">):</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="c1"># Load model if needed
+</span>    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">model</span><span class="p">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">model_size</span><span class="p">:</span>
+        <span class="n">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">),</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">top_k</span><span class="p">),</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">top_p</span><span class="p">),</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Process melody if provided
+</span>    <span class="n">melody</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">melody_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">melody</span> <span class="o">=</span> <span class="n">load_and_process_melody</span><span class="p">(</span><span class="n">melody_file</span><span class="p">)</span>
+    
+    <span class="c1"># Generate music
+</span>    <span class="k">if</span> <span class="n">melody</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c1"># With melody conditioning
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music with melody conditioning for: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate_with_chroma</span><span class="p">([</span><span class="n">prompt</span><span class="p">],</span> <span class="n">melody</span><span class="p">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">to</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">device</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Without melody conditioning
+</span>        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating music for: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+    
+    <span class="c1"># Save and return the audio
+</span>    <span class="c1"># ... (rest of function remains the same)
+</span></code></pre></div></div>
+
+<p>Add the melody input component to the interface:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># In the interface creation function, add this to the input section
+</span><span class="n">melody_input</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span>
+    <span class="n">label</span><span class="o">=</span><span class="s">"Optional Melody Reference (will be used to condition the generation)"</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span>
+<span class="p">)</span>
+
+<span class="c1"># Update the generate_btn.click function inputs to include melody_input
+</span><span class="n">generate_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">generate_music</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">prompt_input</span><span class="p">,</span>
+        <span class="n">duration_slider</span><span class="p">,</span>
+        <span class="n">temperature_slider</span><span class="p">,</span>
+        <span class="n">top_k_slider</span><span class="p">,</span>
+        <span class="n">top_p_slider</span><span class="p">,</span>
+        <span class="n">model_dropdown</span><span class="p">,</span>
+        <span class="n">melody_input</span>
+    <span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">audio_output</span><span class="p">,</span> <span class="n">info_output</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="2-adding-multi-generation-comparison">2. Adding Multi-Generation Comparison</h3>
+
+<p>Let’s add a feature to generate multiple variations with the same parameters for comparison:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add to the interface
+</span><span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+    <span class="n">variation_count</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s">"Number of Variations to Generate"</span><span class="p">,</span>
+        <span class="n">minimum</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">maximum</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">step</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    
+    <span class="n">generate_variations_btn</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Generate Variations"</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s">"secondary"</span><span class="p">)</span>
+
+<span class="c1"># Add this function
+</span><span class="k">def</span> <span class="nf">generate_variations</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">top_p</span><span class="p">,</span> <span class="n">model_size</span><span class="p">,</span> <span class="n">num_variations</span><span class="p">):</span>
+    <span class="s">"""
+    Generate multiple variations with the same parameters.
+    """</span>
+    <span class="k">global</span> <span class="n">model</span>
+    
+    <span class="c1"># Load model if needed
+</span>    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">model</span><span class="p">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">model_size</span><span class="p">:</span>
+        <span class="n">load_model</span><span class="p">(</span><span class="n">model_size</span><span class="p">)</span>
+    
+    <span class="c1"># Set generation parameters
+</span>    <span class="n">model</span><span class="p">.</span><span class="n">set_generation_params</span><span class="p">(</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">),</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">),</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">top_k</span><span class="p">),</span>
+        <span class="n">top_p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">top_p</span><span class="p">),</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Generate multiple variations
+</span>    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num_variations</span><span class="p">)):</span>
+        <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Generating variation </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">num_variations</span><span class="si">}</span><span class="s"> for: '</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s">'"</span><span class="p">)</span>
+        <span class="n">wav</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">generate</span><span class="p">([</span><span class="n">prompt</span><span class="p">])</span>
+        
+        <span class="c1"># Create a unique filename
+</span>        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s">_var</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">"</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        
+        <span class="c1"># Save the audio file
+</span>        <span class="n">audio_write</span><span class="p">(</span>
+            <span class="n">output_path</span><span class="p">,</span> 
+            <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span> 
+            <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> 
+            <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="n">outputs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    
+    <span class="c1"># Fill in missing outputs with None if fewer than 4 variations
+</span>    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">outputs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">outputs</span>
+
+<span class="c1"># Connect the variations button
+</span><span class="n">generate_variations_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">generate_variations</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">prompt_input</span><span class="p">,</span>
+        <span class="n">duration_slider</span><span class="p">,</span>
+        <span class="n">temperature_slider</span><span class="p">,</span>
+        <span class="n">top_k_slider</span><span class="p">,</span>
+        <span class="n">top_p_slider</span><span class="p">,</span>
+        <span class="n">model_dropdown</span><span class="p">,</span>
+        <span class="n">variation_count</span>
+    <span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">history_audio1</span><span class="p">,</span> <span class="n">history_audio2</span><span class="p">,</span> <span class="n">history_audio3</span><span class="p">,</span> <span class="n">history_audio4</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="3-adding-audio-metadata-saving">3. Adding Audio Metadata Saving</h3>
+
+<p>Let’s add a feature to save the generation parameters with the audio files for future reference:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add to the imports
+</span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c1"># Modify the generate_music function to save metadata
+</span><span class="k">def</span> <span class="nf">generate_music</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="p">,</span> 
+    <span class="n">duration</span><span class="p">,</span> 
+    <span class="n">temperature</span><span class="p">,</span> 
+    <span class="n">top_k</span><span class="p">,</span> 
+    <span class="n">top_p</span><span class="p">,</span> 
+    <span class="n">model_size</span><span class="o">=</span><span class="s">"small"</span><span class="p">,</span>
+    <span class="n">melody_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">autoplay</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">):</span>
+    <span class="c1"># ... (existing code)
+</span>    
+    <span class="c1"># Create a unique filename
+</span>    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    
+    <span class="c1"># Save the audio file
+</span>    <span class="n">audio_write</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span> 
+        <span class="n">wav</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cpu</span><span class="p">(),</span> 
+        <span class="n">model</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">,</span> 
+        <span class="n">strategy</span><span class="o">=</span><span class="s">"loudness"</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Save metadata
+</span>    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+        <span class="s">"model_size"</span><span class="p">:</span> <span class="n">model_size</span><span class="p">,</span>
+        <span class="s">"parameters"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">"duration"</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+            <span class="s">"temperature"</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s">"top_k"</span><span class="p">:</span> <span class="n">top_k</span><span class="p">,</span>
+            <span class="s">"top_p"</span><span class="p">:</span> <span class="n">top_p</span>
+        <span class="p">},</span>
+        <span class="s">"timestamp"</span><span class="p">:</span> <span class="n">time</span><span class="p">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">"%Y-%m-%d %H:%M:%S"</span><span class="p">),</span>
+        <span class="s">"melody_used"</span><span class="p">:</span> <span class="n">melody_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="p">}</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s">.json"</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="c1"># ... (rest of function)
+</span></code></pre></div></div>
+
+<h2 id="deploying-your-web-interface">Deploying Your Web Interface</h2>
+
+<p>You can deploy your MusicGen web interface in several ways:</p>
+
+<h3 id="1-local-deployment">1. Local Deployment</h3>
+
+<p>The simplest way to run the interface is locally:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python musicgen_web_app.py
+</code></pre></div></div>
+
+<p>This starts a local web server, typically at http://127.0.0.1:7860.</p>
+
+<h3 id="2-temporary-public-url">2. Temporary Public URL</h3>
+
+<p>To share your interface with others temporarily, set <code class="language-plaintext highlighter-rouge">share=True</code> when launching:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interface</span><span class="p">.</span><span class="n">launch</span><span class="p">(</span><span class="n">share</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># Generates a temporary public URL
+</span></code></pre></div></div>
+
+<p>This creates a temporary URL that’s valid for 72 hours.</p>
+
+<h3 id="3-persistent-deployment">3. Persistent Deployment</h3>
+
+<p>For persistent deployment, you can use services like:</p>
+
+<ul>
+  <li><strong>Hugging Face Spaces</strong>: Free hosting for Gradio apps</li>
+  <li><strong>Streamlit</strong>: Another platform supporting web apps</li>
+  <li><strong>Your own server</strong>: Deploy on AWS, Google Cloud, etc.</li>
+</ul>
+
+<h2 id="example-creating-a-musicgen-composition-tool">Example: Creating a MusicGen Composition Tool</h2>
+
+<p>Let’s expand our web interface into a composition tool by enabling the creation of longer music sequences:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Add this function
+</span><span class="k">def</span> <span class="nf">stitch_audio_segments</span><span class="p">(</span><span class="n">segment_paths</span><span class="p">,</span> <span class="n">crossfade_duration</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="s">"""
+    Stitch multiple audio segments together with crossfading.
+    """</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+    <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">hann</span>
+    
+    <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="c1"># Load all segments
+</span>    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">segment_paths</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">wav</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">segments</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">wav</span><span class="p">.</span><span class="n">squeeze</span><span class="p">().</span><span class="n">numpy</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">sample_rate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sr</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">segments</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    
+    <span class="c1"># Calculate crossfade samples
+</span>    <span class="n">crossfade_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">crossfade_duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    
+    <span class="c1"># Create crossfade window
+</span>    <span class="n">window</span> <span class="o">=</span> <span class="n">hann</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">crossfade_samples</span><span class="p">)</span>
+    <span class="n">fade_in</span> <span class="o">=</span> <span class="n">window</span><span class="p">[:</span><span class="n">crossfade_samples</span><span class="p">]</span>
+    <span class="n">fade_out</span> <span class="o">=</span> <span class="n">window</span><span class="p">[</span><span class="n">crossfade_samples</span><span class="p">:]</span>
+    
+    <span class="c1"># Stitch segments with crossfading
+</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)):</span>
+        <span class="c1"># Ensure current result is long enough for crossfade
+</span>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">crossfade_samples</span><span class="p">:</span>
+            <span class="c1"># Apply fade out to the end of the current result
+</span>            <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="n">crossfade_samples</span><span class="p">:]</span> <span class="o">*=</span> <span class="n">fade_out</span>
+            
+            <span class="c1"># Apply fade in to the beginning of the next segment
+</span>            <span class="n">next_segment</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">next_segment</span><span class="p">[:</span><span class="n">crossfade_samples</span><span class="p">]</span> <span class="o">*=</span> <span class="n">fade_in</span>
+            
+            <span class="c1"># Overlap and add
+</span>            <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">crossfade_samples</span><span class="p">)</span>
+            <span class="n">overlap</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="n">crossfade_samples</span><span class="p">:]</span>
+            <span class="n">overlap</span> <span class="o">+=</span> <span class="n">next_segment</span><span class="p">[:</span><span class="n">crossfade_samples</span><span class="p">]</span>
+            
+            <span class="c1"># Combine
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="n">crossfade_samples</span><span class="p">],</span> <span class="n">overlap</span><span class="p">,</span> <span class="n">next_segment</span><span class="p">[</span><span class="n">crossfade_samples</span><span class="p">:]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If the first segment is too short, just concatenate
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">result</span><span class="p">,</span> <span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+    
+    <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">sample_rate</span>
+
+<span class="c1"># Add this to the interface
+</span><span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Accordion</span><span class="p">(</span><span class="s">"Composition Tool"</span><span class="p">,</span> <span class="nb">open</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">gr</span><span class="p">.</span><span class="n">Markdown</span><span class="p">(</span><span class="s">"### Create longer compositions by stitching multiple segments"</span><span class="p">)</span>
+    
+    <span class="k">with</span> <span class="n">gr</span><span class="p">.</span><span class="n">Row</span><span class="p">():</span>
+        <span class="n">composition_segments</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">CheckboxGroup</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">"Segments to Include"</span><span class="p">,</span>
+            <span class="n">choices</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">value</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+        
+        <span class="n">crossfade_slider</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Slider</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">"Crossfade Duration (seconds)"</span><span class="p">,</span>
+            <span class="n">minimum</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">maximum</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="p">)</span>
+    
+    <span class="n">create_composition_btn</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Button</span><span class="p">(</span><span class="s">"Create Composition"</span><span class="p">)</span>
+    <span class="n">composition_output</span> <span class="o">=</span> <span class="n">gr</span><span class="p">.</span><span class="n">Audio</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">"filepath"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">"Composed Music"</span><span class="p">)</span>
+
+<span class="c1"># Function to update the segments checkbox group
+</span><span class="k">def</span> <span class="nf">update_segments_list</span><span class="p">():</span>
+    <span class="c1"># Get all wav files in the output directory
+</span>    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="p">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">'.wav'</span><span class="p">)]</span>
+    <span class="n">files</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="c1"># Limit to most recent 10 files
+</span>    <span class="n">files</span> <span class="o">=</span> <span class="n">files</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+    <span class="c1"># Create full paths
+</span>    <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+    <span class="c1"># Update the checkbox
+</span>    <span class="k">return</span> <span class="n">gr</span><span class="p">.</span><span class="n">CheckboxGroup</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">choices</span><span class="o">=</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[])</span>
+
+<span class="c1"># Connect the update function
+</span><span class="n">generate_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">update_segments_list</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">composition_segments</span><span class="p">])</span>
+<span class="n">generate_variations_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">update_segments_list</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">composition_segments</span><span class="p">])</span>
+
+<span class="c1"># Function to create composition
+</span><span class="k">def</span> <span class="nf">create_composition</span><span class="p">(</span><span class="n">segment_paths</span><span class="p">,</span> <span class="n">crossfade_duration</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">segment_paths</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Creating composition with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">segment_paths</span><span class="p">)</span><span class="si">}</span><span class="s"> segments"</span><span class="p">)</span>
+    
+    <span class="c1"># Stitch segments together
+</span>    <span class="n">composed_audio</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">stitch_audio_segments</span><span class="p">(</span><span class="n">segment_paths</span><span class="p">,</span> <span class="n">crossfade_duration</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">composed_audio</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="c1"># Save the composition
+</span>    <span class="n">composition_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"composition_</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">.</span><span class="n">uuid4</span><span class="p">())[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+    <span class="n">composition_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">composition_filename</span><span class="p">)</span>
+    
+    <span class="c1"># Convert to numpy and save
+</span>    <span class="n">composed_audio_np</span> <span class="o">=</span> <span class="n">composed_audio</span><span class="p">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">composed_audio</span><span class="p">,</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">composed_audio</span>
+    
+    <span class="c1"># Save using torchaudio
+</span>    <span class="n">torchaudio</span><span class="p">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">composition_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">,</span>
+        <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">composed_audio_np</span><span class="p">).</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">sr</span>
+    <span class="p">)</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Composition saved to </span><span class="si">{</span><span class="n">composition_path</span><span class="si">}</span><span class="s">.wav"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">composition_path</span><span class="si">}</span><span class="s">.wav"</span>
+
+<span class="c1"># Connect the composition button
+</span><span class="n">create_composition_btn</span><span class="p">.</span><span class="n">click</span><span class="p">(</span>
+    <span class="n">fn</span><span class="o">=</span><span class="n">create_composition</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">composition_segments</span><span class="p">,</span> <span class="n">crossfade_slider</span><span class="p">],</span>
+    <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">composition_output</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="exercises">Exercises</h2>
+
+<p>Here are some exercises to enhance your MusicGen web application:</p>
+
+<ol>
+  <li>
+    <p><strong>Style Transfer Interface</strong>: Create a tab in the UI that lets users upload a reference audio file and attempt to generate music in a similar style.</p>
+  </li>
+  <li>
+    <p><strong>Batch Processing</strong>: Add a feature to process a list of prompts in batch mode, generating all samples at once.</p>
+  </li>
+  <li>
+    <p><strong>Custom Presets System</strong>: Expand the presets to include both prompt text and parameter settings, allowing users to save and load their favorite configurations.</p>
+  </li>
+  <li>
+    <p><strong>Audio Visualization</strong>: Add visual representations of the generated audio using waveform or spectrogram displays.</p>
+  </li>
+  <li>
+    <p><strong>Multi-Model Comparison</strong>: Create a side-by-side comparison feature that generates the same prompt with different model sizes.</p>
+  </li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>You’ve now created a powerful web interface for MusicGen that enables interactive music generation. This interface makes AudioCraft more accessible and practical for various use cases, from music composition to sound design.</p>
+
+<p>With the features we’ve implemented, users can:</p>
+<ul>
+  <li>Generate music with detailed control over parameters</li>
+  <li>Compare variations side by side</li>
+  <li>Use melody conditioning for more guided generation</li>
+  <li>Create longer compositions by stitching segments</li>
+</ul>
+
+<p>Try extending this application with additional features from the exercises to create an even more powerful music generation tool.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ol>
+  <li>Explore the <a href="/practical-meta-audiocraft/tutorials/musicgen/musicgen_advanced/">Advanced MusicGen</a> tutorial for more techniques</li>
+  <li>Learn about <a href="/practical-meta-audiocraft/tutorials/audiogen/">AudioGen</a> for sound effect generation</li>
+  <li>Integrate your web interface with other tools using our <a href="../advanced-techniques/api_integration.md">API Integration</a> guide</li>
+</ol>
+
+  </div>
+
+</article>
+
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-col-wrapper">
+            <div class="footer-col">
+              <p>A hands-on guide to creating music, sound effects, and audio experiences with AI</p>
+              <p>
+                <a href="https://github.com/facebookresearch/audiocraft">AudioCraft GitHub Repository</a>
+              </p>
+            </div>
+            <div class="footer-col">
+              <p class="copyright">
+                Copyright © 2025 Scott Friedman.<br>
+                Licensed under <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
