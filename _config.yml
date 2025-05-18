@@ -28,6 +28,7 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-relative-links
+  - jekyll-redirect-from
 
 # Custom settings
 book:

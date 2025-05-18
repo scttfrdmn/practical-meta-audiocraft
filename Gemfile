@@ -9,6 +9,7 @@ group :jekyll_plugins do
   gem "jekyll-seo-tag", "~> 2.8"
   gem "jekyll-sitemap", "~> 1.4"
   gem "jekyll-relative-links", "~> 0.7.0"
+  gem "jekyll-redirect-from", "~> 0.16.0"
 end
 
 # JRuby does not include zoneinfo files

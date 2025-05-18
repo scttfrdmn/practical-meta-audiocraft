@@ -2,6 +2,7 @@
 layout: home
 title: Practical Meta AudioCraft
 permalink: /
+redirect_from: /index.html
 ---
 
 # Practical Meta AudioCraft
