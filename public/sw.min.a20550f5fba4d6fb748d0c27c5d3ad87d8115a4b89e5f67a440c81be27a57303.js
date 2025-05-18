@@ -1,0 +1,1 @@
+navigator.serviceWorker&&navigator.serviceWorker.register("/practical-meta-audiocraft/sw.js",{scope:"/practical-meta-audiocraft/"})

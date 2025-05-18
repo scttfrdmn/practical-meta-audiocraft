@@ -1,0 +1,356 @@
+@charset "UTF-8";
+/* Practical Meta AudioCraft Book Styles */
+:root {
+  /* Color palette */
+  --primary-color: #1877F2;
+  /* Meta blue */
+  --primary-dark: #166FE5;
+  /* Darker blue for hover states */
+  --secondary-color: #42B72A;
+  /* Meta green */
+  --secondary-dark: #36A420;
+  /* Darker green for hover states */
+  --text-color: #1C1E21;
+  /* Primary text color */
+  --text-light: #65676B;
+  /* Secondary text color */
+  --background-color: #FFFFFF;
+  /* Main background */
+  --background-alt: #F0F2F5;
+  /* Alternative background */
+  --border-color: #DADDE1;
+  /* Border color */
+  --code-background: #F6F7F9;
+  /* Code block background */
+  --warning-color: #F02849;
+  /* Warning/error color */
+  --success-color: #31A24C;
+  /* Success color */
+  /* Difficulty colors */
+  --beginner-color: #4CAF50;
+  /* Green for beginner */
+  --intermediate-color: #2196F3;
+  /* Blue for intermediate */
+  --advanced-color: #9C27B0;
+  /* Purple for advanced */
+  /* Typography */
+  --body-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --code-font: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  /* Sizing */
+  --content-width: 800px;
+  --sidebar-width: 280px;
+  --header-height: 60px; }
+
+/* Base styles */
+body {
+  font-family: var(--body-font);
+  color: var(--text-color);
+  line-height: 1.6;
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0; }
+
+a {
+  color: var(--primary-color);
+  text-decoration: none; }
+
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.2; }
+
+h1 {
+  font-size: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem; }
+
+h2 {
+  font-size: 1.8rem;
+  margin-top: 3rem; }
+
+h3 {
+  font-size: 1.4rem; }
+
+p {
+  margin-bottom: 1.5rem; }
+
+/* Code blocks */
+pre {
+  background-color: var(--code-background);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border-color); }
+
+code {
+  font-family: var(--code-font);
+  font-size: 0.9em; }
+
+p code, li code {
+  background-color: var(--code-background);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border: 1px solid var(--border-color); }
+
+/* Chapter specific styles */
+.chapter {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 2rem; }
+
+.chapter-header {
+  margin-bottom: 2rem; }
+
+.chapter-metadata {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem; }
+
+.difficulty {
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 1rem;
+  text-transform: uppercase; }
+
+.beginner {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--beginner-color); }
+
+.intermediate {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--intermediate-color); }
+
+.advanced {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: var(--advanced-color); }
+
+.estimated-time {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center; }
+
+.estimated-time::before {
+  content: '⏱️';
+  margin-right: 0.3rem; }
+
+/* Scenario quote */
+.scenario-quote {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--background-alt);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 6px; }
+
+.scenario-quote blockquote {
+  margin: 0;
+  font-style: italic; }
+
+.scenario-quote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-weight: 500; }
+
+/* Key takeaways */
+.key-takeaways {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  background-color: rgba(33, 150, 243, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(33, 150, 243, 0.2); }
+
+.key-takeaways h2 {
+  margin-top: 0;
+  color: var(--primary-color); }
+
+.key-takeaways ul {
+  margin-bottom: 0; }
+
+/* Next steps */
+.next-steps {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  background-color: rgba(76, 175, 80, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(76, 175, 80, 0.2); }
+
+.next-steps h2 {
+  margin-top: 0;
+  color: var(--secondary-color); }
+
+.next-steps ul {
+  margin-bottom: 0; }
+
+/* Further reading */
+.further-reading {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  background-color: rgba(156, 39, 176, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(156, 39, 176, 0.2); }
+
+.further-reading h2 {
+  margin-top: 0;
+  color: var(--advanced-color); }
+
+.further-reading ul {
+  margin-bottom: 0; }
+
+/* Chapter navigation */
+.chapter-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color); }
+
+.prev-chapter, .next-chapter {
+  display: flex;
+  flex-direction: column;
+  max-width: 45%; }
+
+.next-chapter {
+  text-align: right;
+  margin-left: auto; }
+
+.nav-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 0.3rem; }
+
+.nav-title {
+  font-weight: 500; }
+
+/* Code tabs */
+.code-tabs {
+  margin: 2rem 0;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden; }
+
+.tab-buttons {
+  display: flex;
+  background-color: var(--background-alt);
+  border-bottom: 1px solid var(--border-color); }
+
+.tab-button {
+  padding: 0.8rem 1.2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-light); }
+
+.tab-button.active {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color); }
+
+.tab-button:hover {
+  background-color: rgba(0, 0, 0, 0.03); }
+
+.tab-contents {
+  background-color: var(--background-color); }
+
+.tab-content {
+  display: none;
+  padding: 1rem; }
+
+.tab-content.active {
+  display: block; }
+
+.tab-content pre {
+  margin: 0;
+  border: none;
+  background-color: var(--code-background); }
+
+/* Notes and warnings */
+.note, .warning, .tip {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-radius: 6px; }
+
+.note {
+  background-color: rgba(33, 150, 243, 0.05);
+  border-left: 4px solid var(--primary-color); }
+
+.warning {
+  background-color: rgba(240, 40, 73, 0.05);
+  border-left: 4px solid var(--warning-color); }
+
+.tip {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-left: 4px solid var(--success-color); }
+
+.note h4, .warning h4, .tip h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem; }
+
+/* Audio player */
+.audio-example {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--background-alt);
+  border-radius: 6px;
+  border: 1px solid var(--border-color); }
+
+.audio-example h4 {
+  margin-top: 0;
+  margin-bottom: 1rem; }
+
+.audio-example audio {
+  width: 100%; }
+
+.audio-example .description {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-light); }
+
+/* Copyright footer */
+.copyright-footer, .copyright-notice {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  color: var(--text-light);
+  text-align: center; }
+
+.copyright-footer a, .copyright-notice a {
+  color: var(--primary-color); }
+
+.copyright-footer hr {
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid var(--border-color); }
+
+/* Responsive styles */
+@media (max-width: 900px) {
+  .chapter {
+    padding: 1.5rem; }
+  h1 {
+    font-size: 2rem; }
+  h2 {
+    font-size: 1.5rem; }
+  pre {
+    padding: 0.75rem; } }
+
+@media (max-width: 600px) {
+  .chapter {
+    padding: 1rem; }
+  .chapter-navigation {
+    flex-direction: column;
+    gap: 1.5rem; }
+  .prev-chapter, .next-chapter {
+    max-width: 100%; }
+  .next-chapter {
+    text-align: left; } }

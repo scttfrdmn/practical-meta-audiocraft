@@ -1,0 +1,28 @@
+{{ define "main" }}
+<section class="section">
+  <header class="section-header">
+    <h1>{{ .Title }}</h1>
+    {{ if .Description }}<p class="description">{{ .Description }}</p>{{ end }}
+  </header>
+  
+  <div class="content">
+    {{ .Content }}
+  </div>
+  
+  {{ $pages := .Pages }}
+  {{ if .IsHome }}
+    {{ $pages = .Site.RegularPages }}
+  {{ end }}
+  
+  {{ if $pages }}
+  <ul class="page-list">
+    {{ range $pages.ByWeight }}
+    <li>
+      <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      {{ if .Description }}<p>{{ .Description }}</p>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+  {{ end }}
+</section>
+{{ end }}
